@@ -6,6 +6,43 @@
 export type Database = {
   public: {
     Tables: {
+      assignments: {
+        Row: {
+          id: string;
+          user_id: string;
+          subject_id: string;
+          kind: "homework" | "project" | "exam";
+          title: string;
+          notes: string | null;
+          due_at: string;
+          status: "todo" | "in_progress" | "done";
+          priority: "low" | "normal" | "high";
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          subject_id: string;
+          kind?: "homework" | "project" | "exam";
+          title: string;
+          notes?: string | null;
+          due_at: string;
+          status?: "todo" | "in_progress" | "done";
+          priority?: "low" | "normal" | "high";
+        };
+        Update: {
+          subject_id?: string;
+          kind?: "homework" | "project" | "exam";
+          title?: string;
+          notes?: string | null;
+          due_at?: string;
+          status?: "todo" | "in_progress" | "done";
+          priority?: "low" | "normal" | "high";
+        };
+        Relationships: [];
+      };
       semesters: {
         Row: {
           id: string;
