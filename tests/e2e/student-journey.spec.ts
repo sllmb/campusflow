@@ -1,0 +1,119 @@
+import { expect, test, type Page } from "@playwright/test";
+
+/**
+ * Parcours complet d'un étudiant, sur un semestre créé pour l'occasion puis supprimé :
+ * matières → devoir → notes et moyennes → session de deep work → accueil.
+ */
+test.skip(!process.env.E2E_EMAIL, "E2E_EMAIL et E2E_PASSWORD non définis");
+
+const SEMESTER = `Semestre E2E ${new Date().toISOString().slice(0, 16).replace("T", " ")}`;
+
+async function settle(page: Page) {
+  await page.waitForLoadState("networkidle");
+}
+
+test("parcours complet : matières, devoir, notes, deep work, accueil", async ({ page }) => {
+  page.on("dialog", (dialog) => dialog.accept());
+
+  await test.step("créer un semestre, une UE et deux matières", async () => {
+    await page.goto("/matieres");
+    await settle(page);
+    const open = page.getByRole("button", { name: /Nouveau semestre|Créer mon premier semestre/ });
+    if (await open.isVisible()) await open.click();
+    await page.getByLabel("Nom", { exact: true }).fill(SEMESTER);
+    const today = new Date();
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    await page.getByLabel("Début").fill(iso(new Date(today.getTime() - 30 * 86_400_000)));
+    await page.getByLabel("Fin").fill(iso(new Date(today.getTime() + 120 * 86_400_000)));
+    await page.getByRole("button", { name: "Créer le semestre" }).click();
+    await expect(page.getByRole("heading", { level: 1, name: SEMESTER })).toBeVisible();
+
+    await page.getByLabel("Nom de l'UE").fill("UE E2E");
+    await page.getByLabel("Crédits ECTS").fill("6");
+    await page.getByRole("button", { name: "Ajouter l'UE" }).click();
+    const unit = page.getByRole("region", { name: "UE E2E" });
+    await expect(unit).toBeVisible();
+
+    for (const [name, coef] of [
+      ["Chimie E2E", "2"],
+      ["Biologie E2E", "1"],
+    ]) {
+      await unit.getByRole("button", { name: "Ajouter une matière" }).click();
+      await unit.getByLabel("Matière").fill(name);
+      await unit.getByLabel("Coefficient").fill(coef);
+      await unit.getByRole("button", { name: "Ajouter la matière" }).click();
+      await expect(unit.getByText(name, { exact: true })).toBeVisible();
+    }
+  });
+
+  await test.step("ajouter un devoir pour demain", async () => {
+    await page.goto("/devoirs?ajouter=1");
+    await page.getByLabel("Titre").fill("Compte rendu E2E");
+    await page.getByLabel("Matière").selectOption({ label: "Chimie E2E" });
+    await page.getByRole("button", { name: "Ajouter", exact: true }).click();
+    await expect(
+      page.getByRole("region", { name: "Demain" }).getByText("Compte rendu E2E"),
+    ).toBeVisible();
+  });
+
+  await test.step("saisir des notes : moyenne d'UE et validation", async () => {
+    await page.goto("/notes");
+    await settle(page);
+    // Le semestre E2E est le semestre en cours ; s'il y en a plusieurs, on le choisit.
+    const tab = page.getByRole("link", { name: SEMESTER });
+    if (await tab.isVisible()) await tab.click();
+    const unit = page.getByRole("region", { name: "UE E2E" });
+    const add = async (subject: string, score: string) => {
+      await unit.getByRole("button", { name: `Ajouter une note en ${subject}` }).click();
+      await unit.getByLabel("Épreuve").fill("Partiel");
+      await unit.getByLabel("Note", { exact: true }).fill(score);
+      await unit.getByRole("button", { name: "Ajouter la note" }).click();
+      await expect(unit.getByRole("button", { name: "Ajouter la note" })).toHaveCount(0);
+    };
+    await add("Chimie E2E", "12");
+    await add("Biologie E2E", "7");
+    // (12 × 2 + 7 × 1) / 3 = 10,33 : UE validée par compensation.
+    await expect(unit.locator("p.tabular-nums").first()).toHaveText("10,33");
+    await expect(unit.getByText("Validée", { exact: true })).toBeVisible();
+    await expect(page.getByText("Semestre validé")).toBeVisible();
+  });
+
+  await test.step("deep work de 2 h, chronométré avec une horloge simulée", async () => {
+    // Horloge avancée de 2 h : la session se termine juste avant « maintenant » côté serveur.
+    await page.clock.install({ time: Date.now() - 121 * 60_000 });
+    await page.goto("/pomodoro");
+    await page.getByText("Deep work").first().click();
+    await page.getByLabel("Matière (facultatif)").selectOption({ label: "Chimie E2E" });
+    await page.getByRole("button", { name: "Démarrer" }).click();
+    await expect(page.getByRole("timer")).toHaveText(/^1:59:5\d$/);
+    await page.clock.fastForward("02:00:05");
+    await expect(page.getByRole("status")).toHaveText("Session enregistrée : 2 h en Chimie E2E.");
+  });
+
+  await test.step("l'accueil reflète tout", async () => {
+    await page.goto("/dashboard");
+    await settle(page);
+    await expect(page.getByText("Compte rendu E2E").first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Pomodoro/ })).toContainText(/\d+ h/);
+  });
+
+  await test.step("nettoyage : supprimer la session et le semestre de test", async () => {
+    await page.goto("/pomodoro");
+    await settle(page);
+    const session = page
+      .getByRole("listitem")
+      .filter({ hasText: "Sans matière" })
+      .or(page.getByRole("listitem").filter({ hasText: "Chimie E2E" }));
+    while ((await session.count()) > 0) {
+      const count = await session.count();
+      await session.first().getByRole("button", { name: "Supprimer la session" }).click();
+      await expect(session).toHaveCount(count - 1);
+    }
+    await page.goto("/matieres");
+    await settle(page);
+    await page.getByRole("link", { name: new RegExp(SEMESTER) }).click();
+    await page.getByRole("button", { name: "Supprimer le semestre" }).click();
+    await expect(page).toHaveURL(/\/matieres$/);
+    await expect(page.getByText(SEMESTER)).toHaveCount(0);
+  });
+});

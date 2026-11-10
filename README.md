@@ -39,6 +39,22 @@ Règle du projet : toute nouvelle table active la RLS dans la même migration.
 | `npm run format`       | Formate le code avec Prettier        |
 | `npm run format:check` | Vérifie le formatage (sans modifier) |
 
+## Tests
+
+- **Unitaires** (`npm test`) : calcul des moyennes, classement des échéances, minuteur.
+- **De bout en bout** (`npm run build && npm run e2e`) : Playwright, sur un écran d'iPhone 13.
+  Les tests publics tournent toujours. Le parcours complet (matières, devoir, notes, deep work,
+  accueil) a besoin d'un compte de test confirmé :
+
+  ```bash
+  E2E_EMAIL=test@exemple.fr E2E_PASSWORD=... npm run e2e
+  ```
+
+  Il crée son propre semestre puis le supprime. Premier lancement : `npx playwright install chromium`.
+
+- **Intégration continue** : à chaque pull request, GitHub Actions lance lint, types, formatage,
+  tests unitaires et build.
+
 ## Organisation
 
 - `src/app/` : routes uniquement, avec peu de logique.
