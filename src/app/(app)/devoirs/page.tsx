@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { BookOpen, ClipboardList, PartyPopper } from "lucide-react";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { ButtonLink } from "@/components/ui/button";
@@ -26,7 +27,7 @@ function KindFilter({ active }: { active?: AssignmentKind }) {
     ...KINDS.map((k) => ({ value: k.value, label: k.plural })),
   ];
   return (
-    <nav aria-label="Filtrer par type" className="mb-5 flex flex-wrap gap-2">
+    <nav aria-label="Filtrer par type" className="mb-5 flex flex-wrap gap-1.5">
       {filters.map((filter) => {
         const selected = filter.value === active;
         return (
@@ -35,7 +36,7 @@ function KindFilter({ active }: { active?: AssignmentKind }) {
             href={filter.value ? `/devoirs?type=${filter.value}` : "/devoirs"}
             aria-current={selected ? "page" : undefined}
             className={cn(
-              "inline-flex h-10 items-center rounded-full border-2 px-4 text-sm font-bold",
+              "inline-flex h-9 items-center rounded-full border-2 px-3.5 text-sm font-bold",
               selected ? "bg-ink text-background" : "bg-surface hover:bg-muted",
             )}
           >
@@ -51,6 +52,8 @@ async function AssignmentsContent({ searchParams }: PageProps<"/devoirs">) {
   const { type } = await searchParams;
   const kind = KINDS.some((k) => k.value === type) ? (type as AssignmentKind) : undefined;
 
+  // L'heure actuelle n'est lue qu'au moment de la requête, jamais pendant le prérendu.
+  await connection();
   const timeZone = await getTimeZone();
   const now = new Date();
   const todayLocal = utcToLocalInput(now.toISOString(), timeZone).slice(0, 10);
