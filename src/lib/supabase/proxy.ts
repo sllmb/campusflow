@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getPublicEnv } from "@/lib/env";
 import type { Database } from "@/types/database";
 
-/** Pages accessibles sans être connecté. */
+/** Pages accessibles sans être connecté (en plus de la page d'accueil « / »). */
 const PUBLIC_PATHS = ["/login", "/signup", "/auth"];
 /** Pages réservées aux visiteurs non connectés (un utilisateur connecté est renvoyé à l'accueil). */
 const GUEST_ONLY_PATHS = ["/login", "/signup"];
@@ -56,7 +56,9 @@ export async function updateSession(request: NextRequest) {
     return redirect;
   };
 
-  if (!isSignedIn && !matches(pathname, PUBLIC_PATHS)) {
+  const isPublic = pathname === "/" || matches(pathname, PUBLIC_PATHS);
+
+  if (!isSignedIn && !isPublic) {
     return redirectTo("/login");
   }
   if (isSignedIn && (pathname === "/" || matches(pathname, GUEST_ONLY_PATHS))) {
