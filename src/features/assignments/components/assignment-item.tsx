@@ -9,14 +9,11 @@ import { DeleteForm } from "@/features/subjects/components/delete-form";
 import { cn } from "@/lib/utils";
 import { deleteAssignment, toggleAssignmentDone } from "../actions";
 import { kindInfo } from "../constants";
-import type { AssignmentWithSubject, SubjectOptionGroup } from "../queries";
+import type { AssignmentView } from "../lib/schedule";
+import type { SubjectOptionGroup } from "../queries";
 import { AssignmentForm } from "./assignment-form";
 
-export type AssignmentView = AssignmentWithSubject & {
-  dueLabel: string;
-  dueLocal: string;
-  overdue: boolean;
-};
+export type { AssignmentView } from "../lib/schedule";
 
 function DoneToggle({ done, title }: { done: boolean; title: string }) {
   const { pending } = useFormStatus();
