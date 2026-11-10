@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { UserRound } from "lucide-react";
 import { Suspense } from "react";
 import { Logo } from "./logo";
 import { NavLinks, NavLinksView } from "./nav-links";
@@ -14,6 +16,13 @@ export function Sidebar() {
           <NavLinks variant="sidebar" />
         </Suspense>
       </nav>
+      <Link
+        href="/profil"
+        className="mt-auto flex h-12 items-center gap-3 rounded-full border-2 border-transparent px-4 text-[15px] font-bold transition-colors hover:border-ink hover:bg-surface"
+      >
+        <UserRound className="size-5" strokeWidth={2.1} aria-hidden />
+        Mon profil
+      </Link>
     </aside>
   );
 }
