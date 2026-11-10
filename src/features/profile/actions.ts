@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import type { FormState } from "@/features/auth/types";
+import type { FormState } from "@/lib/form-state";
 import { createClient } from "@/lib/supabase/server";
 import { profileSchema } from "./schemas";
 

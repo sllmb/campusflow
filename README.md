@@ -51,7 +51,7 @@ Règle du projet : toute nouvelle table active la RLS dans la même migration.
 1. ~~Mise en place~~
 2. ~~Design system et layout~~
 3. ~~Authentification~~
-4. Matières
+4. ~~Matières~~
 5. Devoirs, projets et examens
 6. Notes et moyennes
 7. Dashboard

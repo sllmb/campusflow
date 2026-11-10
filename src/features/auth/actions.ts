@@ -6,7 +6,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { authErrorMessage } from "./errors";
 import { signInSchema, signUpSchema } from "./schemas";
-import type { FormState } from "./types";
+import type { FormState } from "@/lib/form-state";
 
 type SignInField = "email" | "password";
 type SignUpField = "displayName" | "email" | "password";
