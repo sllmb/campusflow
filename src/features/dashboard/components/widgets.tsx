@@ -8,6 +8,7 @@ import { formatAverage } from "@/features/grades/format";
 import type { SemesterResult } from "@/features/grades/lib/average";
 import type { UnitWithGrades } from "@/features/grades/queries";
 import { subjectColorClass } from "@/features/subjects/colors";
+import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const widgetLink =
@@ -73,8 +74,14 @@ export function AverageWidget({ result }: { result: SemesterResult }) {
   );
 }
 
-/** Carré vert : Pomodoro (le minuteur arrive à l'étape 8). */
-export function FocusWidget() {
+/** Carré vert : temps de concentration du jour. */
+export function FocusWidget({
+  totalSeconds,
+  sessions,
+}: {
+  totalSeconds: number;
+  sessions: number;
+}) {
   return (
     <Link href="/pomodoro" className={widgetLink}>
       <Card
@@ -88,8 +95,12 @@ export function FocusWidget() {
           </span>
         </div>
         <div>
-          <CardValue>—</CardValue>
-          <p className="mt-1 text-[13px] font-semibold">Bientôt disponible</p>
+          <CardValue className="tabular-nums">{formatDuration(totalSeconds)}</CardValue>
+          <p className="mt-1 text-[13px] font-semibold">
+            {sessions > 0
+              ? `aujourd'hui · ${sessions} session${sessions > 1 ? "s" : ""}`
+              : "aujourd'hui"}
+          </p>
         </div>
       </Card>
     </Link>
