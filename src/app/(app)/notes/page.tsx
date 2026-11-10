@@ -83,7 +83,7 @@ async function GradesContent({ searchParams }: PageProps<"/notes">) {
             {result.status !== "none" && !result.complete && <Badge>Provisoire</Badge>}
           </div>
         </div>
-        <div className="text-right">
+        <div className="sm:text-right">
           <p className="text-sm font-bold">Crédits acquis</p>
           <p className="text-3xl font-extrabold tracking-tight tabular-nums">
             {formatNumber(result.creditsEarned)}

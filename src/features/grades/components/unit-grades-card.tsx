@@ -52,6 +52,8 @@ function SubjectGrades({
   // null : rien d'ouvert ; "new" : ajout ; sinon l'identifiant de la note modifiée.
   const [open, setOpen] = useState<string | null>(null);
   const editing = subject.grades.find((grade) => grade.id === open);
+  // Une note supprimée disparaît des données : son formulaire se referme de lui-même.
+  const showForm = open === "new" || editing !== undefined;
 
   return (
     <li className="py-4">
@@ -80,7 +82,7 @@ function SubjectGrades({
         </p>
       </div>
 
-      {open ? (
+      {showForm ? (
         <div className="mt-3 rounded-3xl border-2 bg-background p-4">
           <GradeForm subjectId={subject.id} grade={editing} onDone={() => setOpen(null)} />
           {editing && (
@@ -151,7 +153,12 @@ export function UnitGradesCard({ unit, result }: { unit: UnitWithGrades; result:
         </div>
         <div className="text-right">
           <p className="text-xs font-bold text-ink-soft">Moyenne</p>
-          <p className="text-[34px] leading-none font-extrabold tracking-[-0.04em] tabular-nums">
+          <p
+            className={cn(
+              "text-[34px] leading-none font-extrabold tracking-[-0.04em] tabular-nums",
+              result.status === "failed" && "text-error",
+            )}
+          >
             {formatAverage(result.average)}
           </p>
         </div>
