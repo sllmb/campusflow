@@ -28,6 +28,13 @@ l'ordre des noms. Deux façons de l'appliquer :
 
 Règle du projet : toute nouvelle table active la RLS dans la même migration.
 
+## E-mails
+
+Les e-mails d'authentification partent par un SMTP personnalisé (Resend), configuré dans
+Supabase → Authentication → Emails → SMTP Settings. Le modèle français de l'e-mail de
+confirmation est dans `supabase/templates/confirm-signup.html`, à coller dans Supabase →
+Authentication → Emails → Templates.
+
 ## Scripts
 
 | Commande               | Rôle                                 |
