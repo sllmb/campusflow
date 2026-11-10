@@ -53,10 +53,16 @@ function SubjectRow({ subject, unitId }: { subject: Subject; unitId: string }) {
   );
 }
 
-export function UnitCard({ unit, semesterId }: { unit: UnitWithSubjects; semesterId: string }) {
+type UnitCardProps = {
+  unit: UnitWithSubjects;
+  semesterId: string;
+  /** Couleur proposée pour la prochaine matière (la première libre dans le semestre). */
+  suggestedColor: number;
+};
+
+export function UnitCard({ unit, semesterId, suggestedColor }: UnitCardProps) {
   const [editing, setEditing] = useState(false);
   const totalCoef = unit.subjects.reduce((sum, subject) => sum + subject.coefficient, 0);
-  const nextColor = ((unit.subjects.at(-1)?.color ?? 0) % 8) + 1;
 
   return (
     <section aria-label={unit.name} className="rounded-card border-2 bg-surface p-5 shadow-hard">
@@ -96,7 +102,7 @@ export function UnitCard({ unit, semesterId }: { unit: UnitWithSubjects; semeste
       )}
 
       <AddPanel label="Ajouter une matière" className="mt-4 bg-background">
-        {(close) => <SubjectForm unitId={unit.id} suggestedColor={nextColor} onDone={close} />}
+        {(close) => <SubjectForm unitId={unit.id} suggestedColor={suggestedColor} onDone={close} />}
       </AddPanel>
     </section>
   );

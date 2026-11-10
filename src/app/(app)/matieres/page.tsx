@@ -5,8 +5,7 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { AddPanel } from "@/features/subjects/components/add-panel";
-import { SemesterForm } from "@/features/subjects/components/semester-form";
+import { NewSemesterPanel } from "@/features/subjects/components/new-semester-panel";
 import { listSemesters } from "@/features/subjects/queries";
 import { formatDate, plural } from "@/lib/format";
 
@@ -23,9 +22,7 @@ async function SemesterList() {
           title="Commence par ton semestre"
           description="Crée ton semestre, puis ajoute ses UE et leurs matières. Tout le reste (devoirs, notes) s'y rattachera."
         />
-        <AddPanel label="Créer mon premier semestre" defaultOpen>
-          {() => <SemesterForm />}
-        </AddPanel>
+        <NewSemesterPanel first />
       </div>
     );
   }
@@ -54,9 +51,7 @@ async function SemesterList() {
           </li>
         ))}
       </ul>
-      <AddPanel label="Nouveau semestre" className="sm:max-w-md">
-        {(close) => <SemesterForm onDone={close} />}
-      </AddPanel>
+      <NewSemesterPanel />
     </div>
   );
 }

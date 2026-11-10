@@ -1,6 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { getPublicEnv } from "@/lib/env";
 import type { Database } from "@/types/database";
 
@@ -9,9 +10,12 @@ import type { Database } from "@/types/database";
  * Un nouveau client par requête : il lit et écrit la session dans les cookies.
  */
 export async function createClient() {
-  // cookies() d'abord : pendant le build, c'est ce qui reporte le rendu à la requête,
-  // avant même de lire les variables d'environnement.
+  // cookies() et connection() d'abord : le rendu est reporté au moment de la requête,
+  // avant de lire les variables d'environnement et avant que Supabase ne lise l'heure
+  // (Date.now) pour vérifier l'expiration de la session, ce que Next.js interdit pendant
+  // le prérendu.
   const cookieStore = await cookies();
+  await connection();
   const env = getPublicEnv();
 
   return createServerClient<Database>(
