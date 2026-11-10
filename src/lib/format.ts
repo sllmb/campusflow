@@ -20,3 +20,12 @@ export function formatDate(isoDate: string) {
 export function plural(count: number, singular: string, pluralForm = `${singular}s`) {
   return `${formatNumber(count)} ${count > 1 || count === 0 ? pluralForm : singular}`;
 }
+
+/** Durée lisible : « 0 min », « 25 min », « 1 h », « 1 h 50 ». */
+export function formatDuration(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  if (hours === 0) return `${minutes} min`;
+  return rest === 0 ? `${hours} h` : `${hours} h ${String(rest).padStart(2, "0")}`;
+}

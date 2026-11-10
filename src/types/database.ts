@@ -6,6 +6,33 @@
 export type Database = {
   public: {
     Tables: {
+      focus_sessions: {
+        Row: {
+          id: string;
+          user_id: string;
+          subject_id: string | null;
+          mode: "pomodoro" | "deep_work";
+          planned_minutes: number;
+          started_at: string;
+          ended_at: string;
+          focused_seconds: number;
+          completed: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          subject_id?: string | null;
+          mode: "pomodoro" | "deep_work";
+          planned_minutes: number;
+          started_at: string;
+          ended_at: string;
+          focused_seconds: number;
+          completed?: boolean;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
       grades: {
         Row: {
           id: string;

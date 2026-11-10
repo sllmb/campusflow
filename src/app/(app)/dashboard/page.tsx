@@ -13,6 +13,7 @@ import {
   SubjectsWidget,
   UpcomingWidget,
 } from "@/features/dashboard/components/widgets";
+import { getFocusToday } from "@/features/focus/queries";
 import { getGradesOverview } from "@/features/grades/queries";
 import { Greeting } from "@/features/profile/components/greeting";
 import { AvatarLink, UserAvatar } from "@/features/profile/components/user-avatar";
@@ -40,9 +41,10 @@ async function DashboardWidgets() {
   const now = new Date();
   const today = utcToLocalInput(now.toISOString(), timeZone).slice(0, 10);
 
-  const [assignments, overview] = await Promise.all([
+  const [assignments, overview, focus] = await Promise.all([
     listAssignments(),
     getGradesOverview(undefined, today),
+    getFocusToday(today, timeZone),
   ]);
   const schedule = buildSchedule(assignments, now, timeZone);
   // Carte principale : la prochaine échéance à venir ; s'il n'y a que des retards, le plus ancien.
@@ -52,7 +54,7 @@ async function DashboardWidgets() {
     <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-4 lg:gap-5">
       <NextDueWidget item={next} />
       <AverageWidget result={overview.result} />
-      <FocusWidget />
+      <FocusWidget totalSeconds={focus.totalSeconds} sessions={focus.sessions.length} />
       <UpcomingWidget
         items={schedule.pending.slice(0, 5)}
         dueThisWeek={schedule.dueThisWeek}
