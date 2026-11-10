@@ -17,6 +17,17 @@ npm run dev                  # http://localhost:3000
 Les clés se trouvent dans Supabase, sous **Project Settings > API Keys** : l'URL du projet et la clé
 publique (`publishable` ou `anon`). La clé `service_role` ne doit jamais être mise dans ce projet.
 
+## Base de données
+
+Le schéma est versionné dans `supabase/migrations/` : chaque fichier SQL s'applique une fois, dans
+l'ordre des noms. Deux façons de l'appliquer :
+
+- **Depuis le navigateur** : Supabase > **SQL Editor** > **New query**, coller le contenu du fichier,
+  puis **Run**.
+- **Avec la CLI** : `npx supabase link --project-ref <id>` puis `npx supabase db push`.
+
+Règle du projet : toute nouvelle table active la RLS dans la même migration.
+
 ## Scripts
 
 | Commande               | Rôle                                 |
@@ -39,7 +50,7 @@ publique (`publishable` ou `anon`). La clé `service_role` ne doit jamais être 
 
 1. ~~Mise en place~~
 2. ~~Design system et layout~~
-3. Authentification
+3. ~~Authentification~~
 4. Matières
 5. Devoirs, projets et examens
 6. Notes et moyennes

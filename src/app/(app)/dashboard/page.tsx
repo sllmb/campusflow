@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Play, Plus } from "lucide-react";
+import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardLabel, CardTitle, CardValue } from "@/components/ui/card";
+import { Greeting } from "@/features/profile/components/greeting";
+import { AvatarLink, UserAvatar } from "@/features/profile/components/user-avatar";
 
 export const metadata: Metadata = { title: "Accueil" };
 
@@ -15,12 +18,21 @@ export default function DashboardPage() {
   return (
     <>
       <PageHeader
-        title="Salut !"
+        title={
+          <Suspense fallback="Salut !">
+            <Greeting />
+          </Suspense>
+        }
         description="Voici ta semaine en un coup d'œil."
         action={
-          <Button size="icon" aria-label="Ajouter">
-            <Plus strokeWidth={2.6} />
-          </Button>
+          <div className="flex gap-3">
+            <Button size="icon" aria-label="Ajouter">
+              <Plus strokeWidth={2.6} />
+            </Button>
+            <Suspense fallback={<AvatarLink />}>
+              <UserAvatar />
+            </Suspense>
+          </div>
         }
       />
 

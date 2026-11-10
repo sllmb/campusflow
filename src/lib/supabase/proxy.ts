@@ -1,0 +1,67 @@
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+import { getPublicEnv } from "@/lib/env";
+import type { Database } from "@/types/database";
+
+/** Pages accessibles sans être connecté. */
+const PUBLIC_PATHS = ["/login", "/signup", "/auth"];
+/** Pages réservées aux visiteurs non connectés (un utilisateur connecté est renvoyé à l'accueil). */
+const GUEST_ONLY_PATHS = ["/login", "/signup"];
+
+function matches(pathname: string, paths: string[]) {
+  return paths.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+}
+
+/**
+ * Rafraîchit la session Supabase à chaque requête et protège les pages de l'app.
+ * Appelé depuis `src/proxy.ts`.
+ */
+export async function updateSession(request: NextRequest) {
+  const env = getPublicEnv();
+  let response = NextResponse.next({ request });
+
+  const supabase = createServerClient<Database>(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet, headers) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          );
+          Object.entries(headers).forEach(([key, value]) => response.headers.set(key, value));
+        },
+      },
+    },
+  );
+
+  // Ne rien exécuter entre la création du client et getClaims() :
+  // c'est cet appel qui vérifie le jeton et le renouvelle si besoin.
+  const { data } = await supabase.auth.getClaims();
+  const isSignedIn = Boolean(data?.claims);
+  const { pathname } = request.nextUrl;
+
+  const redirectTo = (path: string) => {
+    const url = request.nextUrl.clone();
+    url.pathname = path;
+    url.search = "";
+    const redirect = NextResponse.redirect(url);
+    // Garder les cookies de session éventuellement renouvelés.
+    response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+    return redirect;
+  };
+
+  if (!isSignedIn && !matches(pathname, PUBLIC_PATHS)) {
+    return redirectTo("/login");
+  }
+  if (isSignedIn && (pathname === "/" || matches(pathname, GUEST_ONLY_PATHS))) {
+    return redirectTo("/dashboard");
+  }
+
+  return response;
+}
