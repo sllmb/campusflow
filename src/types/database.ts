@@ -6,6 +6,88 @@
 export type Database = {
   public: {
     Tables: {
+      semesters: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          starts_on: string;
+          ends_on: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          name: string;
+          starts_on: string;
+          ends_on: string;
+        };
+        Update: {
+          name?: string;
+          starts_on?: string;
+          ends_on?: string;
+        };
+        Relationships: [];
+      };
+      teaching_units: {
+        Row: {
+          id: string;
+          user_id: string;
+          semester_id: string;
+          name: string;
+          code: string | null;
+          ects_credits: number;
+          position: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          semester_id: string;
+          name: string;
+          code?: string | null;
+          ects_credits: number;
+          position?: number;
+        };
+        Update: {
+          name?: string;
+          code?: string | null;
+          ects_credits?: number;
+          position?: number;
+        };
+        Relationships: [];
+      };
+      subjects: {
+        Row: {
+          id: string;
+          user_id: string;
+          unit_id: string;
+          name: string;
+          color: number;
+          coefficient: number;
+          position: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          unit_id: string;
+          name: string;
+          color?: number;
+          coefficient?: number;
+          position?: number;
+        };
+        Update: {
+          name?: string;
+          color?: number;
+          coefficient?: number;
+          position?: number;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;
