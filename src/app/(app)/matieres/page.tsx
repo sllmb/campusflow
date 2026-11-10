@@ -8,11 +8,11 @@ export const metadata: Metadata = { title: "Matières" };
 export default function Page() {
   return (
     <>
-      <PageHeader title="Matières" description="Vos matières, leur couleur et leur coefficient." />
+      <PageHeader title="Matières" description="Tes matières, leur couleur et leur coefficient." />
       <EmptyState
         icon={BookOpen}
         title="Aucune matière pour l'instant"
-        description="Ajoutez vos matières pour y rattacher devoirs, examens et notes."
+        description="Ajoute tes matières pour y rattacher devoirs, examens et notes."
       />
     </>
   );

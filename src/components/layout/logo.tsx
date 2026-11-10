@@ -5,11 +5,11 @@ export function Logo() {
     <Link href="/dashboard" className="flex items-center gap-2.5">
       <span
         aria-hidden
-        className="flex size-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground"
+        className="flex size-9 items-center justify-center rounded-xl border-2 bg-primary text-base font-extrabold shadow-hard-sm"
       >
         C
       </span>
-      <span className="text-lg font-bold tracking-tight">CampusFlow</span>
+      <span className="text-xl font-extrabold tracking-tight">CampusFlow</span>
     </Link>
   );
 }

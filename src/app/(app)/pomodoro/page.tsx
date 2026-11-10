@@ -8,11 +8,11 @@ export const metadata: Metadata = { title: "Pomodoro" };
 export default function Page() {
   return (
     <>
-      <PageHeader title="Pomodoro" description="Travaillez par sessions de 25 minutes." />
+      <PageHeader title="Pomodoro" description="Travaille par sessions de 25 minutes." />
       <EmptyState
         icon={Timer}
         title="Minuteur à venir"
-        description="Lancez une session de travail et rattachez-la à une matière."
+        description="Lance une session de travail et rattache-la à une matière."
       />
     </>
   );

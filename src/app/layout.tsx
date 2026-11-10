@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
 });
 
@@ -12,16 +12,16 @@ export const metadata: Metadata = {
     default: "CampusFlow",
     template: "%s · CampusFlow",
   },
-  description: "L'organisation de vos études : matières, devoirs, notes et Pomodoro.",
+  description: "L'organisation de tes études : matières, devoirs, notes et Pomodoro.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#f6f4ec",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${jakarta.variable} h-full antialiased`}>
+    <html lang="fr" className={`${bricolage.variable} h-full antialiased`}>
       <body className="min-h-full">{children}</body>
     </html>
   );

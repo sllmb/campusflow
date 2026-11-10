@@ -12,7 +12,7 @@ export default function Page() {
       <EmptyState
         icon={ClipboardList}
         title="Rien à rendre"
-        description="Vos devoirs, projets et examens apparaîtront ici, triés par échéance."
+        description="Tes devoirs, projets et examens apparaîtront ici, triés par échéance."
       />
     </>
   );
