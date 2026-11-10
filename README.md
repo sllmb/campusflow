@@ -38,7 +38,7 @@ publique (`publishable` ou `anon`). La clé `service_role` ne doit jamais être 
 ## Feuille de route
 
 1. ~~Mise en place~~
-2. Design system et layout
+2. ~~Design system et layout~~
 3. Authentification
 4. Matières
 5. Devoirs, projets et examens

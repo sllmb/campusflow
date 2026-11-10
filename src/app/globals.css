@@ -1,26 +1,97 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens CampusFlow.
+ * - Gris légèrement violacés plutôt que neutres.
+ * - Violet (primary) : action principale. Bleu (info) : information.
+ * - Une couleur par matière (subject-1 à subject-8), reprise partout.
+ */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --surface: #faf9fd;
+  --muted: #f3f1f8;
+  --border: #e6e2ef;
+  --ring: #8b6dff;
+
+  --foreground: #1c1830;
+  --muted-foreground: #6c6684;
+
+  --primary: #6941f2;
+  --primary-hover: #5832e0;
+  --primary-foreground: #ffffff;
+  --primary-soft: #efeafe;
+
+  --info: #2f6bed;
+  --info-soft: #e9f0fe;
+  --success: #138a4a;
+  --success-soft: #e6f6ec;
+  --warning: #b76200;
+  --warning-soft: #fdf1e1;
+  --danger: #d93a3f;
+  --danger-soft: #fdeceb;
+
+  --subject-1: #6941f2;
+  --subject-2: #2f6bed;
+  --subject-3: #0e9384;
+  --subject-4: #3f9b2f;
+  --subject-5: #d98a00;
+  --subject-6: #e5603a;
+  --subject-7: #d63f8c;
+  --subject-8: #7a5c3e;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-subject-1: var(--subject-1);
+  --color-subject-2: var(--subject-2);
+  --color-subject-3: var(--subject-3);
+  --color-subject-4: var(--subject-4);
+  --color-subject-5: var(--subject-5);
+  --color-subject-6: var(--subject-6);
+  --color-subject-7: var(--subject-7);
+  --color-subject-8: var(--subject-8);
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+
+  --shadow-card: 0 1px 2px rgb(28 24 48 / 0.04), 0 1px 3px rgb(28 24 48 / 0.06);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--border);
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 }
