@@ -15,6 +15,18 @@ async function settle(page: Page) {
 test("parcours complet : matières, devoir, notes, deep work, accueil", async ({ page }) => {
   page.on("dialog", (dialog) => dialog.accept());
 
+  await test.step("supprimer les semestres de test laissés par un passage interrompu", async () => {
+    await page.goto("/matieres");
+    await settle(page);
+    const leftover = page.getByRole("link", { name: /^Semestre E2E / });
+    while ((await leftover.count()) > 0) {
+      await leftover.first().click();
+      await page.getByRole("button", { name: "Supprimer le semestre" }).click();
+      await expect(page).toHaveURL(/\/matieres$/);
+      await settle(page);
+    }
+  });
+
   await test.step("créer un semestre, une UE et deux matières", async () => {
     await page.goto("/matieres");
     await settle(page);
@@ -49,7 +61,7 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
   await test.step("ajouter un devoir pour demain", async () => {
     await page.goto("/devoirs?ajouter=1");
     await page.getByLabel("Titre").fill("Compte rendu E2E");
-    await page.getByLabel("Matière").selectOption({ label: "Chimie E2E" });
+    await page.getByLabel("Matière", { exact: true }).selectOption({ label: "Chimie E2E" });
     await page.getByRole("button", { name: "Ajouter", exact: true }).click();
     await expect(
       page.getByRole("region", { name: "Demain" }).getByText("Compte rendu E2E"),
@@ -68,7 +80,8 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
       await unit.getByLabel("Épreuve").fill("Partiel");
       await unit.getByLabel("Note", { exact: true }).fill(score);
       await unit.getByRole("button", { name: "Ajouter la note" }).click();
-      await expect(unit.getByRole("button", { name: "Ajouter la note" })).toHaveCount(0);
+      // Formulaire refermé = note enregistrée.
+      await expect(unit.getByRole("textbox", { name: "Épreuve" })).toHaveCount(0);
     };
     await add("Chimie E2E", "12");
     await add("Biologie E2E", "7");
@@ -81,8 +94,8 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
   await test.step("deep work de 2 h, chronométré avec une horloge simulée", async () => {
     // Horloge avancée de 2 h : la session se termine juste avant « maintenant » côté serveur.
     await page.clock.install({ time: Date.now() - 121 * 60_000 });
-    await page.goto("/pomodoro");
-    await page.getByText("Deep work").first().click();
+    await page.goto("/pomodoro", { waitUntil: "networkidle" });
+    await page.getByRole("radio", { name: /Deep work\s*2 h/ }).check({ force: true });
     await page.getByLabel("Matière (facultatif)").selectOption({ label: "Chimie E2E" });
     await page.getByRole("button", { name: "Démarrer" }).click();
     await expect(page.getByRole("timer")).toHaveText(/^1:59:5\d$/);
@@ -94,7 +107,7 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
     await page.goto("/dashboard");
     await settle(page);
     await expect(page.getByText("Compte rendu E2E").first()).toBeVisible();
-    await expect(page.getByRole("link", { name: /Pomodoro/ })).toContainText(/\d+ h/);
+    await expect(page.getByRole("link", { name: /Pomodoro .*aujourd/ })).toContainText(/\d+ h/);
   });
 
   await test.step("nettoyage : supprimer la session et le semestre de test", async () => {
@@ -114,6 +127,7 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
     await page.getByRole("link", { name: new RegExp(SEMESTER) }).click();
     await page.getByRole("button", { name: "Supprimer le semestre" }).click();
     await expect(page).toHaveURL(/\/matieres$/);
-    await expect(page.getByText(SEMESTER)).toHaveCount(0);
+    // Rôle « lien » : ignore la copie cachée de la page précédente que Next.js garde en mémoire.
+    await expect(page.getByRole("link", { name: new RegExp(SEMESTER) })).toHaveCount(0);
   });
 });

@@ -30,7 +30,8 @@ test("les pages légales sont publiques", async ({ page }) => {
 });
 
 test("de faux identifiants sont refusés avec un message clair", async ({ page }) => {
-  await page.goto("/login");
+  // Attendre que la page soit interactive, comme un utilisateur qui voit le formulaire.
+  await page.goto("/login", { waitUntil: "networkidle" });
   await page.getByLabel("E-mail").fill("personne@example.com");
   await page.getByLabel("Mot de passe").fill("mauvais-mot-de-passe");
   await page.getByRole("button", { name: "Se connecter" }).click();
@@ -38,7 +39,7 @@ test("de faux identifiants sont refusés avec un message clair", async ({ page }
 });
 
 test("l'inscription vérifie les champs", async ({ page }) => {
-  await page.goto("/signup");
+  await page.goto("/signup", { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Créer mon compte" }).click();
   await expect(page.getByText("Indique ton prénom.")).toBeVisible();
   await expect(page.getByText("8 caractères minimum.")).toBeVisible();

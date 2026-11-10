@@ -11,7 +11,7 @@ setup("connexion du compte de test", async ({ page }) => {
     await page.context().storageState({ path: authFile });
     return;
   }
-  await page.goto("/login");
+  await page.goto("/login", { waitUntil: "networkidle" });
   await page.getByLabel("E-mail").fill(email);
   await page.getByLabel("Mot de passe").fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
