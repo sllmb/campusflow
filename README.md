@@ -28,6 +28,16 @@ l'ordre des noms. Deux façons de l'appliquer :
 
 Règle du projet : toute nouvelle table active la RLS dans la même migration.
 
+## Double authentification
+
+Facultative, activée depuis la page Profil (application d'authentification, codes TOTP).
+Une fois activée, le code est demandé après le mot de passe (`/verification`), et la base
+refuse toute lecture ou écriture tant qu'il n'a pas été saisi (politiques RLS restrictives,
+migration `20261113090000_enforce_mfa.sql`).
+
+En cas de perte du téléphone : Supabase → Authentication → Users → le compte → retirer le
+facteur MFA.
+
 ## E-mails
 
 Les e-mails d'authentification partent par un SMTP personnalisé (Resend), configuré dans

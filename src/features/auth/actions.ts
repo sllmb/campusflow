@@ -31,6 +31,10 @@ export async function signIn(
     return { error: authErrorMessage(error), values };
   }
 
+  // Double authentification activée : le code est demandé avant d'entrer dans l'app.
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal?.nextLevel === "aal2" && aal.currentLevel !== "aal2") redirect("/verification");
+
   redirect("/dashboard");
 }
 
@@ -77,6 +81,7 @@ export async function signUp(
 
 export async function signOut() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
+  // Déconnecte seulement cet appareil, pas les autres sessions de l'utilisateur.
+  await supabase.auth.signOut({ scope: "local" });
   redirect("/login");
 }

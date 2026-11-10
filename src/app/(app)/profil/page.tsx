@@ -7,6 +7,8 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { signOut } from "@/features/auth/actions";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { getCurrentProfile } from "@/features/profile/queries";
+import { TwoFactorCard } from "@/features/two-factor/components/two-factor-card";
+import { getTwoFactorEnabled } from "@/features/two-factor/queries";
 
 export const metadata: Metadata = { title: "Profil" };
 
@@ -24,6 +26,10 @@ async function ProfileDetails() {
   );
 }
 
+async function TwoFactorSection() {
+  return <TwoFactorCard enabled={await getTwoFactorEnabled()} />;
+}
+
 export default function ProfilePage() {
   return (
     <>
@@ -35,6 +41,9 @@ export default function ProfilePage() {
             <ProfileDetails />
           </Suspense>
         </Card>
+        <Suspense fallback={<div className="h-40 animate-pulse rounded-card bg-muted" />}>
+          <TwoFactorSection />
+        </Suspense>
         <Card>
           <CardTitle>Session</CardTitle>
           <p className="mt-1 mb-4 text-[15px] text-ink-soft">
