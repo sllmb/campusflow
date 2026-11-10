@@ -4,7 +4,14 @@ import { getPublicEnv } from "@/lib/env";
 import type { Database } from "@/types/database";
 
 /** Pages accessibles sans être connecté (en plus de la page d'accueil « / »). */
-const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/mentions-legales", "/confidentialite"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/signup",
+  "/auth",
+  "/mentions-legales",
+  "/confidentialite",
+  "/offline",
+];
 /** Pages réservées aux visiteurs non connectés (un utilisateur connecté est renvoyé à l'accueil). */
 const GUEST_ONLY_PATHS = ["/login", "/signup"];
 
@@ -74,7 +81,10 @@ export async function updateSession(request: NextRequest) {
   if (!isSignedIn && !isPublic) {
     return redirectTo("/login");
   }
-  if (needsCode && !matches(pathname, ["/auth", "/mentions-legales", "/confidentialite"])) {
+  if (
+    needsCode &&
+    !matches(pathname, ["/auth", "/mentions-legales", "/confidentialite", "/offline"])
+  ) {
     return redirectTo("/verification");
   }
   if (isSignedIn && (pathname === "/" || matches(pathname, GUEST_ONLY_PATHS))) {
