@@ -7,12 +7,19 @@ import { AssignmentForm } from "./assignment-form";
 export function NewAssignmentPanel({
   groups,
   defaultDue,
+  defaultOpen = false,
 }: {
   groups: SubjectOptionGroup[];
   defaultDue: string;
+  /** Ouvert d'emblée (lien « + » de l'accueil). */
+  defaultOpen?: boolean;
 }) {
   return (
-    <AddPanel label="Ajouter un devoir, un projet ou un examen" className="shadow-none">
+    <AddPanel
+      label="Ajouter un devoir, un projet ou un examen"
+      className="shadow-none"
+      defaultOpen={defaultOpen}
+    >
       {(close) => <AssignmentForm groups={groups} defaultDue={defaultDue} onDone={close} />}
     </AddPanel>
   );

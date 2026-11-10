@@ -6,20 +6,16 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import {
-  AssignmentItem,
-  type AssignmentView,
-} from "@/features/assignments/components/assignment-item";
+import { AssignmentItem } from "@/features/assignments/components/assignment-item";
 import { NewAssignmentPanel } from "@/features/assignments/components/new-assignment-panel";
 import { KINDS, type AssignmentKind } from "@/features/assignments/constants";
 import { listAssignments, listSubjectOptions } from "@/features/assignments/queries";
-import { calendarDaysFrom, formatDue, utcToLocalInput } from "@/lib/time";
+import { buildSchedule } from "@/features/assignments/lib/schedule";
+import { utcToLocalInput } from "@/lib/time";
 import { getTimeZone } from "@/lib/timezone";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Devoirs" };
-
-type Bucket = { key: string; title: string; items: AssignmentView[] };
 
 function KindFilter({ active }: { active?: AssignmentKind }) {
   const filters = [
@@ -49,7 +45,7 @@ function KindFilter({ active }: { active?: AssignmentKind }) {
 }
 
 async function AssignmentsContent({ searchParams }: PageProps<"/devoirs">) {
-  const { type } = await searchParams;
+  const { type, ajouter } = await searchParams;
   const kind = KINDS.some((k) => k.value === type) ? (type as AssignmentKind) : undefined;
 
   // L'heure actuelle n'est lue qu'au moment de la requête, jamais pendant le prérendu.
@@ -77,38 +73,14 @@ async function AssignmentsContent({ searchParams }: PageProps<"/devoirs">) {
   const tomorrow = new Date(now.getTime() + 86_400_000);
   const defaultDue = `${utcToLocalInput(tomorrow.toISOString(), timeZone).slice(0, 10)}T23:59`;
 
-  const buckets: Bucket[] = [
-    { key: "overdue", title: "En retard", items: [] },
-    { key: "today", title: "Aujourd'hui", items: [] },
-    { key: "tomorrow", title: "Demain", items: [] },
-    { key: "week", title: "Cette semaine", items: [] },
-    { key: "later", title: "Plus tard", items: [] },
-  ];
-  const done: AssignmentView[] = [];
-
-  for (const assignment of assignments) {
-    const days = calendarDaysFrom(now, assignment.due_at, timeZone);
-    const overdue = assignment.status !== "done" && new Date(assignment.due_at) < now;
-    const view: AssignmentView = {
-      ...assignment,
-      overdue,
-      dueLabel: formatDue(assignment.due_at, now, timeZone),
-      dueLocal: utcToLocalInput(assignment.due_at, timeZone),
-    };
-    if (assignment.status === "done") done.push(view);
-    else if (overdue) buckets[0].items.push(view);
-    else if (days === 0) buckets[1].items.push(view);
-    else if (days === 1) buckets[2].items.push(view);
-    else if (days < 7) buckets[3].items.push(view);
-    else buckets[4].items.push(view);
-  }
-  done.sort((a, b) => (b.completed_at ?? "").localeCompare(a.completed_at ?? ""));
-  const pending = buckets.filter((bucket) => bucket.items.length > 0);
+  const schedule = buildSchedule(assignments, now, timeZone);
+  const done = schedule.done;
+  const pending = schedule.buckets.filter((bucket) => bucket.items.length > 0);
 
   return (
     <>
       <KindFilter active={kind} />
-      <NewAssignmentPanel groups={groups} defaultDue={defaultDue} />
+      <NewAssignmentPanel groups={groups} defaultDue={defaultDue} defaultOpen={ajouter === "1"} />
 
       <div className="mt-8 grid gap-8">
         {pending.length === 0 && (
