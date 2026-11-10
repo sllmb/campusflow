@@ -58,8 +58,24 @@ export async function updateSession(request: NextRequest) {
 
   const isPublic = pathname === "/" || matches(pathname, PUBLIC_PATHS);
 
+  // Double authentification : une session ouverte avec le seul mot de passe (« aal1 ») sur un
+  // compte qui a activé la 2FA doit d'abord passer par /verification.
+  let needsCode = false;
+  if (isSignedIn) {
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    needsCode = aal?.nextLevel === "aal2" && aal.currentLevel !== "aal2";
+  }
+
+  if (pathname === "/verification") {
+    if (!isSignedIn) return redirectTo("/login");
+    if (!needsCode) return redirectTo("/dashboard");
+    return response;
+  }
   if (!isSignedIn && !isPublic) {
     return redirectTo("/login");
+  }
+  if (needsCode && !matches(pathname, ["/auth", "/mentions-legales", "/confidentialite"])) {
+    return redirectTo("/verification");
   }
   if (isSignedIn && (pathname === "/" || matches(pathname, GUEST_ONLY_PATHS))) {
     return redirectTo("/dashboard");
