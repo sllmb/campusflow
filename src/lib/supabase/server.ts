@@ -9,8 +9,10 @@ import type { Database } from "@/types/database";
  * Un nouveau client par requête : il lit et écrit la session dans les cookies.
  */
 export async function createClient() {
-  const env = getPublicEnv();
+  // cookies() d'abord : pendant le build, c'est ce qui reporte le rendu à la requête,
+  // avant même de lire les variables d'environnement.
   const cookieStore = await cookies();
+  const env = getPublicEnv();
 
   return createServerClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
