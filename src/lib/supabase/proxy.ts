@@ -4,7 +4,7 @@ import { getPublicEnv } from "@/lib/env";
 import type { Database } from "@/types/database";
 
 /** Pages accessibles sans être connecté (en plus de la page d'accueil « / »). */
-const PUBLIC_PATHS = ["/login", "/signup", "/auth"];
+const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/mentions-legales", "/confidentialite"];
 /** Pages réservées aux visiteurs non connectés (un utilisateur connecté est renvoyé à l'accueil). */
 const GUEST_ONLY_PATHS = ["/login", "/signup"];
 

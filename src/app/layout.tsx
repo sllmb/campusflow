@@ -21,7 +21,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${bricolage.variable} h-full antialiased`}>
+    <html
+      lang="fr"
+      data-scroll-behavior="smooth"
+      className={`${bricolage.variable} h-full antialiased`}
+    >
       <body className="min-h-full">{children}</body>
     </html>
   );
