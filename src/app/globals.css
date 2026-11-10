@@ -1,26 +1,88 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens CampusFlow — direction « Bloc + Widgets ».
+ * - Fond crème, encre presque noire, bordures épaisses et ombres décalées.
+ * - Couleurs franches, toujours avec du texte noir dessus (contraste garanti).
+ * - Jaune : action principale. Bleu : information. Rose : retard / alerte.
+ * - Une couleur par matière (subject-1 à subject-8), reprise partout.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f4ec;
+  --surface: #ffffff;
+  --muted: #ece9dd;
+  --ink: #111111;
+  --ink-soft: #4a4a4a;
+
+  --yellow: #ffd23f;
+  --blue: #5b8cff;
+  --green: #3ddc97;
+  --pink: #ff7eb9;
+  --orange: #ff9f43;
+  --error: #c8102e;
+
+  --subject-1: #5b8cff;
+  --subject-2: #3ddc97;
+  --subject-3: #ffd23f;
+  --subject-4: #ff7eb9;
+  --subject-5: #ff9f43;
+  --subject-6: #a78bfa;
+  --subject-7: #2dd4bf;
+  --subject-8: #f87171;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-border: var(--ink);
+
+  --color-primary: var(--yellow);
+  --color-info: var(--blue);
+  --color-success: var(--green);
+  --color-alert: var(--pink);
+  --color-warning: var(--orange);
+  --color-error: var(--error);
+
+  --color-yellow: var(--yellow);
+  --color-blue: var(--blue);
+  --color-green: var(--green);
+  --color-pink: var(--pink);
+  --color-orange: var(--orange);
+
+  --color-subject-1: var(--subject-1);
+  --color-subject-2: var(--subject-2);
+  --color-subject-3: var(--subject-3);
+  --color-subject-4: var(--subject-4);
+  --color-subject-5: var(--subject-5);
+  --color-subject-6: var(--subject-6);
+  --color-subject-7: var(--subject-7);
+  --color-subject-8: var(--subject-8);
+
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1.625rem;
+
+  --shadow-hard-sm: 3px 3px 0 var(--ink);
+  --shadow-hard: 4px 4px 0 var(--ink);
+  --shadow-hard-lg: 6px 6px 0 var(--ink);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--ink);
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background: var(--background);
+    color: var(--ink);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+  }
 }
