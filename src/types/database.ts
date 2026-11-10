@@ -6,6 +6,38 @@
 export type Database = {
   public: {
     Tables: {
+      grades: {
+        Row: {
+          id: string;
+          user_id: string;
+          subject_id: string;
+          title: string;
+          score: number;
+          out_of: number;
+          weight: number;
+          graded_on: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          subject_id: string;
+          title: string;
+          score: number;
+          out_of?: number;
+          weight?: number;
+          graded_on?: string | null;
+        };
+        Update: {
+          title?: string;
+          score?: number;
+          out_of?: number;
+          weight?: number;
+          graded_on?: string | null;
+        };
+        Relationships: [];
+      };
       assignments: {
         Row: {
           id: string;
@@ -76,6 +108,7 @@ export type Database = {
           code: string | null;
           ects_credits: number;
           position: number;
+          jury_validated: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -93,6 +126,7 @@ export type Database = {
           code?: string | null;
           ects_credits?: number;
           position?: number;
+          jury_validated?: boolean;
         };
         Relationships: [];
       };
