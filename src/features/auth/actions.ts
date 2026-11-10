@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { authErrorMessage } from "./errors";
+import { authErrorMessage, logAuthError } from "./errors";
 import { signInSchema, signUpSchema } from "./schemas";
 import type { FormState } from "@/lib/form-state";
 
@@ -26,7 +26,10 @@ export async function signIn(
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return { error: authErrorMessage(error), values };
+  if (error) {
+    if (error.code !== "invalid_credentials") logAuthError("signIn", error);
+    return { error: authErrorMessage(error), values };
+  }
 
   redirect("/dashboard");
 }
@@ -58,7 +61,10 @@ export async function signUp(
       data: { display_name: parsed.data.displayName },
     },
   });
-  if (error) return { error: authErrorMessage(error), values };
+  if (error) {
+    logAuthError("signUp", error);
+    return { error: authErrorMessage(error), values };
+  }
 
   // Confirmation par e-mail désactivée : la session est ouverte tout de suite.
   if (data.session) redirect("/dashboard");
