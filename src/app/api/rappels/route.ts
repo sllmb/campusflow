@@ -30,12 +30,11 @@ export async function GET(request: Request) {
   const admin = createAdminClient(supabaseSecretKey);
   const { data: subscriptions, error } = await admin.from("push_subscriptions").select("*");
   if (error) {
-    // Réponse réservée à qui a le secret : on peut y donner la cause (clé invalide…).
-    console.error("Rappels : lecture des abonnements impossible :", error.message);
-    return NextResponse.json(
-      { error: "Lecture impossible.", detail: error.message },
-      { status: 500 },
-    );
+    // Jamais le message brut : il peut contenir la clé elle-même (en-tête refusé…).
+    // Seulement un code, pour diagnostiquer sans rien révéler.
+    const code = error.code || (error.message.includes("header") ? "cle_mal_formee" : "inconnu");
+    console.error("Rappels : lecture des abonnements impossible, code :", code);
+    return NextResponse.json({ error: "Lecture impossible.", code }, { status: 500 });
   }
 
   const now = new Date();

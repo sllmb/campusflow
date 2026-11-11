@@ -3,12 +3,22 @@ import webpush, { WebPushError } from "web-push";
 import { VAPID_PUBLIC_KEY, VAPID_SUBJECT } from "./config";
 import type { Digest } from "./lib/digest";
 
-/** Variables secrètes des rappels ; null si elles ne sont pas (encore) configurées. */
+/**
+ * Une clé ne contient jamais d'espace ni de retour à la ligne : on retire ceux qu'un copier-coller
+ * a pu glisser (au début, à la fin ou au milieu). Vide → undefined.
+ */
+function secret(value: string | undefined) {
+  const cleaned = value?.replace(/\s+/g, "");
+  return cleaned || undefined;
+}
+
+/** Variables secrètes des rappels ; undefined si elles ne sont pas (encore) configurées. */
 export function getReminderSecrets() {
-  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY?.trim();
-  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY?.trim();
-  const cronSecret = process.env.CRON_SECRET?.trim();
-  return { vapidPrivateKey, supabaseSecretKey, cronSecret };
+  return {
+    vapidPrivateKey: secret(process.env.VAPID_PRIVATE_KEY),
+    supabaseSecretKey: secret(process.env.SUPABASE_SECRET_KEY),
+    cronSecret: secret(process.env.CRON_SECRET),
+  };
 }
 
 export type PushTarget = { endpoint: string; p256dh: string; auth: string };
