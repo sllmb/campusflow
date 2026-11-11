@@ -90,7 +90,7 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
     await expect(summary).toBeVisible();
     await expect(summary).toHaveAttribute("aria-expanded", "true");
     await expect(exam.getByRole("button", { name: /^Marquer « .* » comme fait$/ })).toHaveCount(4);
-    await expect(exam.getByText("45 min")).toHaveCount(4);
+    await expect(exam.getByText("45 min", { exact: true })).toHaveCount(4);
 
     // Accueil : le créneau du jour, avec « Lancer » (Pomodoro, moins d'1 h) et la case à cocher.
     await page.goto("/dashboard");
