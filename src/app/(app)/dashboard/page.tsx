@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
+import { InstallHintLoader } from "@/components/pwa/install-hint-loader";
 import { ButtonLink } from "@/components/ui/button";
 import { buildSchedule } from "@/features/assignments/lib/schedule";
 import { listAssignments } from "@/features/assignments/queries";
@@ -106,6 +107,7 @@ export default function DashboardPage() {
           </div>
         }
       />
+      <InstallHintLoader />
       <Suspense fallback={<WidgetsSkeleton />}>
         <DashboardWidgets />
       </Suspense>

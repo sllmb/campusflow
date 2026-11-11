@@ -28,6 +28,16 @@ l'ordre des noms. Deux façons de l'appliquer :
 
 Règle du projet : toute nouvelle table active la RLS dans la même migration.
 
+## Application installable (PWA)
+
+- Manifeste : `src/app/manifest.ts` (nom, plein écran, couleurs, icônes de `public/brand/`).
+- Service worker : `public/sw.js`, enregistré en production. Il ne met en cache que la page
+  `/offline`, les icônes et les fichiers versionnés de Next.js ; **jamais** les pages ni les
+  données de l'utilisateur. Sans réseau, la navigation affiche `/offline`.
+- Après une modification de `public/sw.js`, incrémenter `VERSION` pour vider l'ancien cache.
+- Installation : sur iPhone, Safari → Partager → « Sur l'écran d'accueil » (l'accueil de l'app
+  l'explique) ; sur Android, bouton « Installer ».
+
 ## Double authentification
 
 Facultative, activée depuis la page Profil (application d'authentification, codes TOTP).
