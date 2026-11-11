@@ -6,6 +6,8 @@ import { useFormStatus } from "react-dom";
 import { Badge } from "@/components/ui/badge";
 import { subjectColorClass } from "@/features/subjects/colors";
 import { DeleteForm } from "@/features/subjects/components/delete-form";
+import { RevisionPlanner } from "@/features/revisions/components/revision-planner";
+import type { RevisionSlotView } from "@/features/revisions/components/revision-slot-row";
 import { cn } from "@/lib/utils";
 import { deleteAssignment, toggleAssignmentDone } from "../actions";
 import { kindInfo } from "../constants";
@@ -39,10 +41,19 @@ type AssignmentItemProps = {
   item: AssignmentView;
   groups: SubjectOptionGroup[];
   defaultDue: string;
+  /** Pour les examens et projets : créneaux de révision, et le jour local (planning). */
+  revisions?: RevisionSlotView[];
+  today?: string;
 };
 
 /** Une échéance : rond pour la terminer, ligne touchable pour la modifier. */
-export function AssignmentItem({ item, groups, defaultDue }: AssignmentItemProps) {
+export function AssignmentItem({
+  item,
+  groups,
+  defaultDue,
+  revisions = [],
+  today,
+}: AssignmentItemProps) {
   const [editing, setEditing] = useState(false);
   const done = item.status === "done";
   const kind = kindInfo(item.kind);
@@ -69,50 +80,64 @@ export function AssignmentItem({ item, groups, defaultDue }: AssignmentItemProps
     );
   }
 
+  const plannable = today !== undefined && item.kind !== "homework" && !done;
+
   return (
     <li
       className={cn(
-        "flex items-center gap-3 rounded-3xl border-2 bg-surface p-3",
+        "grid gap-3 rounded-3xl border-2 bg-surface p-3",
         item.overdue && "bg-pink/25",
         done && "opacity-60",
       )}
     >
-      <form action={toggleAssignmentDone}>
-        <input type="hidden" name="id" value={item.id} />
-        <input type="hidden" name="done" value={String(!done)} />
-        <DoneToggle done={done} title={item.title} />
-      </form>
-      <button
-        type="button"
-        onClick={() => setEditing(true)}
-        aria-label={`Modifier ${item.title}`}
-        className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-2xl text-left"
-      >
-        <span
-          aria-hidden
-          className={cn(
-            "h-10 w-2 shrink-0 rounded-full border-2",
-            subjectColorClass(item.subject.color),
-          )}
-        />
-        <span className="min-w-0 flex-1">
-          <span className={cn("block truncate text-[15px] font-bold", done && "line-through")}>
-            {item.title}
-          </span>
-          <span className="block truncate text-[13px] text-ink-soft">{item.subject.name}</span>
-          <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
-            <Badge tone={item.overdue ? "pink" : "white"}>{item.dueLabel}</Badge>
-            <Badge tone={kind.tone}>{kind.label}</Badge>
-            {item.status === "in_progress" && <Badge tone="green">En cours</Badge>}
-            {item.priority === "high" && !done && (
-              <Badge tone="yellow">
-                <Flag className="size-3" strokeWidth={3} aria-hidden /> Prioritaire
-              </Badge>
+      <div className="flex items-center gap-3">
+        <form action={toggleAssignmentDone}>
+          <input type="hidden" name="id" value={item.id} />
+          <input type="hidden" name="done" value={String(!done)} />
+          <DoneToggle done={done} title={item.title} />
+        </form>
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          aria-label={`Modifier ${item.title}`}
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-2xl text-left"
+        >
+          <span
+            aria-hidden
+            className={cn(
+              "h-10 w-2 shrink-0 rounded-full border-2",
+              subjectColorClass(item.subject.color),
             )}
+          />
+          <span className="min-w-0 flex-1">
+            <span className={cn("block truncate text-[15px] font-bold", done && "line-through")}>
+              {item.title}
+            </span>
+            <span className="block truncate text-[13px] text-ink-soft">{item.subject.name}</span>
+            <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+              <Badge tone={item.overdue ? "pink" : "white"}>{item.dueLabel}</Badge>
+              <Badge tone={kind.tone}>{kind.label}</Badge>
+              {item.status === "in_progress" && <Badge tone="green">En cours</Badge>}
+              {item.priority === "high" && !done && (
+                <Badge tone="yellow">
+                  <Flag className="size-3" strokeWidth={3} aria-hidden /> Prioritaire
+                </Badge>
+              )}
+            </span>
           </span>
-        </span>
-        <ChevronRight className="size-5 shrink-0" strokeWidth={2.4} aria-hidden />
-      </button>
+          <ChevronRight className="size-5 shrink-0" strokeWidth={2.4} aria-hidden />
+        </button>
+      </div>
+      {plannable && (
+        <div className="grid border-t-2 border-dashed border-ink/15 px-1 pt-3">
+          <RevisionPlanner
+            assignmentId={item.id}
+            examDay={item.dueLocal.slice(0, 10)}
+            today={today}
+            slots={revisions}
+          />
+        </div>
+      )}
     </li>
   );
 }

@@ -84,6 +84,18 @@ Le seuil de 10 s'applique à la moyenne arrondie au centième, celle qui est aff
 | ----- | ------------------------------------------------------------------------------------------- | ------- |
 | EF-50 | Afficher le prochain rendu, la moyenne, le temps de concentration du jour et les échéances. | 0.1     |
 
+### Planning de révisions
+
+| Id    | Exigence                                                                                                                                    | Version |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| EF-70 | Planifier ses révisions avant un examen ou un projet : un temps total et des jours de la semaine, répartis jusqu'à la veille de l'échéance. | 1.1     |
+| EF-71 | Voir ses créneaux dans Devoirs, dans le calendrier et sur l'accueil (révisions du jour).                                                    | 1.1     |
+| EF-72 | Cocher un créneau fait, le déplacer, changer sa durée ou le supprimer.                                                                      | 1.1     |
+| EF-73 | Lancer le minuteur réglé pour un créneau : deep work dès 1 h, Pomodoro en dessous.                                                          | 1.1     |
+
+Répartition par quarts d'heure, le plus également possible ; les quarts d'heure en trop vont aux
+jours les plus proches de l'échéance. 10 h au plus par jour.
+
 ### Statistiques
 
 | Id    | Exigence                                                                                  | Version |
@@ -141,7 +153,7 @@ Le détail des tables est dans le [modèle de données](modele-de-donnees.md).
 
 1. ~~**Calendrier**~~ : fait (EF-23).
 2. ~~**Statistiques**~~ : fait (EF-60 à EF-64).
-3. **Planning de révisions.**
+3. ~~**Planning de révisions**~~ : fait (EF-70 à EF-73).
 4. **Rappels d'échéances** par notification.
 
 ## 10. Avant une ouverture au public

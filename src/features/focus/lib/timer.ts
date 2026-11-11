@@ -32,6 +32,14 @@ export function formatMinutes(minutes: number) {
   return m === 0 ? `${h} h` : `${h} h ${String(m).padStart(2, "0")}`;
 }
 
+/** Réglage proposé à l'ouverture du minuteur (lien « Lancer » d'un créneau de révision). */
+export type FocusPreset = {
+  mode: FocusMode;
+  /** Durée du deep work, déjà ramenée dans les limites. */
+  minutes?: number;
+  subjectId: string | null;
+};
+
 /** Pause après le n-ième Pomodoro du jour : 5 min, et 15 min tous les 4. */
 export function breakMinutesAfter(pomodoroCount: number) {
   return pomodoroCount > 0 && pomodoroCount % 4 === 0 ? 15 : 5;

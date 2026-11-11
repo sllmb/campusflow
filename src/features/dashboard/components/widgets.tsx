@@ -1,4 +1,4 @@
-import { ArrowRight, ChartColumn, Timer } from "lucide-react";
+import { ArrowRight, CalendarClock, ChartColumn, Timer } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardLabel, CardTitle, CardValue } from "@/components/ui/card";
@@ -8,6 +8,11 @@ import { formatAverage } from "@/features/grades/format";
 import type { SemesterResult } from "@/features/grades/lib/average";
 import type { UnitWithGrades } from "@/features/grades/queries";
 import { subjectColorClass } from "@/features/subjects/colors";
+import {
+  RevisionSlotRow,
+  type RevisionSlotView,
+} from "@/features/revisions/components/revision-slot-row";
+import { formatMinutes } from "@/features/focus/lib/timer";
 import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -255,5 +260,35 @@ export function StatsLinkWidget() {
         <ArrowRight className="size-5 shrink-0" strokeWidth={2.6} aria-hidden />
       </Card>
     </Link>
+  );
+}
+
+/** Les créneaux de révision du jour (affiché seulement s'il y en a). */
+export function TodayRevisionsWidget({
+  slots,
+  today,
+}: {
+  slots: RevisionSlotView[];
+  today: string;
+}) {
+  if (slots.length === 0) return null;
+  const left = slots.filter((slot) => !slot.done).reduce((sum, slot) => sum + slot.minutes, 0);
+  return (
+    <Card className="col-span-2">
+      <div className="flex items-center justify-between gap-2">
+        <CardTitle className="flex items-center gap-2">
+          <CalendarClock className="size-5" strokeWidth={2.4} aria-hidden />
+          Révisions du jour
+        </CardTitle>
+        <Badge tone={left ? "yellow" : "green"}>
+          {left ? `${formatMinutes(left)} à faire` : "Tout est fait"}
+        </Badge>
+      </div>
+      <ul className="mt-3 grid gap-2.5">
+        {slots.map((slot) => (
+          <RevisionSlotRow key={slot.id} slot={slot} today={today} context />
+        ))}
+      </ul>
+    </Card>
   );
 }

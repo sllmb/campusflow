@@ -22,6 +22,7 @@ flowchart LR
         uc_cours(["Organiser ses cours<br/>semestres, UE, matières"])
         uc_devoirs(["Suivre ses devoirs"])
         uc_calendrier(["Consulter le calendrier<br/>et ajouter sur un jour"])
+        uc_revisions(["Planifier ses révisions<br/>avant un examen"])
         uc_notes(["Saisir ses notes<br/>et voir ses moyennes"])
         uc_focus(["Lancer une session<br/>Pomodoro ou deep work"])
         uc_dashboard(["Consulter le tableau de bord"])
@@ -40,6 +41,7 @@ flowchart LR
     etudiant --- uc_cours
     etudiant --- uc_devoirs
     etudiant --- uc_calendrier
+    etudiant --- uc_revisions
     etudiant --- uc_notes
     etudiant --- uc_focus
     etudiant --- uc_dashboard
@@ -90,6 +92,21 @@ Un visiteur devient étudiant en se connectant.
 - **Variantes** :
   - Vue semaine : les 7 jours sont listés, chacun avec un bouton « + ».
   - Aucune matière : le calendrier invite à en créer une d'abord.
+
+### Planifier ses révisions (EF-70 à EF-73)
+
+- **Acteur** : étudiant.
+- **Préconditions** : un examen ou un projet dont l'échéance n'est pas aujourd'hui.
+- **Scénario nominal** :
+  1. Dans Devoirs, sous l'examen, l'étudiant touche « Planifier mes révisions ».
+  2. Il indique le temps total (par exemple 10 h) et les jours où il peut réviser.
+  3. CampusFlow répartit ce temps d'aujourd'hui à la veille de l'échéance et affiche les créneaux.
+  4. Chaque jour, l'accueil montre les révisions du jour ; « Lancer » ouvre le minuteur réglé.
+  5. Il coche le créneau une fois fait.
+- **Variantes** :
+  - Trop d'heures pour le temps qui reste (plus de 10 h par jour) : le maximum possible est indiqué.
+  - Aucun jour choisi n'est disponible : message sous les jours.
+  - « Refaire le planning » : les créneaux déjà faits et ceux des jours passés sont gardés.
 
 ### Consulter ses statistiques (EF-60 à EF-64)
 

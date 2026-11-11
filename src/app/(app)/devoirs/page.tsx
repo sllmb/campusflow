@@ -12,6 +12,7 @@ import { AssignmentsViewSwitch } from "@/features/assignments/components/view-sw
 import { KINDS, type AssignmentKind } from "@/features/assignments/constants";
 import { listAssignments, listSubjectOptions } from "@/features/assignments/queries";
 import { buildSchedule } from "@/features/assignments/lib/schedule";
+import { groupByAssignment, listRevisionSlots } from "@/features/revisions/queries";
 import { utcToLocalInput } from "@/lib/time";
 import { getTimeZone } from "@/lib/timezone";
 import { cn } from "@/lib/utils";
@@ -54,10 +55,12 @@ async function AssignmentsContent({ searchParams }: PageProps<"/devoirs">) {
   const timeZone = await getTimeZone();
   const now = new Date();
   const todayLocal = utcToLocalInput(now.toISOString(), timeZone).slice(0, 10);
-  const [groups, assignments] = await Promise.all([
+  const [groups, assignments, revisionSlots] = await Promise.all([
     listSubjectOptions(todayLocal),
     listAssignments(kind),
+    listRevisionSlots(),
   ]);
+  const revisions = groupByAssignment(revisionSlots);
 
   if (groups.length === 0) {
     return (
@@ -111,7 +114,14 @@ async function AssignmentsContent({ searchParams }: PageProps<"/devoirs">) {
             </h2>
             <ul className="grid gap-3">
               {bucket.items.map((item) => (
-                <AssignmentItem key={item.id} item={item} groups={groups} defaultDue={defaultDue} />
+                <AssignmentItem
+                  key={item.id}
+                  item={item}
+                  groups={groups}
+                  defaultDue={defaultDue}
+                  revisions={revisions.get(item.id)}
+                  today={todayLocal}
+                />
               ))}
             </ul>
           </section>
