@@ -50,11 +50,12 @@ Il n'y a pas de rôle administrateur dans l'application : chaque étudiant ne g�
 
 ### Devoirs
 
-| Id    | Exigence                                                                    | Version |
-| ----- | --------------------------------------------------------------------------- | ------- |
-| EF-20 | Ajouter un devoir, un projet ou un examen à une matière, avec une échéance. | 0.1     |
-| EF-21 | Suivre son statut (à faire, en cours, terminé) et sa priorité.              | 0.1     |
-| EF-22 | Voir les devoirs en retard et à venir, à l'heure du fuseau de l'étudiant.   | 0.1     |
+| Id    | Exigence                                                                       | Version |
+| ----- | ------------------------------------------------------------------------------ | ------- |
+| EF-20 | Ajouter un devoir, un projet ou un examen à une matière, avec une échéance.    | 0.1     |
+| EF-21 | Suivre son statut (à faire, en cours, terminé) et sa priorité.                 | 0.1     |
+| EF-22 | Voir les devoirs en retard et à venir, à l'heure du fuseau de l'étudiant.      | 0.1     |
+| EF-23 | Calendrier mois ou semaine, aux couleurs des matières, avec ajout sur un jour. | 1.1     |
 
 ### Notes et moyennes
 
@@ -126,7 +127,7 @@ Le détail des tables est dans le [modèle de données](modele-de-donnees.md).
 
 ## 9. Évolutions prévues (v1.1)
 
-1. **Calendrier** : vue mois et semaine, couleurs des matières, ajout rapide.
+1. ~~**Calendrier**~~ : fait (EF-23).
 2. **Statistiques** : temps de travail et évolution des moyennes.
 3. **Planning de révisions.**
 4. **Rappels d'échéances** par notification.

@@ -56,11 +56,18 @@ export async function listSubjectOptions(today: string): Promise<SubjectOptionGr
     .filter((group) => group.options.length > 0);
 }
 
-/** Devoirs de l'utilisateur avec leur matière, triés par échéance. */
-export async function listAssignments(kind?: AssignmentKind): Promise<AssignmentWithSubject[]> {
+/**
+ * Devoirs de l'utilisateur avec leur matière, triés par échéance. `between` limite aux échéances
+ * comprises entre deux instants UTC (le premier inclus, le second exclu).
+ */
+export async function listAssignments(
+  kind?: AssignmentKind,
+  between?: { from: string; to: string },
+): Promise<AssignmentWithSubject[]> {
   const supabase = await createClient();
   let query = supabase.from("assignments").select("*").order("due_at");
   if (kind) query = query.eq("kind", kind);
+  if (between) query = query.gte("due_at", between.from).lt("due_at", between.to);
   const [{ data: assignments, error }, { data: subjects, error: subjectsError }] =
     await Promise.all([query, supabase.from("subjects").select("id, name, color")]);
   if (error) throw error;
