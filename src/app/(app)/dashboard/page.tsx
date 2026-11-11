@@ -12,11 +12,13 @@ import {
   FocusWidget,
   NextDueWidget,
   StatsLinkWidget,
+  TodayRevisionsWidget,
   SubjectsWidget,
   UpcomingWidget,
 } from "@/features/dashboard/components/widgets";
 import { getFocusToday } from "@/features/focus/queries";
 import { getGradesOverview } from "@/features/grades/queries";
+import { listRevisionSlots } from "@/features/revisions/queries";
 import { Greeting } from "@/features/profile/components/greeting";
 import { AvatarLink, UserAvatar } from "@/features/profile/components/user-avatar";
 import { utcToLocalInput } from "@/lib/time";
@@ -43,10 +45,11 @@ async function DashboardWidgets() {
   const now = new Date();
   const today = utcToLocalInput(now.toISOString(), timeZone).slice(0, 10);
 
-  const [assignments, overview, focus] = await Promise.all([
+  const [assignments, overview, focus, revisions] = await Promise.all([
     listAssignments(),
     getGradesOverview(undefined, today),
     getFocusToday(today, timeZone),
+    listRevisionSlots({ first: today, last: today }),
   ]);
   const schedule = buildSchedule(assignments, now, timeZone);
   // Carte principale : la prochaine échéance à venir ; s'il n'y a que des retards, le plus ancien.
@@ -57,6 +60,7 @@ async function DashboardWidgets() {
       <NextDueWidget item={next} />
       <AverageWidget result={overview.result} />
       <FocusWidget totalSeconds={focus.totalSeconds} sessions={focus.sessions.length} />
+      <TodayRevisionsWidget slots={revisions} today={today} />
       <UpcomingWidget
         items={schedule.pending.slice(0, 5)}
         dueThisWeek={schedule.dueThisWeek}

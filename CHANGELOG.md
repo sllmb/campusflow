@@ -11,6 +11,9 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 - **Calendrier des échéances** (Devoirs → Calendrier) : vue mois et vue semaine, couleurs des
   matières, ajout rapide d'une échéance sur un jour choisi. Les jours suivent le fuseau horaire
   de l'étudiant.
+- **Planning de révisions** pour les examens et les projets : un temps total et des jours
+  choisis, répartis jusqu'à la veille de l'échéance. Les créneaux apparaissent dans Devoirs, le
+  calendrier et l'accueil (révisions du jour) ; « Lancer » ouvre le minuteur réglé.
 - **Statistiques** (depuis l'accueil, ou le menu sur ordinateur) : temps de concentration par
   jour sur 7 ou 30 jours comparé à la période d'avant, répartition par matière, série de jours
   d'affilée, évolution de la moyenne du semestre, devoirs rendus à temps.

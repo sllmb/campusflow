@@ -68,6 +68,45 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
     ).toBeVisible();
   });
 
+  await test.step("planning de révisions : 3 h avant un examen dans 4 jours", async () => {
+    const inDays = new Date(Date.now() + 4 * 86_400_000);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const due = `${inDays.getFullYear()}-${pad(inDays.getMonth() + 1)}-${pad(inDays.getDate())}T08:00`;
+
+    await page.goto("/devoirs?ajouter=1");
+    await page.getByRole("radio", { name: "Examen" }).check({ force: true });
+    await page.getByLabel("Titre").fill("Partiel E2E");
+    await page.getByLabel("Matière", { exact: true }).selectOption({ label: "Chimie E2E" });
+    await page.getByLabel("Échéance").fill(due);
+    await page.getByRole("button", { name: "Ajouter", exact: true }).click();
+
+    const exam = page.getByRole("listitem").filter({ hasText: "Partiel E2E" }).first();
+    await exam.getByRole("button", { name: "Planifier mes révisions" }).click();
+    await exam.getByLabel("Temps de révision (en heures)").fill("3");
+    await exam.getByRole("button", { name: "Planifier", exact: true }).click();
+
+    // 3 h = 12 quarts d'heure sur 4 jours (aujourd'hui → veille) : 45 min par jour.
+    const summary = exam.getByRole("button", { name: /^Révisions : 0 min sur 3 h/ });
+    await expect(summary).toBeVisible();
+    await expect(summary).toHaveAttribute("aria-expanded", "true");
+    await expect(exam.getByRole("button", { name: /^Marquer « .* » comme fait$/ })).toHaveCount(4);
+    await expect(exam.getByText("45 min", { exact: true })).toHaveCount(4);
+
+    // Accueil : le créneau du jour, avec « Lancer » (Pomodoro, moins d'1 h) et la case à cocher.
+    await page.goto("/dashboard");
+    const today = page
+      .getByRole("heading", { name: "Révisions du jour" })
+      .locator("..")
+      .locator("..");
+    await expect(today.getByText("Réviser Partiel E2E")).toBeVisible();
+    await expect(today.getByRole("link", { name: /^Lancer 45 min/ })).toHaveAttribute(
+      "href",
+      /mode=pomodoro/,
+    );
+    await today.getByRole("button", { name: "Marquer « Réviser Partiel E2E » comme fait" }).click();
+    await expect(today.getByText("Tout est fait")).toBeVisible();
+  });
+
   await test.step("calendrier : le devoir est sur le bon jour, ajout rapide", async () => {
     const day = (offset: number) => new Date(Date.now() + offset * 86_400_000);
     const iso = (d: Date) =>

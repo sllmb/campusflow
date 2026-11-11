@@ -25,6 +25,8 @@ import {
   type CalendarView,
 } from "@/features/assignments/lib/calendar";
 import { buildSchedule, type AssignmentView } from "@/features/assignments/lib/schedule";
+import { RevisionSlotRow } from "@/features/revisions/components/revision-slot-row";
+import { listRevisionSlots, type RevisionSlot } from "@/features/revisions/queries";
 import {
   listAssignments,
   listSubjectOptions,
@@ -42,20 +44,45 @@ function calendarHref(view: CalendarView, date: string, add = false) {
 
 function DayItems({
   items,
+  revisions,
   groups,
   date,
+  today,
 }: {
   items: AssignmentView[];
+  revisions: RevisionSlot[];
   groups: SubjectOptionGroup[];
   date: string;
+  today: string;
 }) {
-  if (items.length === 0) return <p className="text-sm text-ink-soft">Rien de prévu.</p>;
+  if (items.length === 0 && revisions.length === 0) {
+    return <p className="text-sm text-ink-soft">Rien de prévu.</p>;
+  }
   return (
-    <ul className="grid gap-3">
-      {items.map((item) => (
-        <AssignmentItem key={item.id} item={item} groups={groups} defaultDue={`${date}T23:59`} />
-      ))}
-    </ul>
+    <>
+      {items.length > 0 && (
+        <ul className="grid gap-3">
+          {items.map((item) => (
+            <AssignmentItem
+              key={item.id}
+              item={item}
+              groups={groups}
+              defaultDue={`${date}T23:59`}
+            />
+          ))}
+        </ul>
+      )}
+      {revisions.length > 0 && (
+        <div className="rounded-3xl border-2 border-dashed p-3">
+          <p className="mb-2.5 text-sm font-bold">Révisions</p>
+          <ul className="grid gap-2.5">
+            {revisions.map((slot) => (
+              <RevisionSlotRow key={slot.id} slot={slot} today={today} context />
+            ))}
+          </ul>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -74,12 +101,13 @@ async function CalendarContent({ searchParams }: PageProps<"/devoirs/calendrier"
   // Un jour de marge de chaque côté : quel que soit le fuseau, aucune échéance visible
   // n'est oubliée. Le classement par jour local se fait ensuite, dans groupByDay.
   const { first, last } = visibleRange(view, selected);
-  const [groups, assignments] = await Promise.all([
+  const [groups, assignments, revisionSlots] = await Promise.all([
     listSubjectOptions(today),
     listAssignments(undefined, {
       from: `${addDays(first, -1)}T00:00:00Z`,
       to: `${addDays(last, 2)}T00:00:00Z`,
     }),
+    listRevisionSlots({ first, last }),
   ]);
 
   if (groups.length === 0) {
@@ -95,6 +123,9 @@ async function CalendarContent({ searchParams }: PageProps<"/devoirs/calendrier"
 
   const schedule = buildSchedule(assignments, now, timeZone);
   const byDay = groupByDay([...schedule.pending, ...schedule.done]);
+  const revisionsByDay = groupByDay(
+    revisionSlots.map((slot) => ({ ...slot, dueLocal: `${slot.planned_on}T00:00` })),
+  );
   const unit = view === "mois" ? "Mois" : "Semaine";
 
   return (
@@ -151,13 +182,20 @@ async function CalendarContent({ searchParams }: PageProps<"/devoirs/calendrier"
             selected={selected}
             today={today}
             byDay={byDay}
+            revisionsByDay={revisionsByDay}
             hrefFor={(date) => calendarHref("mois", date)}
           />
           <section aria-labelledby="selected-day" className="mt-6 grid gap-4">
             <h3 id="selected-day" className="text-lg font-extrabold tracking-tight">
               {capitalize(dayLabel(selected))}
             </h3>
-            <DayItems items={byDay.get(selected) ?? []} groups={groups} date={selected} />
+            <DayItems
+              items={byDay.get(selected) ?? []}
+              revisions={revisionsByDay.get(selected) ?? []}
+              groups={groups}
+              date={selected}
+              today={today}
+            />
             <NewAssignmentPanel
               key={selected}
               groups={groups}
@@ -171,6 +209,7 @@ async function CalendarContent({ searchParams }: PageProps<"/devoirs/calendrier"
         <div className="grid gap-6">
           {weekDays(selected).map(({ date }) => {
             const items = byDay.get(date) ?? [];
+            const count = items.length + (revisionsByDay.get(date)?.length ?? 0);
             const isToday = date === today;
             return (
               <section key={date} aria-labelledby={`day-${date}`} className="grid gap-3">
@@ -183,9 +222,9 @@ async function CalendarContent({ searchParams }: PageProps<"/devoirs/calendrier"
                     )}
                   >
                     {capitalize(dayLabel(date))}
-                    {items.length > 0 && (
+                    {count > 0 && (
                       <span className="rounded-full border-2 border-current px-2 text-xs">
-                        {items.length}
+                        {count}
                       </span>
                     )}
                   </h3>
@@ -200,7 +239,13 @@ async function CalendarContent({ searchParams }: PageProps<"/devoirs/calendrier"
                     </Link>
                   )}
                 </div>
-                <DayItems items={items} groups={groups} date={date} />
+                <DayItems
+                  items={items}
+                  revisions={revisionsByDay.get(date) ?? []}
+                  groups={groups}
+                  date={date}
+                  today={today}
+                />
                 {adding && date === selected && (
                   <NewAssignmentPanel
                     key={date}

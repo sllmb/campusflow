@@ -25,6 +25,7 @@ import {
   tick,
   type FinishedSession,
   type FocusMode,
+  type FocusPreset,
   type TimerState,
 } from "../lib/timer";
 
@@ -101,21 +102,27 @@ function chime() {
 type FocusTimerProps = {
   groups: SubjectOptionGroup[];
   pomodorosToday: number;
+  /** Réglage venu d'un lien ; ignoré si une session est déjà en cours. */
+  preset?: FocusPreset;
 };
 
 /**
  * Minuteur. Rendu uniquement dans le navigateur (voir FocusTimerLoader) : son état est relu
  * depuis le stockage local dès le départ, pour reprendre une session après un rechargement.
  */
-export function FocusTimer({ groups, pomodorosToday }: FocusTimerProps) {
+export function FocusTimer({ groups, pomodorosToday, preset }: FocusTimerProps) {
   const [initial] = useState(() => load());
+  // Une session en cours passe avant le lien : on ne l'écrase jamais.
+  const proposed = initial ? undefined : preset;
   const [state, setState] = useState<TimerState>(initial ?? IDLE);
   const [now, setNow] = useState(() => Date.now());
-  const [mode, setMode] = useState<FocusMode>(initial?.mode ?? "pomodoro");
+  const [mode, setMode] = useState<FocusMode>(initial?.mode ?? proposed?.mode ?? "pomodoro");
   const [deepMinutes, setDeepMinutes] = useState(() =>
-    initial?.mode === "deep_work" ? clampDeepWork(initial.plannedMinutes) : loadDeepWork(),
+    initial?.mode === "deep_work"
+      ? clampDeepWork(initial.plannedMinutes)
+      : (proposed?.minutes ?? loadDeepWork()),
   );
-  const [subjectId, setSubjectId] = useState(initial?.subjectId ?? "");
+  const [subjectId, setSubjectId] = useState(initial?.subjectId ?? proposed?.subjectId ?? "");
   const [message, setMessage] = useState<string | null>(null);
   const [, startSaving] = useTransition();
 

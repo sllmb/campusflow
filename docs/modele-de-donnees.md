@@ -17,6 +17,8 @@ matière.
           │                             ├─ Devoirs
           │                             └─ Sessions de concentration
           └─ Profil
+
+(un examen ou un projet ─ Créneaux de révision)
 ```
 
 ## Modèle conceptuel (MCD)
@@ -33,6 +35,7 @@ erDiagram
     UE ||--o{ MATIERE : "regroupe"
     MATIERE ||--o{ NOTE : "reçoit"
     MATIERE ||--o{ DEVOIR : "donne lieu à"
+    DEVOIR ||--o{ CRENEAU_REVISION : "se prépare en"
     MATIERE |o--o{ SESSION_CONCENTRATION : "concerne"
     UTILISATEUR ||--o{ SESSION_CONCENTRATION : "réalise"
 ```
@@ -54,6 +57,7 @@ erDiagram
     teaching_units ||--o{ subjects : "unit_id"
     subjects ||--o{ grades : "subject_id"
     subjects ||--o{ assignments : "subject_id"
+    assignments ||--o{ revision_sessions : "assignment_id"
     subjects |o--o{ focus_sessions : "subject_id"
 
     auth_users {
@@ -112,6 +116,14 @@ erDiagram
         text priority
         timestamptz completed_at
     }
+    revision_sessions {
+        uuid id PK
+        uuid user_id FK
+        uuid assignment_id FK
+        date planned_on
+        int minutes
+        boolean done
+    }
     focus_sessions {
         uuid id PK
         uuid user_id FK
@@ -137,6 +149,7 @@ Notation : la clé primaire est en **gras**, les clés étrangères sont précé
 - **grades** (**id**, #user_id, #subject_id, title, score, out_of, weight, graded_on)
 - **assignments** (**id**, #user_id, #subject_id, kind, title, notes, due_at, status, priority,
   completed_at)
+- **revision_sessions** (**id**, #user_id, #assignment_id, planned_on, minutes, done)
 - **focus_sessions** (**id**, #user_id, #subject_id, mode, planned_minutes, started_at, ended_at,
   focused_seconds, completed)
 
@@ -147,14 +160,15 @@ une requête contourne l'application.
 
 ### Contraintes de valeurs (`check`)
 
-| Table            | Règle                                                                          |
-| ---------------- | ------------------------------------------------------------------------------ |
-| `semesters`      | Nom de 1 à 60 caractères ; la date de fin est après la date de début.          |
-| `teaching_units` | Crédits ECTS entre 0 (exclu) et 60.                                            |
-| `subjects`       | Couleur de 1 à 8 ; coefficient entre 0 (exclu) et 100.                         |
-| `grades`         | Note ≥ 0 et ≤ barème ; barème entre 0 (exclu) et 1000 ; poids entre 0 et 100.  |
-| `assignments`    | Type `homework`, `project` ou `exam` ; statut `todo`, `in_progress` ou `done`. |
-| `focus_sessions` | Mode `pomodoro` ou `deep_work` ; durée prévue de 1 à 600 minutes (10 h).       |
+| Table               | Règle                                                                          |
+| ------------------- | ------------------------------------------------------------------------------ |
+| `semesters`         | Nom de 1 à 60 caractères ; la date de fin est après la date de début.          |
+| `teaching_units`    | Crédits ECTS entre 0 (exclu) et 60.                                            |
+| `subjects`          | Couleur de 1 à 8 ; coefficient entre 0 (exclu) et 100.                         |
+| `grades`            | Note ≥ 0 et ≤ barème ; barème entre 0 (exclu) et 1000 ; poids entre 0 et 100.  |
+| `assignments`       | Type `homework`, `project` ou `exam` ; statut `todo`, `in_progress` ou `done`. |
+| `revision_sessions` | Durée de 15 à 600 minutes, multiple de 15.                                     |
+| `focus_sessions`    | Mode `pomodoro` ou `deep_work` ; durée prévue de 1 à 600 minutes (10 h).       |
 
 ### Clés étrangères composites `(id, user_id)`
 
@@ -165,6 +179,7 @@ rattacher une UE au semestre d'un autre étudiant, même en connaissant son iden
 ### Suppressions en cascade
 
 - Supprimer un semestre supprime ses UE, puis leurs matières, puis leurs notes et devoirs.
+- Supprimer un examen ou un projet supprime ses créneaux de révision.
 - Supprimer une matière **conserve** ses sessions de concentration (le lien est simplement vidé),
   pour que le temps de travail total reste juste.
 - Supprimer le compte (`public.delete_my_account()`) supprime toutes les données de l'étudiant.
@@ -197,3 +212,4 @@ rattacher une UE au semestre d'un autre étudiant, même en connaissant son iden
 | `20261113090000_enforce_mfa`                     | Double authentification exigée par la base. |
 | `20261114090000_delete_own_account`              | Suppression de son propre compte.           |
 | `20261115090000_longer_deep_work`                | Deep work jusqu'à 10 h.                     |
+| `20261116090000_create_revision_sessions`        | Créneaux de révision.                       |

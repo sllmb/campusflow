@@ -33,6 +33,32 @@ export type Database = {
         Update: Record<string, never>;
         Relationships: [];
       };
+      revision_sessions: {
+        Row: {
+          id: string;
+          user_id: string;
+          assignment_id: string;
+          planned_on: string;
+          minutes: number;
+          done: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          assignment_id: string;
+          planned_on: string;
+          minutes: number;
+          done?: boolean;
+        };
+        Update: {
+          planned_on?: string;
+          minutes?: number;
+          done?: boolean;
+        };
+        Relationships: [];
+      };
       grades: {
         Row: {
           id: string;

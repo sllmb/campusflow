@@ -11,6 +11,8 @@ type CalendarMonthProps = {
   selected: string;
   today: string;
   byDay: Map<string, AssignmentView[]>;
+  /** Créneaux de révision par jour : un petit carré au lieu d'un rond. */
+  revisionsByDay?: Map<string, { id: string; done: boolean; subject: { color: number } }[]>;
   hrefFor: (date: string) => string;
 };
 
@@ -23,7 +25,13 @@ function countLabel(items: AssignmentView[]) {
 }
 
 /** Grille du mois : un point de la couleur de la matière par échéance. */
-export function CalendarMonth({ selected, today, byDay, hrefFor }: CalendarMonthProps) {
+export function CalendarMonth({
+  selected,
+  today,
+  byDay,
+  revisionsByDay,
+  hrefFor,
+}: CalendarMonthProps) {
   const weeks = monthGrid(selected);
 
   return (
@@ -44,6 +52,8 @@ export function CalendarMonth({ selected, today, byDay, hrefFor }: CalendarMonth
           <tr key={week[0].date}>
             {week.map(({ date, day, inMonth }) => {
               const items = byDay.get(date) ?? [];
+              const revisions = revisionsByDay?.get(date) ?? [];
+              const pendingRevisions = revisions.filter((slot) => !slot.done).length;
               const isSelected = date === selected;
               const isToday = date === today;
               const hasOverdue = items.some((item) => item.overdue);
@@ -53,7 +63,7 @@ export function CalendarMonth({ selected, today, byDay, hrefFor }: CalendarMonth
                     href={hrefFor(date)}
                     scroll={false}
                     aria-current={isToday ? "date" : undefined}
-                    aria-label={`${dayLabel(date)}${isToday ? ", aujourd'hui" : ""} : ${countLabel(items)}${isSelected ? " (sélectionné)" : ""}`}
+                    aria-label={`${dayLabel(date)}${isToday ? ", aujourd'hui" : ""} : ${countLabel(items)}${revisions.length ? `, ${revisions.length} révision${revisions.length > 1 ? "s" : ""}${pendingRevisions === 0 ? " faite" + (revisions.length > 1 ? "s" : "") : ""}` : ""}${isSelected ? " (sélectionné)" : ""}`}
                     className={cn(
                       "flex h-14 flex-col items-center gap-1 rounded-2xl border-2 pt-1.5 transition-colors sm:h-20",
                       isSelected
@@ -72,7 +82,7 @@ export function CalendarMonth({ selected, today, byDay, hrefFor }: CalendarMonth
                     >
                       {day}
                     </span>
-                    {items.length > 0 && (
+                    {(items.length > 0 || revisions.length > 0) && (
                       <span aria-hidden className="flex items-center gap-0.5">
                         {items.slice(0, MAX_DOTS).map((item) => (
                           <span
@@ -90,6 +100,17 @@ export function CalendarMonth({ selected, today, byDay, hrefFor }: CalendarMonth
                             +{items.length - MAX_DOTS}
                           </span>
                         )}
+                        {revisions.slice(0, items.length ? 1 : 2).map((slot) => (
+                          <span
+                            key={slot.id}
+                            className={cn(
+                              "size-2 rounded-[2px] border",
+                              isSelected ? "border-background" : "border-ink",
+                              subjectColorClass(slot.subject.color),
+                              slot.done && "opacity-40",
+                            )}
+                          />
+                        ))}
                       </span>
                     )}
                   </Link>

@@ -4,10 +4,11 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardTitle } from "@/components/ui/card";
-import { listSubjectOptions } from "@/features/assignments/queries";
+import { listSubjectOptions, type SubjectOptionGroup } from "@/features/assignments/queries";
 import { deleteFocusSession } from "@/features/focus/actions";
 import { FocusTimerLoader } from "@/features/focus/components/focus-timer-loader";
 import { getFocusToday } from "@/features/focus/queries";
+import { clampDeepWork, type FocusPreset } from "@/features/focus/lib/timer";
 import { subjectColorClass } from "@/features/subjects/colors";
 import { DeleteForm } from "@/features/subjects/components/delete-form";
 import { formatDuration } from "@/lib/format";
@@ -17,7 +18,27 @@ import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Pomodoro" };
 
-async function FocusContent() {
+/**
+ * Réglage proposé par un lien (bouton « Lancer » d'un créneau de révision) :
+ * `?mode=deep_work&minutes=90&matiere=<id>`. Les valeurs inconnues sont ignorées.
+ */
+function readPreset(
+  params: Record<string, string | string[] | undefined>,
+  groups: SubjectOptionGroup[],
+): FocusPreset | undefined {
+  const mode = params.mode === "deep_work" || params.mode === "pomodoro" ? params.mode : null;
+  if (!mode) return undefined;
+  const subject = typeof params.matiere === "string" ? params.matiere : "";
+  const known = groups.some((group) => group.options.some((option) => option.id === subject));
+  return {
+    mode,
+    minutes: mode === "deep_work" ? clampDeepWork(Number(params.minutes)) : undefined,
+    subjectId: known ? subject : null,
+  };
+}
+
+async function FocusContent({ searchParams }: PageProps<"/pomodoro">) {
+  const params = await searchParams;
   await connection();
   const timeZone = await getTimeZone();
   const today = utcToLocalInput(new Date().toISOString(), timeZone).slice(0, 10);
@@ -28,7 +49,11 @@ async function FocusContent() {
 
   return (
     <>
-      <FocusTimerLoader groups={groups} pomodorosToday={focus.pomodoroCount} />
+      <FocusTimerLoader
+        groups={groups}
+        pomodorosToday={focus.pomodoroCount}
+        preset={readPreset(params, groups)}
+      />
 
       <Card className="mt-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -91,7 +116,7 @@ function FocusSkeleton() {
   );
 }
 
-export default function PomodoroPage() {
+export default function PomodoroPage(props: PageProps<"/pomodoro">) {
   return (
     <>
       <PageHeader
@@ -99,7 +124,7 @@ export default function PomodoroPage() {
         description="Pomodoro de 25 min ou deep work de 1 h à 10 h, par matière."
       />
       <Suspense fallback={<FocusSkeleton />}>
-        <FocusContent />
+        <FocusContent {...props} />
       </Suspense>
     </>
   );
