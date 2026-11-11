@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildDigest, type DigestAssignment } from "./digest";
+import { buildDigest, reminderDue, type DigestAssignment } from "./digest";
 
 const PARIS = "Europe/Paris";
 const TODAY = "2026-11-11"; // mercredi
@@ -96,5 +96,34 @@ describe("buildDigest", () => {
       buildDigest({ today: TODAY, timeZone: "Africa/Dakar", assignments: late, revisions: [] })
         ?.body,
     ).toBe("En retard : 1");
+  });
+});
+
+describe("reminderDue", () => {
+  // Réveil quotidien à 8 h UTC.
+  const cron = new Date("2026-11-11T08:00:00Z");
+
+  it("8 h au Sénégal : on prévient", () => {
+    expect(reminderDue(cron, "Africa/Dakar", null, 8)).toEqual({ due: true, today: "2026-11-11" });
+  });
+
+  it("déjà prévenu aujourd'hui : on ne renvoie pas", () => {
+    expect(reminderDue(cron, "Africa/Dakar", "2026-11-11", 8).due).toBe(false);
+    expect(reminderDue(cron, "Africa/Dakar", "2026-11-10", 8).due).toBe(true);
+  });
+
+  it("à l'est, plus tard dans la matinée : on prévient (9 h à Paris)", () => {
+    expect(reminderDue(cron, "Europe/Paris", null, 8).due).toBe(true);
+  });
+
+  it("à l'ouest, avant 8 h : on attend (3 h à Montréal)", () => {
+    expect(reminderDue(cron, "America/Montreal", null, 8)).toEqual({
+      due: false,
+      today: "2026-11-11",
+    });
+    // Avec un réveil toutes les heures, il serait prévenu à 13 h UTC, soit 8 h chez lui.
+    expect(reminderDue(new Date("2026-11-11T13:00:00Z"), "America/Montreal", null, 8).due).toBe(
+      true,
+    );
   });
 });

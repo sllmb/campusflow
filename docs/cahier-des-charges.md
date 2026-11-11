@@ -112,24 +112,24 @@ Une session compte pour le jour où elle a commencé, dans le fuseau de l'étudi
 
 | Id    | Exigence                                                                                                                                                      | Version |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| EF-80 | Activer ou désactiver, par appareil, un rappel chaque matin vers 8 h (heure de Paris).                                                                        | 1.1     |
+| EF-80 | Activer ou désactiver, par appareil, un rappel chaque matin vers 8 h (heure du Sénégal ; 8 h locales partout avec un réveil horaire).                         | 1.1     |
 | EF-81 | Le rappel résume les échéances du jour, les révisions du jour, les examens et projets du lendemain et les retards ; rien n'est envoyé s'il n'y a rien à dire. | 1.1     |
 | EF-82 | Envoyer une notification d'essai depuis le profil.                                                                                                            | 1.1     |
 
 ## 5. Exigences non fonctionnelles
 
-| Id     | Domaine         | Exigence                                                                                           |
-| ------ | --------------- | -------------------------------------------------------------------------------------------------- |
-| ENF-01 | Sécurité        | Chaque table est protégée par la RLS : un étudiant n'accède qu'à ses propres lignes.               |
-| ENF-02 | Sécurité        | Avec la 2FA activée, la base refuse tout accès tant que le code n'est pas saisi.                   |
-| ENF-03 | Sécurité        | En-têtes de sécurité (CSP, `X-Frame-Options`, `Referrer-Policy`) et redirections limitées au site. |
-| ENF-04 | Confidentialité | Aucune page contenant des données personnelles n'est mise en cache.                                |
-| ENF-05 | Confidentialité | L'étudiant peut supprimer son compte et toutes ses données lui-même.                               |
-| ENF-06 | Mobile          | Interface conçue d'abord pour le téléphone ; installable sur l'écran d'accueil (PWA).              |
-| ENF-07 | Langue          | Interface en français, tutoiement.                                                                 |
-| ENF-08 | Dates           | Les échéances sont stockées en UTC et affichées dans le fuseau horaire de l'étudiant.              |
-| ENF-09 | Accessibilité   | Navigation au clavier, libellés pour les lecteurs d'écran, contrastes suffisants.                  |
-| ENF-10 | Qualité         | Chaque modification passe par une pull request et une CI verte (lint, types, tests, build).        |
+| Id     | Domaine         | Exigence                                                                                                   |
+| ------ | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| ENF-01 | Sécurité        | Chaque table est protégée par la RLS : un étudiant n'accède qu'à ses propres lignes.                       |
+| ENF-02 | Sécurité        | Avec la 2FA activée, la base refuse tout accès tant que le code n'est pas saisi.                           |
+| ENF-03 | Sécurité        | En-têtes de sécurité (CSP, `X-Frame-Options`, `Referrer-Policy`) et redirections limitées au site.         |
+| ENF-04 | Confidentialité | Aucune page contenant des données personnelles n'est mise en cache.                                        |
+| ENF-05 | Confidentialité | L'étudiant peut supprimer son compte et toutes ses données lui-même.                                       |
+| ENF-06 | Mobile          | Interface conçue d'abord pour le téléphone ; installable sur l'écran d'accueil (PWA).                      |
+| ENF-07 | Langue          | Interface en français, tutoiement.                                                                         |
+| ENF-08 | Dates           | Les échéances sont stockées en UTC et affichées dans le fuseau horaire de l'étudiant (Sénégal par défaut). |
+| ENF-09 | Accessibilité   | Navigation au clavier, libellés pour les lecteurs d'écran, contrastes suffisants.                          |
+| ENF-10 | Qualité         | Chaque modification passe par une pull request et une CI verte (lint, types, tests, build).                |
 
 ## 6. Contraintes
 

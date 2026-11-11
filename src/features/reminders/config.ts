@@ -6,5 +6,12 @@
 export const VAPID_PUBLIC_KEY =
   "BHzZGtay67uLEMOptSyjDgsfA7rbFxs69dVm5-iZoAcWklR7njb6obvgYlnj1NDoCaXhrE-GwSbNcNmXDboCyRk";
 
+/**
+ * Heure locale du rappel du matin, dans le fuseau de chaque étudiant. Le réveil (vercel.json)
+ * passe une fois par jour à 8 h UTC, soit 8 h au Sénégal ; avec un réveil toutes les heures,
+ * chacun le recevrait à 8 h chez lui, sans autre changement.
+ */
+export const REMINDER_HOUR = 8;
+
 /** Contact donné aux services de notification en cas de problème. */
 export const VAPID_SUBJECT = "https://campusflow-two-chi.vercel.app";

@@ -92,12 +92,12 @@ sequenceDiagram
     participant P as Service de notification
     participant T as Téléphone
 
-    C->>S: GET chaque jour à 7 h UTC, avec CRON_SECRET
+    C->>S: GET chaque jour à 8 h UTC (8 h au Sénégal), avec CRON_SECRET
     alt Secret absent ou faux
         S-->>C: 401, rien n'est lu
     else Secret correct
         S->>B: Abonnements (tous les comptes)
-        loop Pour chaque étudiant pas encore prévenu aujourd'hui
+        loop Pour chaque étudiant où il est au moins 8 h, pas encore prévenu aujourd'hui
             S->>B: Échéances proches et révisions du jour
             S->>S: buildDigest : rien à dire ? alors pas de message
             S->>P: Notification chiffrée et signée (VAPID)

@@ -50,7 +50,7 @@ facteur MFA.
 
 ## Rappels du matin
 
-Chaque matin (Vercel Cron, `vercel.json`, 7 h UTC ≈ 8 h à Paris), `/api/rappels` envoie à chaque
+Chaque matin (Vercel Cron, `vercel.json`, 8 h UTC = 8 h au Sénégal), `/api/rappels` envoie à chaque
 appareil abonné un résumé : échéances du jour, révisions, examens du lendemain, retards. Rien
 n'est envoyé s'il n'y a rien à dire, et jamais deux fois le même jour.
 
@@ -61,6 +61,11 @@ Variables à définir sur Vercel (Settings > Environment Variables), jamais dans
 | `SUPABASE_SECRET_KEY` | Lire les échéances de tous les abonnés (contourne la RLS).            |
 | `VAPID_PRIVATE_KEY`   | Signer les notifications (clé publique : `src/features/reminders`).   |
 | `CRON_SECRET`         | Mot de passe que Vercel Cron envoie ; sans lui, `/api/rappels` : 401. |
+
+Un appareil n'est prévenu que s'il est au moins 8 h dans **son** fuseau (`REMINDER_HOUR`). Avec
+le réveil quotidien de l'offre gratuite, c'est 8 h au Sénégal, plus tard à l'est, et pas du
+tout à l'ouest (il y fait encore nuit au passage du réveil). Pour des étudiants à l'étranger, passer à un réveil toutes les
+heures (GitHub Actions, ou Vercel Pro) : chacun sera prévenu à 8 h chez lui, sans changer le code.
 
 Sur iPhone, les notifications ne marchent que dans l'app installée (iOS 16.4 ou plus).
 

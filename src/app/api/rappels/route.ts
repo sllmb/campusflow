@@ -1,10 +1,11 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { addDays } from "@/features/assignments/lib/calendar";
-import { buildDigest } from "@/features/reminders/lib/digest";
+import { REMINDER_HOUR } from "@/features/reminders/config";
+import { buildDigest, reminderDue } from "@/features/reminders/lib/digest";
 import { getReminderSecrets, sendPush } from "@/features/reminders/push";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isValidTimeZone, utcToLocalInput } from "@/lib/time";
+import { DEFAULT_TIME_ZONE, isValidTimeZone } from "@/lib/time";
 
 /**
  * Rappel du matin, appelé chaque jour par Vercel Cron (voir vercel.json), qui envoie
@@ -28,7 +29,14 @@ export async function GET(request: Request) {
 
   const admin = createAdminClient(supabaseSecretKey);
   const { data: subscriptions, error } = await admin.from("push_subscriptions").select("*");
-  if (error) return NextResponse.json({ error: "Lecture impossible." }, { status: 500 });
+  if (error) {
+    // Réponse réservée à qui a le secret : on peut y donner la cause (clé invalide…).
+    console.error("Rappels : lecture des abonnements impossible :", error.message);
+    return NextResponse.json(
+      { error: "Lecture impossible.", detail: error.message },
+      { status: 500 },
+    );
+  }
 
   const now = new Date();
   const byUser = new Map<string, typeof subscriptions>();
@@ -38,10 +46,14 @@ export async function GET(request: Request) {
   const stats = { users: 0, sent: 0, removed: 0, failed: 0 };
 
   for (const [userId, devices] of byUser) {
-    const timeZone = isValidTimeZone(devices[0].time_zone) ? devices[0].time_zone : "Europe/Paris";
-    const today = utcToLocalInput(now.toISOString(), timeZone).slice(0, 10);
-    // Déjà prévenu aujourd'hui (le réveil a pu passer deux fois) : on ne renvoie pas.
-    const waiting = devices.filter((device) => device.last_sent_on !== today);
+    const timeZone = isValidTimeZone(devices[0].time_zone)
+      ? devices[0].time_zone
+      : DEFAULT_TIME_ZONE;
+    // Pas encore 8 h chez l'étudiant, ou déjà prévenu aujourd'hui : on passe.
+    const { today } = reminderDue(now, timeZone, null, REMINDER_HOUR);
+    const waiting = devices.filter(
+      (device) => reminderDue(now, timeZone, device.last_sent_on, REMINDER_HOUR).due,
+    );
     if (waiting.length === 0) continue;
     stats.users += 1;
 
