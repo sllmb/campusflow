@@ -18,27 +18,29 @@ export function NavLinksView({ variant, pathname }: { variant: Variant; pathname
   if (variant === "bottom") {
     return (
       <ul className="flex items-center justify-between">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const active = isActive(pathname, href);
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-current={active ? "page" : undefined}
-                aria-label={active ? undefined : label}
-                className={cn(
-                  "flex h-12 items-center justify-center rounded-full transition-colors",
-                  active
-                    ? "gap-2 bg-primary px-4 text-sm font-bold text-ink"
-                    : "w-12 text-background hover:text-primary",
-                )}
-              >
-                <Icon className="size-[22px]" strokeWidth={2.1} aria-hidden />
-                {active && label}
-              </Link>
-            </li>
-          );
-        })}
+        {navItems
+          .filter((item) => !item.desktopOnly)
+          .map(({ href, label, icon: Icon }) => {
+            const active = isActive(pathname, href);
+            return (
+              <li key={href}>
+                <Link
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  aria-label={active ? undefined : label}
+                  className={cn(
+                    "flex h-12 items-center justify-center rounded-full transition-colors",
+                    active
+                      ? "gap-2 bg-primary px-4 text-sm font-bold text-ink"
+                      : "w-12 text-background hover:text-primary",
+                  )}
+                >
+                  <Icon className="size-[22px]" strokeWidth={2.1} aria-hidden />
+                  {active && label}
+                </Link>
+              </li>
+            );
+          })}
       </ul>
     );
   }

@@ -25,6 +25,7 @@ flowchart LR
         uc_notes(["Saisir ses notes<br/>et voir ses moyennes"])
         uc_focus(["Lancer une session<br/>Pomodoro ou deep work"])
         uc_dashboard(["Consulter le tableau de bord"])
+        uc_stats(["Consulter ses statistiques"])
         uc_profil(["Gérer son compte<br/>nom, mot de passe, 2FA, suppression"])
     end
 
@@ -42,6 +43,7 @@ flowchart LR
     etudiant --- uc_notes
     etudiant --- uc_focus
     etudiant --- uc_dashboard
+    etudiant --- uc_stats
     etudiant --- uc_profil
 ```
 
@@ -88,6 +90,20 @@ Un visiteur devient étudiant en se connectant.
 - **Variantes** :
   - Vue semaine : les 7 jours sont listés, chacun avec un bouton « + ».
   - Aucune matière : le calendrier invite à en créer une d'abord.
+
+### Consulter ses statistiques (EF-60 à EF-64)
+
+- **Acteur** : étudiant.
+- **Scénario nominal** :
+  1. Depuis l'accueil, l'étudiant touche « Mes statistiques » (sur ordinateur : menu latéral).
+  2. Il voit son temps de concentration des 7 derniers jours, jour par jour, et l'écart avec
+     les 7 jours d'avant.
+  3. Il choisit « 30 jours » pour voir le mois.
+  4. Il consulte la répartition par matière, sa série de jours d'affilée, l'évolution de sa
+     moyenne et ses devoirs rendus à temps.
+- **Variantes** :
+  - Aucune session : « Pas encore de session sur cette période » et un lien vers le Pomodoro.
+  - Notes à une seule date : la moyenne s'affiche, la courbe apparaît dès la deuxième date.
 
 ### Se connecter avec la double authentification (EF-03, EF-05)
 

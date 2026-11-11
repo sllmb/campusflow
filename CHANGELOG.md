@@ -11,6 +11,9 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 - **Calendrier des échéances** (Devoirs → Calendrier) : vue mois et vue semaine, couleurs des
   matières, ajout rapide d'une échéance sur un jour choisi. Les jours suivent le fuseau horaire
   de l'étudiant.
+- **Statistiques** (depuis l'accueil, ou le menu sur ordinateur) : temps de concentration par
+  jour sur 7 ou 30 jours comparé à la période d'avant, répartition par matière, série de jours
+  d'affilée, évolution de la moyenne du semestre, devoirs rendus à temps.
 - **Deep work de durée libre** : de 1 h à 10 h, par quarts d'heure, avec des raccourcis
   (1 h, 1 h 30, 2 h, 3 h, 4 h, 6 h, 10 h). La dernière durée choisie est proposée à nouveau.
 
