@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { DEEP_WORK, POMODORO_MINUTES } from "./lib/timer";
 
 /** Une session de moins d'une minute n'est pas enregistrée. */
 const MIN_SECONDS = 60;
@@ -10,13 +11,20 @@ const MIN_SECONDS = 60;
 const sessionSchema = z
   .object({
     mode: z.enum(["pomodoro", "deep_work"]),
-    plannedMinutes: z.number().int().min(1).max(480),
+    plannedMinutes: z.number().int().min(1).max(DEEP_WORK.max),
     subjectId: z.uuid().nullable(),
     startedAt: z.number().int().positive(),
     endedAt: z.number().int().positive(),
     focusedSeconds: z.number().int().min(0),
     completed: z.boolean(),
   })
+  .refine(
+    (s) =>
+      s.mode === "pomodoro"
+        ? s.plannedMinutes === POMODORO_MINUTES
+        : s.plannedMinutes >= DEEP_WORK.min && s.plannedMinutes % DEEP_WORK.step === 0,
+    "Durée prévue invalide.",
+  )
   .refine((s) => s.endedAt >= s.startedAt, "Fin avant le début.")
   .refine((s) => s.focusedSeconds <= s.plannedMinutes * 60 + 5, "Plus long que prévu.")
   .refine(

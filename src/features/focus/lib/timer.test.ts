@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  FOCUS_PRESETS,
+  DEEP_WORK,
   breakMinutesAfter,
+  clampDeepWork,
+  formatMinutes,
   focusedMs,
   pause,
   remainingMs,
@@ -15,12 +17,30 @@ const MIN = 60_000;
 const T0 = Date.UTC(2026, 10, 12, 8, 0); // 12 nov. 2026, 08:00 UTC
 
 describe("préréglages", () => {
-  it("Pomodoro 25 min, deep work 2 h et 4 h", () => {
-    expect(FOCUS_PRESETS.map((p) => [p.id, p.mode, p.minutes])).toEqual([
-      ["pomodoro", "pomodoro", 25],
-      ["deep2", "deep_work", 120],
-      ["deep4", "deep_work", 240],
-    ]);
+  it("deep work de 1 h à 10 h, par quarts d'heure", () => {
+    expect(DEEP_WORK).toMatchObject({ min: 60, max: 600, step: 15 });
+    expect(clampDeepWork(90)).toBe(90);
+    expect(clampDeepWork(600)).toBe(600);
+    expect(clampDeepWork(97)).toBe(90); // arrondi au quart d'heure le plus proche
+    expect(clampDeepWork(98)).toBe(105);
+    expect(clampDeepWork(30)).toBe(60); // moins d'1 h : ramené à 1 h
+    expect(clampDeepWork(900)).toBe(600); // plus de 10 h : ramené à 10 h
+    expect(clampDeepWork(Number.NaN)).toBe(120);
+  });
+  it("écrit les durées en heures et minutes", () => {
+    expect(formatMinutes(25)).toBe("25 min");
+    expect(formatMinutes(60)).toBe("1 h");
+    expect(formatMinutes(90)).toBe("1 h 30");
+    expect(formatMinutes(600)).toBe("10 h");
+  });
+  it("une session de 10 h se termine et s'enregistre en entier", () => {
+    const s = start({ mode: "deep_work", minutes: 600, subjectId: null }, T0);
+    const { finished } = tick(s, T0 + 600 * MIN);
+    expect(finished).toMatchObject({
+      plannedMinutes: 600,
+      focusedSeconds: 36_000,
+      completed: true,
+    });
   });
   it("pause de 5 min après un Pomodoro, 15 min après le 4e", () => {
     expect(breakMinutesAfter(1)).toBe(5);

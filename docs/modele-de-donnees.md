@@ -154,7 +154,7 @@ une requête contourne l'application.
 | `subjects`       | Couleur de 1 à 8 ; coefficient entre 0 (exclu) et 100.                         |
 | `grades`         | Note ≥ 0 et ≤ barème ; barème entre 0 (exclu) et 1000 ; poids entre 0 et 100.  |
 | `assignments`    | Type `homework`, `project` ou `exam` ; statut `todo`, `in_progress` ou `done`. |
-| `focus_sessions` | Mode `pomodoro` ou `deep_work` ; durée prévue de 1 à 480 minutes.              |
+| `focus_sessions` | Mode `pomodoro` ou `deep_work` ; durée prévue de 1 à 600 minutes (10 h).       |
 
 ### Clés étrangères composites `(id, user_id)`
 
@@ -196,3 +196,4 @@ rattacher une UE au semestre d'un autre étudiant, même en connaissant son iden
 | `20261112090000_create_focus_sessions`           | Sessions Pomodoro et deep work.             |
 | `20261113090000_enforce_mfa`                     | Double authentification exigée par la base. |
 | `20261114090000_delete_own_account`              | Suppression de son propre compte.           |
+| `20261115090000_longer_deep_work`                | Deep work jusqu'à 10 h.                     |

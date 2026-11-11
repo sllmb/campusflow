@@ -72,11 +72,11 @@ Le seuil de 10 s'applique à la moyenne arrondie au centième, celle qui est aff
 
 ### Concentration
 
-| Id    | Exigence                                                           | Version |
-| ----- | ------------------------------------------------------------------ | ------- |
-| EF-40 | Lancer un Pomodoro (travail et pauses en alternance).              | 0.1     |
-| EF-41 | Lancer une session de deep work continue de 2 h ou 4 h.            | 0.1     |
-| EF-42 | Rattacher une session à une matière (facultatif) et l'enregistrer. | 0.1     |
+| Id    | Exigence                                                                    | Version |
+| ----- | --------------------------------------------------------------------------- | ------- |
+| EF-40 | Lancer un Pomodoro (travail et pauses en alternance).                       | 0.1     |
+| EF-41 | Lancer une session de deep work continue, de 1 h à 10 h par quarts d'heure. | 1.1     |
+| EF-42 | Rattacher une session à une matière (facultatif) et l'enregistrer.          | 0.1     |
 
 ### Tableau de bord
 

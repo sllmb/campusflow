@@ -1,6 +1,6 @@
 "use client";
 
-import { Pause, Play, SkipForward, Square } from "lucide-react";
+import { Minus, Pause, Play, Plus, SkipForward, Square } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -10,9 +10,13 @@ import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { saveFocusSession } from "../actions";
 import {
-  FOCUS_PRESETS,
+  DEEP_WORK,
+  DEEP_WORK_SHORTCUTS,
   IDLE,
+  POMODORO_MINUTES,
+  clampDeepWork,
   focusedMs,
+  formatMinutes,
   pause,
   remainingMs,
   resume,
@@ -20,11 +24,29 @@ import {
   stop,
   tick,
   type FinishedSession,
-  type PresetId,
+  type FocusMode,
   type TimerState,
 } from "../lib/timer";
 
 const STORAGE_KEY = "campusflow:focus-timer";
+/** Dernière durée de deep work choisie, proposée à nouveau la fois suivante. */
+const DEEP_WORK_KEY = "campusflow:deep-work-minutes";
+
+function loadDeepWork() {
+  try {
+    return clampDeepWork(Number(window.localStorage.getItem(DEEP_WORK_KEY) ?? DEEP_WORK.default));
+  } catch {
+    return DEEP_WORK.default;
+  }
+}
+
+function persistDeepWork(minutes: number) {
+  try {
+    window.localStorage.setItem(DEEP_WORK_KEY, String(minutes));
+  } catch {
+    // Stockage indisponible : la durée revient simplement à 2 h la prochaine fois.
+  }
+}
 
 function load(): TimerState | null {
   try {
@@ -89,11 +111,9 @@ export function FocusTimer({ groups, pomodorosToday }: FocusTimerProps) {
   const [initial] = useState(() => load());
   const [state, setState] = useState<TimerState>(initial ?? IDLE);
   const [now, setNow] = useState(() => Date.now());
-  const [preset, setPreset] = useState<PresetId>(
-    () =>
-      FOCUS_PRESETS.find(
-        (p) => initial && p.mode === initial.mode && p.minutes === initial.plannedMinutes,
-      )?.id ?? "pomodoro",
+  const [mode, setMode] = useState<FocusMode>(initial?.mode ?? "pomodoro");
+  const [deepMinutes, setDeepMinutes] = useState(() =>
+    initial?.mode === "deep_work" ? clampDeepWork(initial.plannedMinutes) : loadDeepWork(),
   );
   const [subjectId, setSubjectId] = useState(initial?.subjectId ?? "");
   const [message, setMessage] = useState<string | null>(null);
@@ -172,9 +192,9 @@ export function FocusTimer({ groups, pomodorosToday }: FocusTimerProps) {
     document.title = `${formatClock(remainingMs(state, now))} · ${label}`;
   }, [state, now]);
 
-  const presetInfo = FOCUS_PRESETS.find((p) => p.id === preset)!;
+  const minutes = mode === "pomodoro" ? POMODORO_MINUTES : deepMinutes;
   const idle = state.status === "idle";
-  const remaining = idle ? presetInfo.minutes * 60_000 : remainingMs(state, now);
+  const remaining = idle ? minutes * 60_000 : remainingMs(state, now);
   const progress = idle || state.durationMs === 0 ? 0 : 1 - remaining / state.durationMs;
   const onBreak = state.phase === "break" && !idle;
 
@@ -182,12 +202,8 @@ export function FocusTimer({ groups, pomodorosToday }: FocusTimerProps) {
     setMessage(null);
     const t = Date.now();
     setNow(t);
-    update(
-      start(
-        { mode: presetInfo.mode, minutes: presetInfo.minutes, subjectId: subjectId || null },
-        t,
-      ),
-    );
+    if (mode === "deep_work") persistDeepWork(deepMinutes);
+    update(start({ mode, minutes, subjectId: subjectId || null }, t));
   };
 
   const onStop = () => {
@@ -207,6 +223,8 @@ export function FocusTimer({ groups, pomodorosToday }: FocusTimerProps) {
       subjectId: state.subjectId,
     });
   };
+
+  const chooseDeepWork = (value: number) => setDeepMinutes(clampDeepWork(value));
 
   // Anneau de progression.
   const R = 120;
@@ -326,26 +344,93 @@ export function FocusTimer({ groups, pomodorosToday }: FocusTimerProps) {
         <fieldset disabled={!idle} className="disabled:opacity-60">
           <legend className="text-sm font-bold">Type de session</legend>
           <div className="mt-2 grid gap-2">
-            {FOCUS_PRESETS.map((p) => (
-              <label key={p.id} className="cursor-pointer">
+            {(
+              [
+                { value: "pomodoro", label: "Pomodoro", detail: formatMinutes(POMODORO_MINUTES) },
+                { value: "deep_work", label: "Deep work", detail: formatMinutes(deepMinutes) },
+              ] as const
+            ).map((option) => (
+              <label key={option.value} className="cursor-pointer">
                 <input
                   type="radio"
-                  name="preset"
-                  value={p.id}
-                  checked={preset === p.id}
-                  onChange={() => setPreset(p.id)}
+                  name="mode"
+                  value={option.value}
+                  checked={mode === option.value}
+                  onChange={() => setMode(option.value)}
                   className="peer sr-only"
                 />
                 <span className="flex items-center justify-between rounded-2xl border-2 bg-background px-4 py-3 font-bold peer-checked:bg-primary peer-checked:shadow-hard-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue">
-                  {p.label}
-                  <span className="text-sm">{p.detail}</span>
+                  {option.label}
+                  <span className="text-sm">{option.detail}</span>
                 </span>
               </label>
             ))}
           </div>
+
+          {mode === "deep_work" && (
+            <div
+              role="group"
+              aria-labelledby="deep-work-duration"
+              className="mt-4 rounded-2xl border-2 border-dashed p-3"
+            >
+              <p id="deep-work-duration" className="text-sm font-bold">
+                Durée du deep work
+              </p>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Retirer 15 minutes"
+                  disabled={deepMinutes <= DEEP_WORK.min}
+                  onClick={() => chooseDeepWork(deepMinutes - DEEP_WORK.step)}
+                >
+                  <Minus strokeWidth={2.6} />
+                </Button>
+                <output
+                  aria-live="polite"
+                  className="text-3xl font-extrabold tracking-tight tabular-nums"
+                >
+                  {formatMinutes(deepMinutes)}
+                </output>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Ajouter 15 minutes"
+                  disabled={deepMinutes >= DEEP_WORK.max}
+                  onClick={() => chooseDeepWork(deepMinutes + DEEP_WORK.step)}
+                >
+                  <Plus strokeWidth={2.6} />
+                </Button>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {DEEP_WORK_SHORTCUTS.map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={deepMinutes === value}
+                    onClick={() => chooseDeepWork(value)}
+                    className={cn(
+                      "inline-flex h-9 cursor-pointer items-center rounded-full border-2 px-3 text-sm font-bold",
+                      deepMinutes === value
+                        ? "bg-ink text-background"
+                        : "bg-background hover:bg-muted",
+                    )}
+                  >
+                    {formatMinutes(value)}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-2 text-[13px] text-ink-soft">
+                De {formatMinutes(DEEP_WORK.min)} à {formatMinutes(DEEP_WORK.max)}, par quarts
+                d&apos;heure.
+              </p>
+            </div>
+          )}
           <p className="mt-2 text-[13px] text-ink-soft">
             Pomodoro : 25 min puis 5 min de pause (15 min tous les 4). Deep work : une session
-            continue, que tu mets en pause toi-même.
+            continue de la durée de ton choix, que tu mets en pause toi-même.
           </p>
         </fieldset>
 

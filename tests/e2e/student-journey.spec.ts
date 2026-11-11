@@ -124,16 +124,26 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
     await expect(page.getByText("Semestre validé")).toBeVisible();
   });
 
-  await test.step("deep work de 2 h, chronométré avec une horloge simulée", async () => {
+  await test.step("deep work de durée libre (2 h), chronométré avec une horloge simulée", async () => {
     // Horloge avancée de 2 h : la session se termine juste avant « maintenant » côté serveur.
     await page.clock.install({ time: Date.now() - 121 * 60_000 });
     await page.goto("/pomodoro", { waitUntil: "networkidle" });
-    await page.getByRole("radio", { name: /Deep work\s*2 h/ }).check({ force: true });
+    await page.getByRole("radio", { name: /Deep work/ }).check({ force: true });
+    // Durée libre : + et − par quarts d'heure, raccourcis en un geste.
+    const duration = page.getByRole("group", { name: "Durée du deep work" });
+    await duration.getByRole("button", { name: "Ajouter 15 minutes" }).click();
+    await expect(duration.locator("output")).toHaveText("2 h 15");
+    await duration.getByRole("button", { name: "6 h", exact: true }).click();
+    await expect(duration.locator("output")).toHaveText("6 h");
+    await duration.getByRole("button", { name: "2 h", exact: true }).click();
+    await expect(page.getByRole("radio", { name: /Deep work\s*2 h/ })).toBeChecked();
     await page.getByLabel("Matière (facultatif)").selectOption({ label: "Chimie E2E" });
     await page.getByRole("button", { name: "Démarrer" }).click();
     await expect(page.getByRole("timer")).toHaveText(/^1:59:5\d$/);
     await page.clock.fastForward("02:00:05");
-    await expect(page.getByRole("status")).toHaveText("Session enregistrée : 2 h en Chimie E2E.");
+    await expect(page.getByRole("status").filter({ hasText: "Session" })).toHaveText(
+      "Session enregistrée : 2 h en Chimie E2E.",
+    );
   });
 
   await test.step("l'accueil reflète tout", async () => {

@@ -8,19 +8,29 @@
 
 export type FocusMode = "pomodoro" | "deep_work";
 
-export const FOCUS_PRESETS = [
-  { id: "pomodoro", mode: "pomodoro", minutes: 25, label: "Pomodoro", detail: "25 min" },
-  { id: "deep2", mode: "deep_work", minutes: 120, label: "Deep work", detail: "2 h" },
-  { id: "deep4", mode: "deep_work", minutes: 240, label: "Deep work", detail: "4 h" },
-] as const satisfies readonly {
-  id: string;
-  mode: FocusMode;
-  minutes: number;
-  label: string;
-  detail: string;
-}[];
+/** Pomodoro : durée fixe. */
+export const POMODORO_MINUTES = 25;
 
-export type PresetId = (typeof FOCUS_PRESETS)[number]["id"];
+/** Deep work : durée choisie par l'étudiant, de 1 h à 10 h, par pas de 15 min. */
+export const DEEP_WORK = { min: 60, max: 600, step: 15, default: 120 } as const;
+
+/** Durées proposées en un geste ; les autres se règlent avec − et +. */
+export const DEEP_WORK_SHORTCUTS = [60, 90, 120, 180, 240, 360, 600] as const;
+
+/** Ramène une durée de deep work dans les limites, au quart d'heure le plus proche. */
+export function clampDeepWork(minutes: number) {
+  if (!Number.isFinite(minutes)) return DEEP_WORK.default;
+  const rounded = Math.round(minutes / DEEP_WORK.step) * DEEP_WORK.step;
+  return Math.min(DEEP_WORK.max, Math.max(DEEP_WORK.min, rounded));
+}
+
+/** 90 → « 1 h 30 », 120 → « 2 h », 25 → « 25 min ». */
+export function formatMinutes(minutes: number) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  return m === 0 ? `${h} h` : `${h} h ${String(m).padStart(2, "0")}`;
+}
 
 /** Pause après le n-ième Pomodoro du jour : 5 min, et 15 min tous les 4. */
 export function breakMinutesAfter(pomodoroCount: number) {

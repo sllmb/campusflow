@@ -96,7 +96,7 @@ export default function PomodoroPage() {
     <>
       <PageHeader
         title="Pomodoro"
-        description="Pomodoro de 25 min ou deep work de 2 h et 4 h, par matière."
+        description="Pomodoro de 25 min ou deep work de 1 h à 10 h, par matière."
       />
       <Suspense fallback={<FocusSkeleton />}>
         <FocusContent />
