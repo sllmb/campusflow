@@ -92,6 +92,8 @@ cette page (paramètre `next`, contrôlé par `safeNext`).
 - `src/features/` : le code métier, regroupé par domaine (matières, devoirs, notes, Pomodoro).
 - `src/lib/` : utilitaires partagés (client Supabase, variables d'environnement).
 - `supabase/migrations/` : schéma SQL versionné, tables et règles RLS.
+- `docs/` : cahier des charges, modèle de données, cas d'utilisation et séquences
+  ([sommaire](docs/README.md)).
 
 ## Feuille de route
 
