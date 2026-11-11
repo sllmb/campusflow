@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+# Droits minimaux : la vérification ne fait que lire le code.
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true

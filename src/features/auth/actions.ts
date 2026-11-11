@@ -1,8 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { getRequestOrigin } from "@/lib/request-origin";
 import { createClient } from "@/lib/supabase/server";
 import { authErrorMessage, logAuthError } from "./errors";
 import { newPasswordSchema, resetRequestSchema, signInSchema, signUpSchema } from "./schemas";
@@ -55,7 +55,7 @@ export async function signUp(
     return { fieldErrors: z.flattenError(parsed.error).fieldErrors, values };
   }
 
-  const origin = (await headers()).get("origin") ?? "";
+  const origin = await getRequestOrigin();
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
@@ -95,7 +95,7 @@ export async function requestPasswordReset(
   const parsed = resetRequestSchema.safeParse(values);
   if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors, values };
 
-  const origin = (await headers()).get("origin") ?? "";
+  const origin = await getRequestOrigin();
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${origin}/auth/confirm?next=/nouveau-mot-de-passe`,
