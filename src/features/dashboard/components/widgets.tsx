@@ -1,4 +1,4 @@
-import { ArrowRight, Timer } from "lucide-react";
+import { ArrowRight, ChartColumn, Timer } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardLabel, CardTitle, CardValue } from "@/components/ui/card";
@@ -235,5 +235,25 @@ export function SubjectsWidget({
         Voir mes notes <ArrowRight className="size-4" strokeWidth={2.6} aria-hidden />
       </Link>
     </Card>
+  );
+}
+
+/** Lien vers les statistiques (sur téléphone, elles ne sont pas dans la barre du bas). */
+export function StatsLinkWidget() {
+  return (
+    <Link href="/statistiques" className={cn(widgetLink, "col-span-2 lg:col-span-4")}>
+      <Card className="flex items-center gap-4 p-4">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl border-2 bg-orange">
+          <ChartColumn className="size-5" strokeWidth={2.4} aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[15px] font-extrabold">Mes statistiques</span>
+          <span className="block truncate text-[13px] text-ink-soft">
+            Temps de travail, régularité, évolution de la moyenne
+          </span>
+        </span>
+        <ArrowRight className="size-5 shrink-0" strokeWidth={2.6} aria-hidden />
+      </Card>
+    </Link>
   );
 }

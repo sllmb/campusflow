@@ -84,6 +84,18 @@ Le seuil de 10 s'applique à la moyenne arrondie au centième, celle qui est aff
 | ----- | ------------------------------------------------------------------------------------------- | ------- |
 | EF-50 | Afficher le prochain rendu, la moyenne, le temps de concentration du jour et les échéances. | 0.1     |
 
+### Statistiques
+
+| Id    | Exigence                                                                                  | Version |
+| ----- | ----------------------------------------------------------------------------------------- | ------- |
+| EF-60 | Voir son temps de concentration par jour sur 7 ou 30 jours, comparé à la période d'avant. | 1.1     |
+| EF-61 | Voir la répartition de ce temps par matière.                                              | 1.1     |
+| EF-62 | Voir sa série de jours d'affilée avec au moins une session.                               | 1.1     |
+| EF-63 | Voir l'évolution de la moyenne du semestre, jour de notes après jour de notes.            | 1.1     |
+| EF-64 | Voir la part des devoirs terminés avant leur échéance.                                    | 1.1     |
+
+Une session compte pour le jour où elle a commencé, dans le fuseau de l'étudiant.
+
 ## 5. Exigences non fonctionnelles
 
 | Id     | Domaine         | Exigence                                                                                           |
@@ -128,7 +140,7 @@ Le détail des tables est dans le [modèle de données](modele-de-donnees.md).
 ## 9. Évolutions prévues (v1.1)
 
 1. ~~**Calendrier**~~ : fait (EF-23).
-2. **Statistiques** : temps de travail et évolution des moyennes.
+2. ~~**Statistiques**~~ : fait (EF-60 à EF-64).
 3. **Planning de révisions.**
 4. **Rappels d'échéances** par notification.
 

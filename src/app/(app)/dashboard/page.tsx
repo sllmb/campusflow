@@ -11,6 +11,7 @@ import {
   AverageWidget,
   FocusWidget,
   NextDueWidget,
+  StatsLinkWidget,
   SubjectsWidget,
   UpcomingWidget,
 } from "@/features/dashboard/components/widgets";
@@ -66,6 +67,7 @@ async function DashboardWidgets() {
         units={overview.units}
         result={overview.result}
       />
+      <StatsLinkWidget />
     </div>
   );
 }

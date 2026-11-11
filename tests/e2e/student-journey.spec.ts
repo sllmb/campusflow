@@ -153,6 +153,20 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
     await expect(page.getByRole("link", { name: /Pomodoro .*aujourd/ })).toContainText(/\d+ h/);
   });
 
+  await test.step("statistiques : temps par matière et régularité", async () => {
+    await page.goto("/dashboard");
+    await page.getByRole("link", { name: /Mes statistiques/ }).click();
+    await expect(page).toHaveURL(/\/statistiques$/);
+    await expect(page.getByRole("heading", { name: "Temps de concentration" })).toBeVisible();
+    // Le deep work de 2 h en Chimie E2E apparaît dans la répartition par matière.
+    const chimie = page.getByRole("listitem").filter({ hasText: "Chimie E2E" });
+    await expect(chimie).toContainText("2 h");
+    await expect(page.getByText(/jours? d'affilée avec au moins une session/)).toBeVisible();
+    await page.getByRole("link", { name: "30 jours" }).click();
+    await expect(page).toHaveURL(/periode=30/);
+    await expect(page.getByText("Les 30 derniers jours")).toBeVisible();
+  });
+
   await test.step("nettoyage : supprimer la session et le semestre de test", async () => {
     await page.goto("/pomodoro");
     await settle(page);
