@@ -10,6 +10,19 @@ test("en-têtes de sécurité sur les pages publiques", async ({ request }) => {
   expect(headers["content-security-policy"]).toContain("object-src 'none'");
 });
 
+test("le rappel du matin refuse tout appel sans le secret de Vercel Cron", async ({ request }) => {
+  const attempts: Record<string, string>[] = [
+    {},
+    { authorization: "Bearer mauvais-secret" },
+    { authorization: "" },
+  ];
+  for (const headers of attempts) {
+    const response = await request.get("/api/rappels", { headers, maxRedirects: 0 });
+    expect(response.status()).toBe(401);
+    expect(await response.json()).toEqual({ error: "Non autorisé." });
+  }
+});
+
 test.describe("pages personnelles", () => {
   test.skip(!process.env.E2E_EMAIL, "E2E_EMAIL et E2E_PASSWORD non définis");
 

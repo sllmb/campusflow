@@ -81,6 +81,39 @@ sequenceDiagram
 Fichiers : `src/features/auth/actions.ts`, `src/features/two-factor/actions.ts`,
 `src/lib/supabase/proxy.ts`, `supabase/migrations/20261113090000_enforce_mfa.sql`.
 
+## Rappel du matin
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Vercel Cron
+    participant S as Serveur (/api/rappels)
+    participant B as Base (clé secrète)
+    participant P as Service de notification
+    participant T as Téléphone
+
+    C->>S: GET chaque jour à 7 h UTC, avec CRON_SECRET
+    alt Secret absent ou faux
+        S-->>C: 401, rien n'est lu
+    else Secret correct
+        S->>B: Abonnements (tous les comptes)
+        loop Pour chaque étudiant pas encore prévenu aujourd'hui
+            S->>B: Échéances proches et révisions du jour
+            S->>S: buildDigest : rien à dire ? alors pas de message
+            S->>P: Notification chiffrée et signée (VAPID)
+            P->>T: Affichée, même app fermée
+            alt Abonnement expiré (404 ou 410)
+                S->>B: Supprime l'abonnement
+            else Envoyé
+                S->>B: last_sent_on = aujourd'hui
+            end
+        end
+    end
+```
+
+Fichiers : `vercel.json`, `src/app/api/rappels/route.ts`, `src/features/reminders/`,
+`public/sw.js` (affichage et ouverture de la notification).
+
 ## Confirmer son inscription
 
 ```mermaid

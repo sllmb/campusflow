@@ -70,6 +70,23 @@ test.describe("connecté", () => {
     expect(personal).toEqual([]);
   });
 
+  test("le profil propose les rappels du matin, ou explique qu'ils sont bloqués", async ({
+    page,
+  }) => {
+    // Le navigateur des tests bloque les notifications par défaut.
+    await page.goto("/profil", { waitUntil: "networkidle" });
+    await expect(page.getByRole("heading", { name: "Rappels du matin" })).toBeVisible();
+    await expect(page.getByText("Les notifications sont bloquées pour CampusFlow.")).toBeVisible();
+
+    // Un téléphone qui n'a encore rien décidé (« default ») : le bouton d'activation apparaît.
+    // Le Chromium sans écran répond toujours « denied » : on simule la première visite.
+    await page.addInitScript(() =>
+      Object.defineProperty(Notification, "permission", { get: () => "default" }),
+    );
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.getByRole("button", { name: "Activer les rappels" })).toBeVisible();
+  });
+
   test("sur iPhone, l'accueil explique comment installer l'app, et l'aide se masque", async ({
     page,
   }) => {

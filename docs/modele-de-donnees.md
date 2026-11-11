@@ -38,6 +38,7 @@ erDiagram
     DEVOIR ||--o{ CRENEAU_REVISION : "se prépare en"
     MATIERE |o--o{ SESSION_CONCENTRATION : "concerne"
     UTILISATEUR ||--o{ SESSION_CONCENTRATION : "réalise"
+    UTILISATEUR ||--o{ ABONNEMENT_RAPPEL : "reçoit sur"
 ```
 
 Une session de concentration peut ne concerner aucune matière (`|o`) : on peut lancer un
@@ -53,6 +54,7 @@ presque toutes les tables et ne sont pas répétées ici.
 erDiagram
     auth_users ||--|| profiles : "id"
     auth_users ||--o{ semesters : "user_id"
+    auth_users ||--o{ push_subscriptions : "user_id"
     semesters ||--o{ teaching_units : "semester_id"
     teaching_units ||--o{ subjects : "unit_id"
     subjects ||--o{ grades : "subject_id"
@@ -116,6 +118,15 @@ erDiagram
         text priority
         timestamptz completed_at
     }
+    push_subscriptions {
+        uuid id PK
+        uuid user_id FK
+        text endpoint UK
+        text p256dh
+        text auth
+        text time_zone
+        date last_sent_on
+    }
     revision_sessions {
         uuid id PK
         uuid user_id FK
@@ -149,6 +160,7 @@ Notation : la clé primaire est en **gras**, les clés étrangères sont précé
 - **grades** (**id**, #user_id, #subject_id, title, score, out_of, weight, graded_on)
 - **assignments** (**id**, #user_id, #subject_id, kind, title, notes, due_at, status, priority,
   completed_at)
+- **push_subscriptions** (**id**, #user_id, endpoint, p256dh, auth, time_zone, last_sent_on)
 - **revision_sessions** (**id**, #user_id, #assignment_id, planned_on, minutes, done)
 - **focus_sessions** (**id**, #user_id, #subject_id, mode, planned_minutes, started_at, ended_at,
   focused_seconds, completed)
@@ -160,15 +172,16 @@ une requête contourne l'application.
 
 ### Contraintes de valeurs (`check`)
 
-| Table               | Règle                                                                          |
-| ------------------- | ------------------------------------------------------------------------------ |
-| `semesters`         | Nom de 1 à 60 caractères ; la date de fin est après la date de début.          |
-| `teaching_units`    | Crédits ECTS entre 0 (exclu) et 60.                                            |
-| `subjects`          | Couleur de 1 à 8 ; coefficient entre 0 (exclu) et 100.                         |
-| `grades`            | Note ≥ 0 et ≤ barème ; barème entre 0 (exclu) et 1000 ; poids entre 0 et 100.  |
-| `assignments`       | Type `homework`, `project` ou `exam` ; statut `todo`, `in_progress` ou `done`. |
-| `revision_sessions` | Durée de 15 à 600 minutes, multiple de 15.                                     |
-| `focus_sessions`    | Mode `pomodoro` ou `deep_work` ; durée prévue de 1 à 600 minutes (10 h).       |
+| Table                | Règle                                                                          |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `semesters`          | Nom de 1 à 60 caractères ; la date de fin est après la date de début.          |
+| `teaching_units`     | Crédits ECTS entre 0 (exclu) et 60.                                            |
+| `subjects`           | Couleur de 1 à 8 ; coefficient entre 0 (exclu) et 100.                         |
+| `grades`             | Note ≥ 0 et ≤ barème ; barème entre 0 (exclu) et 1000 ; poids entre 0 et 100.  |
+| `assignments`        | Type `homework`, `project` ou `exam` ; statut `todo`, `in_progress` ou `done`. |
+| `push_subscriptions` | Adresse `https://` unique (un appareil = un abonnement), tailles limitées.     |
+| `revision_sessions`  | Durée de 15 à 600 minutes, multiple de 15.                                     |
+| `focus_sessions`     | Mode `pomodoro` ou `deep_work` ; durée prévue de 1 à 600 minutes (10 h).       |
 
 ### Clés étrangères composites `(id, user_id)`
 
@@ -197,6 +210,10 @@ rattacher une UE au semestre d'un autre étudiant, même en connaissant son iden
 - **Double authentification** : des politiques _restrictives_ s'ajoutent aux précédentes. Pour
   un compte qui a activé la 2FA, une session ouverte avec le seul mot de passe n'a accès à rien
   tant que le code n'a pas été saisi (`private.mfa_satisfied()`).
+- `push_subscriptions` : chacun lit et supprime ses abonnements ; l'ajout passe par la fonction
+  `save_push_subscription` (SECURITY DEFINER, connexion et code 2FA exigés), qui retire
+  l'abonnement d'un autre compte sur le même appareil. Le rappel du matin (clé secrète) note
+  `last_sent_on` pour ne jamais envoyer deux fois le même jour.
 - Les sessions de concentration ne peuvent pas être modifiées après coup : il n'existe pas de
   politique `update` sur `focus_sessions`.
 
@@ -213,3 +230,4 @@ rattacher une UE au semestre d'un autre étudiant, même en connaissant son iden
 | `20261114090000_delete_own_account`              | Suppression de son propre compte.           |
 | `20261115090000_longer_deep_work`                | Deep work jusqu'à 10 h.                     |
 | `20261116090000_create_revision_sessions`        | Créneaux de révision.                       |
+| `20261117090000_create_push_subscriptions`       | Abonnements aux rappels du matin.           |

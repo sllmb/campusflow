@@ -11,6 +11,7 @@ flowchart LR
     visiteur(["👤 Visiteur"])
     etudiant(["👤 Étudiant"])
     mail(["✉️ Service e-mail"])
+    push(["🔔 Service de notification<br/>Apple, Google"])
 
     subgraph campusflow["CampusFlow"]
         direction TB
@@ -28,6 +29,7 @@ flowchart LR
         uc_dashboard(["Consulter le tableau de bord"])
         uc_stats(["Consulter ses statistiques"])
         uc_profil(["Gérer son compte<br/>nom, mot de passe, 2FA, suppression"])
+        uc_rappels(["Recevoir un rappel<br/>chaque matin"])
     end
 
     visiteur --- uc_accueil
@@ -47,6 +49,8 @@ flowchart LR
     etudiant --- uc_dashboard
     etudiant --- uc_stats
     etudiant --- uc_profil
+    etudiant --- uc_rappels
+    uc_rappels --- push
 ```
 
 Un visiteur devient étudiant en se connectant.
@@ -121,6 +125,18 @@ Un visiteur devient étudiant en se connectant.
 - **Variantes** :
   - Aucune session : « Pas encore de session sur cette période » et un lien vers le Pomodoro.
   - Notes à une seule date : la moyenne s'affiche, la courbe apparaît dès la deuxième date.
+
+### Recevoir un rappel chaque matin (EF-80 à EF-82)
+
+- **Acteur** : étudiant, avec CampusFlow installée sur l'écran d'accueil (obligatoire sur iPhone).
+- **Scénario nominal** :
+  1. Dans Profil, il touche « Activer les rappels » et autorise les notifications.
+  2. Il touche « Envoyer un essai » : une notification arrive.
+  3. Chaque matin vers 8 h, il reçoit le résumé de sa journée ; le toucher ouvre l'accueil.
+- **Variantes** :
+  - Safari sur iPhone, app non installée : la carte explique comment l'installer.
+  - Notifications bloquées : la carte explique où les autoriser.
+  - Rien à faire aujourd'hui ni demain : aucune notification.
 
 ### Se connecter avec la double authentification (EF-03, EF-05)
 

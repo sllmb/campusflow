@@ -12,6 +12,8 @@ const PUBLIC_PATHS = [
   "/confidentialite",
   "/offline",
   "/mot-de-passe-oublie",
+  // Rappel du matin : appelé par Vercel Cron, protégé par son propre secret (CRON_SECRET).
+  "/api/rappels",
 ];
 /** Pages réservées aux visiteurs non connectés (un utilisateur connecté est renvoyé à l'accueil). */
 const GUEST_ONLY_PATHS = ["/login", "/signup"];

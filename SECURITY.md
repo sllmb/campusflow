@@ -13,7 +13,10 @@ reproduire le problème. Une réponse est donnée sous 7 jours.
   rattachement à la ligne d'un autre compte, contraintes `CHECK` sur toutes les valeurs.
 - **Double authentification** facultative ; politiques RLS restrictives : sans le code, un compte
   protégé ne lit ni n'écrit rien.
-- **Aucune clé secrète** dans l'application : seule la clé publique Supabase est utilisée.
+- **Clé secrète Supabase** utilisée à un seul endroit, côté serveur : le rappel du matin
+  (`src/app/api/rappels`), protégé par le secret de Vercel Cron (comparaison à temps constant).
+  Elle n'existe que dans les variables de Vercel, jamais dans le code ni dans le navigateur.
+  Toutes les autres requêtes passent par la clé publique et la RLS.
 - **Entrées validées** côté serveur (Zod) avant toute écriture ; redirections limitées aux pages
   du site (`safeNext`).
 - **En-têtes** : HSTS, CSP, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy` ;

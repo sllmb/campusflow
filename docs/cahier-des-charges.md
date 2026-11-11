@@ -108,6 +108,14 @@ jours les plus proches de l'échéance. 10 h au plus par jour.
 
 Une session compte pour le jour où elle a commencé, dans le fuseau de l'étudiant.
 
+### Rappels
+
+| Id    | Exigence                                                                                                                                                      | Version |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| EF-80 | Activer ou désactiver, par appareil, un rappel chaque matin vers 8 h (heure de Paris).                                                                        | 1.1     |
+| EF-81 | Le rappel résume les échéances du jour, les révisions du jour, les examens et projets du lendemain et les retards ; rien n'est envoyé s'il n'y a rien à dire. | 1.1     |
+| EF-82 | Envoyer une notification d'essai depuis le profil.                                                                                                            | 1.1     |
+
 ## 5. Exigences non fonctionnelles
 
 | Id     | Domaine         | Exigence                                                                                           |
@@ -127,6 +135,8 @@ Une session compte pour le jour où elle a commencé, dans le fuseau de l'étudi
 
 - **Budget nul** : offres gratuites de Vercel et Supabase, envoi d'e-mails par le SMTP de Gmail.
 - **Un seul développeur.**
+- **Offre gratuite de Vercel** : un seul réveil automatique par jour, d'où l'heure fixe des
+  rappels.
 - **Pas de nom de domaine** pour l'instant : le site utilise l'adresse fournie par Vercel.
 
 ## 7. Architecture technique
@@ -154,7 +164,7 @@ Le détail des tables est dans le [modèle de données](modele-de-donnees.md).
 1. ~~**Calendrier**~~ : fait (EF-23).
 2. ~~**Statistiques**~~ : fait (EF-60 à EF-64).
 3. ~~**Planning de révisions**~~ : fait (EF-70 à EF-73).
-4. **Rappels d'échéances** par notification.
+4. ~~**Rappels d'échéances**~~ : fait (EF-80 à EF-82).
 
 ## 10. Avant une ouverture au public
 
