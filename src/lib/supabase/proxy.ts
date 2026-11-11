@@ -101,5 +101,8 @@ export async function updateSession(request: NextRequest) {
     return redirectTo("/dashboard");
   }
 
+  // Page personnelle : aucun cache partagé (proxy d'école, d'entreprise, CDN) ne doit la garder.
+  if (isSignedIn) response.headers.set("Cache-Control", "private, no-store, max-age=0");
+
   return response;
 }
