@@ -24,7 +24,12 @@ export default function LoginPage(props: PageProps<"/login">) {
       <Suspense fallback={<LoginForm />}>
         <LoginFormWithNotice {...props} />
       </Suspense>
-      <p className="mt-6 text-center text-sm">
+      <p className="mt-4 text-center text-sm">
+        <Link href="/mot-de-passe-oublie" className="font-bold underline underline-offset-4">
+          Mot de passe oublié ?
+        </Link>
+      </p>
+      <p className="mt-3 text-center text-sm">
         Pas encore de compte ?{" "}
         <Link href="/signup" className="font-bold underline underline-offset-4">
           Inscris-toi

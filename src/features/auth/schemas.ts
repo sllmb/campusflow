@@ -17,5 +17,17 @@ export const signUpSchema = z.object({
   password: z.string().min(8, "8 caractères minimum.").max(72, "72 caractères maximum."),
 });
 
+export const resetRequestSchema = z.object({ email });
+
+export const newPasswordSchema = z
+  .object({
+    password: z.string().min(8, "8 caractères minimum.").max(72, "72 caractères maximum."),
+    confirm: z.string(),
+  })
+  .refine((data) => data.password === data.confirm, {
+    path: ["confirm"],
+    message: "Les deux mots de passe ne sont pas identiques.",
+  });
+
 export type SignInInput = z.infer<typeof signInSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;

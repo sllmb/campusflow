@@ -11,6 +11,7 @@ const PUBLIC_PATHS = [
   "/mentions-legales",
   "/confidentialite",
   "/offline",
+  "/mot-de-passe-oublie",
 ];
 /** Pages réservées aux visiteurs non connectés (un utilisateur connecté est renvoyé à l'accueil). */
 const GUEST_ONLY_PATHS = ["/login", "/signup"];
@@ -53,10 +54,11 @@ export async function updateSession(request: NextRequest) {
   const isSignedIn = Boolean(data?.claims);
   const { pathname } = request.nextUrl;
 
-  const redirectTo = (path: string) => {
+  const redirectTo = (path: string, next?: string) => {
     const url = request.nextUrl.clone();
     url.pathname = path;
     url.search = "";
+    if (next) url.searchParams.set("next", next);
     const redirect = NextResponse.redirect(url);
     // Garder les cookies de session éventuellement renouvelés.
     response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
@@ -83,9 +85,17 @@ export async function updateSession(request: NextRequest) {
   }
   if (
     needsCode &&
-    !matches(pathname, ["/auth", "/mentions-legales", "/confidentialite", "/offline"])
+    !matches(pathname, [
+      "/auth",
+      "/mentions-legales",
+      "/confidentialite",
+      "/offline",
+      "/mot-de-passe-oublie",
+    ])
   ) {
-    return redirectTo("/verification");
+    // On garde la page demandée pour y revenir après le code (ex. : nouveau mot de passe).
+    const wanted = pathname + request.nextUrl.search;
+    return redirectTo("/verification", wanted === "/" ? undefined : wanted);
   }
   if (isSignedIn && (pathname === "/" || matches(pathname, GUEST_ONLY_PATHS))) {
     return redirectTo("/dashboard");
