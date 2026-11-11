@@ -4,6 +4,14 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), numérotation
 [SemVer](https://semver.org/lang/fr/).
 
+## [Non publié]
+
+### Ajouté
+
+- **Calendrier des échéances** (Devoirs → Calendrier) : vue mois et vue semaine, couleurs des
+  matières, ajout rapide d'une échéance sur un jour choisi. Les jours suivent le fuseau horaire
+  de l'étudiant.
+
 ## [1.0.0] — 11 novembre 2026
 
 Première version complète : l'app est installable, protégée par la double authentification

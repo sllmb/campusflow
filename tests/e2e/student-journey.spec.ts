@@ -68,6 +68,39 @@ test("parcours complet : matières, devoir, notes, deep work, accueil", async ({
     ).toBeVisible();
   });
 
+  await test.step("calendrier : le devoir est sur le bon jour, ajout rapide", async () => {
+    const day = (offset: number) => new Date(Date.now() + offset * 86_400_000);
+    const iso = (d: Date) =>
+      [d.getFullYear(), d.getMonth() + 1, d.getDate()]
+        .map((n) => String(n).padStart(2, "0"))
+        .join("-");
+    const label = (d: Date) =>
+      new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" }).format(
+        d,
+      );
+
+    // Vue semaine : le devoir créé pour demain est rangé sous demain.
+    await page.goto(`/devoirs/calendrier?vue=semaine&date=${iso(day(1))}`);
+    await expect(
+      page
+        .getByRole("region", { name: new RegExp(label(day(1)), "i") })
+        .getByText("Compte rendu E2E"),
+    ).toBeVisible();
+
+    // Vue mois : toucher après-demain, puis ajouter une échéance pour ce jour-là.
+    await page.goto(`/devoirs/calendrier?vue=mois&date=${iso(day(2))}`);
+    await settle(page);
+    await page.getByRole("button", { name: /^Ajouter pour le / }).click();
+    await page.getByLabel("Titre").fill("Exposé E2E");
+    await page.getByLabel("Matière", { exact: true }).selectOption({ label: "Biologie E2E" });
+    await page.getByRole("button", { name: "Ajouter", exact: true }).click();
+    const selected = page.getByRole("region", { name: new RegExp(label(day(2)), "i") });
+    await expect(selected.getByText("Exposé E2E")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: new RegExp(`${label(day(2))}.*\\d+ échéance`, "i") }),
+    ).toBeVisible();
+  });
+
   await test.step("saisir des notes : moyenne d'UE et validation", async () => {
     await page.goto("/notes");
     await settle(page);

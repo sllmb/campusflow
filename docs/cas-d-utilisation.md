@@ -21,6 +21,7 @@ flowchart LR
         uc_2fa(["Saisir le code 2FA"])
         uc_cours(["Organiser ses cours<br/>semestres, UE, matières"])
         uc_devoirs(["Suivre ses devoirs"])
+        uc_calendrier(["Consulter le calendrier<br/>et ajouter sur un jour"])
         uc_notes(["Saisir ses notes<br/>et voir ses moyennes"])
         uc_focus(["Lancer une session<br/>Pomodoro ou deep work"])
         uc_dashboard(["Consulter le tableau de bord"])
@@ -37,6 +38,7 @@ flowchart LR
 
     etudiant --- uc_cours
     etudiant --- uc_devoirs
+    etudiant --- uc_calendrier
     etudiant --- uc_notes
     etudiant --- uc_focus
     etudiant --- uc_dashboard
@@ -72,6 +74,20 @@ Un visiteur devient étudiant en se connectant.
 - **Variantes** :
   - Note supérieure au barème : refusée par le formulaire, puis par la base.
   - Matière supprimée entre-temps : message « Cette matière n'existe plus ».
+
+### Ajouter une échéance depuis le calendrier (EF-23)
+
+- **Acteur** : étudiant.
+- **Préconditions** : au moins une matière existe.
+- **Scénario nominal** :
+  1. L'étudiant ouvre Devoirs, puis Calendrier : le mois en cours s'affiche, avec un point de la
+     couleur de la matière sous chaque jour qui a une échéance.
+  2. Il touche un jour : la liste des échéances de ce jour s'affiche sous la grille.
+  3. Il touche « Ajouter pour le … » : le formulaire s'ouvre avec ce jour à 23:59.
+  4. Il remplit le titre et la matière : l'échéance apparaît sur le jour choisi.
+- **Variantes** :
+  - Vue semaine : les 7 jours sont listés, chacun avec un bouton « + ».
+  - Aucune matière : le calendrier invite à en créer une d'abord.
 
 ### Se connecter avec la double authentification (EF-03, EF-05)
 

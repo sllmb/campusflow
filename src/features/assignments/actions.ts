@@ -17,6 +17,7 @@ function text(formData: FormData, key: string) {
 
 function revalidate() {
   revalidatePath("/devoirs");
+  revalidatePath("/devoirs/calendrier");
   revalidatePath("/dashboard");
 }
 

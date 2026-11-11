@@ -8,6 +8,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AssignmentItem } from "@/features/assignments/components/assignment-item";
 import { NewAssignmentPanel } from "@/features/assignments/components/new-assignment-panel";
+import { AssignmentsViewSwitch } from "@/features/assignments/components/view-switch";
 import { KINDS, type AssignmentKind } from "@/features/assignments/constants";
 import { listAssignments, listSubjectOptions } from "@/features/assignments/queries";
 import { buildSchedule } from "@/features/assignments/lib/schedule";
@@ -152,7 +153,11 @@ function ListSkeleton() {
 export default function AssignmentsPage(props: PageProps<"/devoirs">) {
   return (
     <>
-      <PageHeader title="Devoirs" description="Devoirs, projets et examens, par échéance." />
+      <PageHeader
+        title="Devoirs"
+        description="Devoirs, projets et examens, par échéance."
+        action={<AssignmentsViewSwitch active="liste" />}
+      />
       <Suspense fallback={<ListSkeleton />}>
         <AssignmentsContent {...props} />
       </Suspense>
