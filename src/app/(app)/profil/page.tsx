@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
+import { DeleteAccountCard } from "@/features/account/components/delete-account-card";
 import { signOut } from "@/features/auth/actions";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { getCurrentProfile } from "@/features/profile/queries";
@@ -60,6 +61,7 @@ export default function ProfilePage() {
             </form>
           </div>
         </Card>
+        <DeleteAccountCard />
       </div>
     </>
   );

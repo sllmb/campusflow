@@ -6,11 +6,12 @@ import { signIn } from "../actions";
 import { Field } from "./field";
 import { FormAlert } from "./form-alert";
 
-export function LoginForm({ notice }: { notice?: string }) {
+export function LoginForm({ notice, success }: { notice?: string; success?: string }) {
   const [state, formAction, pending] = useActionState(signIn, {});
 
   return (
     <form action={formAction} className="grid gap-4" noValidate>
+      {success && !state.error && <FormAlert tone="success">{success}</FormAlert>}
       {notice && !state.error && <FormAlert tone="error">{notice}</FormAlert>}
       {state.error && <FormAlert tone="error">{state.error}</FormAlert>}
       <Field

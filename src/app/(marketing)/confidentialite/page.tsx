@@ -63,8 +63,12 @@ export default function PrivacyPolicyPage() {
       <section>
         <h2>Tes droits</h2>
         <p>
-          Tu peux consulter, corriger ou supprimer tes données, et demander la suppression de ton
-          compte, en écrivant à <ToFill>adresse e-mail de contact</ToFill>.
+          Tu peux consulter et corriger tes données à tout moment dans l&apos;application, et
+          supprimer ton compte avec toutes tes données depuis la page Profil (« Supprimer mon compte
+          »). L&apos;effacement est immédiat et définitif.
+        </p>
+        <p>
+          Pour toute autre demande, écris à <ToFill>adresse e-mail de contact</ToFill>.
         </p>
       </section>
     </LegalPage>
