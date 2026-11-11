@@ -10,10 +10,15 @@ const notices: Record<string, string> = {
   lien: "Ce lien n'a pas pu ouvrir ta session. Si ton e-mail est confirmé, connecte-toi ci-dessous.",
 };
 
+const successes: Record<string, string> = {
+  supprime: "Ton compte et toutes tes données ont été supprimés. À bientôt peut-être !",
+};
+
 async function LoginFormWithNotice({ searchParams }: PageProps<"/login">) {
-  const { erreur } = await searchParams;
+  const { erreur, compte } = await searchParams;
   const notice = typeof erreur === "string" ? notices[erreur] : undefined;
-  return <LoginForm notice={notice} />;
+  const success = typeof compte === "string" ? successes[compte] : undefined;
+  return <LoginForm notice={notice} success={success} />;
 }
 
 export default function LoginPage(props: PageProps<"/login">) {
