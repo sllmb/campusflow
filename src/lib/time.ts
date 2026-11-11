@@ -1,7 +1,7 @@
 import { TZDate } from "@date-fns/tz";
 
-/** Fuseau utilisé tant que le navigateur n'a pas donné le sien. */
-export const DEFAULT_TIME_ZONE = "Europe/Paris";
+/** Fuseau utilisé tant que le navigateur n'a pas donné le sien : le Sénégal (UTC+0, sans heure d'été). */
+export const DEFAULT_TIME_ZONE = "Africa/Dakar";
 
 export function isValidTimeZone(timeZone: string) {
   try {

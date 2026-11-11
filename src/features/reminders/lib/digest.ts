@@ -59,3 +59,14 @@ export function buildDigest(input: {
     url: "/dashboard",
   };
 }
+
+/**
+ * Faut-il prévenir cet appareil maintenant ? Oui s'il est au moins `hour` heures dans son fuseau
+ * et qu'il n'a pas déjà reçu le rappel aujourd'hui. Renvoie aussi « aujourd'hui » (jour local).
+ */
+export function reminderDue(now: Date, timeZone: string, lastSentOn: string | null, hour: number) {
+  const local = utcToLocalInput(now.toISOString(), timeZone);
+  const today = local.slice(0, 10);
+  const due = Number(local.slice(11, 13)) >= hour && lastSentOn !== today;
+  return { due, today };
+}

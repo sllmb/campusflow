@@ -11,7 +11,7 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 - **Calendrier des échéances** (Devoirs → Calendrier) : vue mois et vue semaine, couleurs des
   matières, ajout rapide d'une échéance sur un jour choisi. Les jours suivent le fuseau horaire
   de l'étudiant.
-- **Rappels du matin** (Profil → Rappels du matin) : une notification vers 8 h avec les
+- **Rappels du matin** (Profil → Rappels du matin) : une notification vers 8 h (heure du Sénégal) avec les
   échéances et révisions du jour, les examens du lendemain et les retards. Notification d'essai.
   Sur iPhone, dans l'app installée.
 - **Planning de révisions** pour les examens et les projets : un temps total et des jours

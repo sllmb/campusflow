@@ -116,7 +116,7 @@ export function RemindersCard() {
         {status === "on" && <Badge tone="green">Activés</Badge>}
       </div>
       <p className="mt-1 text-[15px] text-ink-soft">
-        Chaque matin vers 8 h (heure de Paris), un résumé sur ce téléphone : échéances du jour,
+        Chaque matin vers 8 h (heure du Sénégal), un résumé sur ce téléphone : échéances du jour,
         révisions, examens du lendemain. Rien n&apos;est envoyé s&apos;il n&apos;y a rien à dire.
       </p>
 
