@@ -8,6 +8,7 @@ import { DeleteAccountCard } from "@/features/account/components/delete-account-
 import { signOut } from "@/features/auth/actions";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { getCurrentProfile } from "@/features/profile/queries";
+import { RemindersCardLoader } from "@/features/reminders/components/reminders-card-loader";
 import { TwoFactorCard } from "@/features/two-factor/components/two-factor-card";
 import { getTwoFactorEnabled } from "@/features/two-factor/queries";
 
@@ -42,6 +43,7 @@ export default function ProfilePage() {
             <ProfileDetails />
           </Suspense>
         </Card>
+        <RemindersCardLoader />
         <Suspense fallback={<div className="h-40 animate-pulse rounded-card bg-muted" />}>
           <TwoFactorSection />
         </Suspense>

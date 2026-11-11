@@ -48,6 +48,22 @@ migration `20261113090000_enforce_mfa.sql`).
 En cas de perte du téléphone : Supabase → Authentication → Users → le compte → retirer le
 facteur MFA.
 
+## Rappels du matin
+
+Chaque matin (Vercel Cron, `vercel.json`, 7 h UTC ≈ 8 h à Paris), `/api/rappels` envoie à chaque
+appareil abonné un résumé : échéances du jour, révisions, examens du lendemain, retards. Rien
+n'est envoyé s'il n'y a rien à dire, et jamais deux fois le même jour.
+
+Variables à définir sur Vercel (Settings > Environment Variables), jamais dans le code :
+
+| Variable              | Rôle                                                                  |
+| --------------------- | --------------------------------------------------------------------- |
+| `SUPABASE_SECRET_KEY` | Lire les échéances de tous les abonnés (contourne la RLS).            |
+| `VAPID_PRIVATE_KEY`   | Signer les notifications (clé publique : `src/features/reminders`).   |
+| `CRON_SECRET`         | Mot de passe que Vercel Cron envoie ; sans lui, `/api/rappels` : 401. |
+
+Sur iPhone, les notifications ne marchent que dans l'app installée (iOS 16.4 ou plus).
+
 ## E-mails
 
 Les e-mails d'authentification partent par un SMTP personnalisé (Resend), configuré dans

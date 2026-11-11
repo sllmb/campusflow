@@ -1,11 +1,12 @@
 /*
  * Service worker CampusFlow.
  *
- * Rôle : rendre l'app installable et afficher une page propre hors connexion.
+ * Rôle : rendre l'app installable, afficher une page propre hors connexion, et afficher les
+ * rappels (notifications push) envoyés par le serveur.
  * Confidentialité : les pages et les données de l'utilisateur ne sont JAMAIS mises en cache ;
  * seuls la page /offline, les icônes et les fichiers techniques versionnés (/_next/static) le sont.
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const STATIC_CACHE = `campusflow-static-${VERSION}`;
 const OFFLINE_URL = "/offline";
 const PRECACHE = [OFFLINE_URL, "/brand/icon-192.png", "/brand/icon-512.png", "/icon.svg"];
@@ -71,4 +72,43 @@ self.addEventListener("fetch", (event) => {
     );
   }
   // Tout le reste (données, actions serveur…) passe directement par le réseau.
+});
+
+// Rappels : le serveur envoie { title, body, url } (voir src/features/reminders).
+self.addEventListener("push", (event) => {
+  let message = { title: "CampusFlow", body: "", url: "/dashboard" };
+  try {
+    message = { ...message, ...event.data.json() };
+  } catch {
+    // Message illisible : on affiche quand même une notification générique.
+  }
+  event.waitUntil(
+    self.registration.showNotification(message.title, {
+      body: message.body,
+      icon: "/brand/icon-192.png",
+      badge: "/brand/icon-192.png",
+      tag: "campusflow-rappel",
+      data: { url: message.url },
+    }),
+  );
+});
+
+// Toucher la notification ouvre CampusFlow sur la bonne page (ou la réutilise si elle est ouverte).
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const path = event.notification.data?.url ?? "/dashboard";
+  const target = new URL(path, self.location.origin);
+  if (target.origin !== self.location.origin) return;
+  event.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      for (const client of windows) {
+        if (new URL(client.url).origin === self.location.origin) {
+          await client.focus();
+          return client.navigate(target.href);
+        }
+      }
+      return self.clients.openWindow(target.href);
+    })(),
+  );
 });

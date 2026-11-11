@@ -33,6 +33,29 @@ export type Database = {
         Update: Record<string, never>;
         Relationships: [];
       };
+      push_subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          time_zone: string;
+          last_sent_on: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          time_zone?: string;
+          last_sent_on?: string | null;
+        };
+        Update: { last_sent_on?: string | null };
+        Relationships: [];
+      };
       revision_sessions: {
         Row: {
           id: string;
@@ -234,6 +257,10 @@ export type Database = {
     Views: Record<string, never>;
     Functions: {
       delete_my_account: { Args: Record<string, never>; Returns: undefined };
+      save_push_subscription: {
+        Args: { p_endpoint: string; p_p256dh: string; p_auth: string; p_time_zone: string };
+        Returns: undefined;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
