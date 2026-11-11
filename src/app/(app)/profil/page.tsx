@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { LogOut } from "lucide-react";
+import { KeyRound, LogOut } from "lucide-react";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { signOut } from "@/features/auth/actions";
 import { ProfileForm } from "@/features/profile/components/profile-form";
@@ -49,11 +49,16 @@ export default function ProfilePage() {
           <p className="mt-1 mb-4 text-[15px] text-ink-soft">
             Tu devras te reconnecter pour accéder à tes données.
           </p>
-          <form action={signOut}>
-            <Button type="submit" variant="outline">
-              <LogOut /> Se déconnecter
-            </Button>
-          </form>
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href="/nouveau-mot-de-passe" variant="outline">
+              <KeyRound /> Modifier mon mot de passe
+            </ButtonLink>
+            <form action={signOut}>
+              <Button type="submit" variant="outline">
+                <LogOut /> Se déconnecter
+              </Button>
+            </form>
+          </div>
         </Card>
       </div>
     </>

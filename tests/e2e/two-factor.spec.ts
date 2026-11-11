@@ -40,28 +40,32 @@ test("activer la 2FA, se connecter avec le code, puis la désactiver", async ({ 
       await expect(page).toHaveURL(/\/verification$/);
       // Sans code, l'app reste fermée.
       await page.goto("/dashboard");
-      await expect(page).toHaveURL(/\/verification$/);
+      await expect(page).toHaveURL(/\/verification\?next=%2Fdashboard$/);
+      // La page demandée est mémorisée (ex. : lien de réinitialisation du mot de passe).
+      await page.goto("/nouveau-mot-de-passe");
+      await expect(page).toHaveURL(/\/verification\?next=%2Fnouveau-mot-de-passe$/);
     });
 
-    await test.step("un mauvais code est refusé, le bon ouvre l'app", async () => {
-      await page.goto("/verification", { waitUntil: "networkidle" });
+    await test.step("un mauvais code est refusé, le bon ramène à la page demandée", async () => {
+      await page.waitForLoadState("networkidle");
       await page.getByLabel("Code à 6 chiffres").fill(lastCode === "000000" ? "111111" : "000000");
       await page.getByRole("button", { name: "Vérifier" }).click();
       await expect(page.locator("form [role=alert]")).toContainText("Code incorrect");
       lastCode = await nextTotp(secret!, lastCode);
       await page.getByLabel("Code à 6 chiffres").fill(lastCode);
       await page.getByRole("button", { name: "Vérifier" }).click();
-      await expect(page).toHaveURL(/\/dashboard$/);
+      // Retour sur la page demandée avant le code.
+      await expect(page).toHaveURL(/\/nouveau-mot-de-passe$/);
     });
   } finally {
     await test.step("remettre le compte de test sans 2FA", async () => {
       await page.goto("/profil", { waitUntil: "networkidle" });
-      if (page.url().endsWith("/verification") && secret) {
+      if (page.url().includes("/verification") && secret) {
         lastCode = await nextTotp(secret, lastCode);
         await page.getByLabel("Code à 6 chiffres").fill(lastCode);
         await page.getByRole("button", { name: "Vérifier" }).click();
-        await expect(page).toHaveURL(/\/dashboard$/);
-        await page.goto("/profil", { waitUntil: "networkidle" });
+        await expect(page).toHaveURL(/\/profil$/);
+        await page.waitForLoadState("networkidle");
       }
       const disable = page.getByRole("button", { name: "Désactiver", exact: true });
       if (await disable.isVisible()) {

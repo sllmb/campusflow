@@ -51,9 +51,13 @@ facteur MFA.
 ## E-mails
 
 Les e-mails d'authentification partent par un SMTP personnalisé (Resend), configuré dans
-Supabase → Authentication → Emails → SMTP Settings. Le modèle français de l'e-mail de
-confirmation est dans `supabase/templates/confirm-signup.html`, à coller dans Supabase →
-Authentication → Emails → Templates.
+Supabase → Authentication → Emails → SMTP Settings. Les modèles français sont dans
+`supabase/templates/` (`confirm-signup.html` pour « Confirm signup », `reset-password.html`
+pour « Reset password »), à coller dans Supabase → Authentication → Emails → Templates.
+
+Mot de passe oublié : `/mot-de-passe-oublie` envoie le lien, qui passe par `/auth/confirm` puis
+`/nouveau-mot-de-passe`. Avec la 2FA, le code est demandé avant, puis l'utilisateur revient sur
+cette page (paramètre `next`, contrôlé par `safeNext`).
 
 ## Scripts
 

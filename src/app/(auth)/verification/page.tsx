@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { signOut } from "@/features/auth/actions";
-import { VerifyForm } from "@/features/two-factor/components/verify-form";
+import { Suspense } from "react";
+import { VerifyForm, VerifyFormView } from "@/features/two-factor/components/verify-form";
 
 export const metadata: Metadata = { title: "Vérification" };
 
@@ -18,7 +19,9 @@ export default function VerificationPage() {
       <p className="mt-1 mb-6 text-[15px] text-ink-soft">
         Saisis le code à 6 chiffres affiché dans ton application d&apos;authentification.
       </p>
-      <VerifyForm />
+      <Suspense fallback={<VerifyFormView next="" />}>
+        <VerifyForm />
+      </Suspense>
       <form action={signOut} className="mt-6 text-center">
         <button
           type="submit"

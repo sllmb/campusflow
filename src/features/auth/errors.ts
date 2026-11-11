@@ -17,6 +17,14 @@ export function authErrorMessage(error: AuthError): string {
       return "Trop de tentatives. Réessaie dans quelques minutes.";
     case "signup_disabled":
       return "Les inscriptions sont fermées pour le moment.";
+    case "same_password":
+      return "Choisis un mot de passe différent de l'ancien.";
+    case "insufficient_aal":
+      return "Saisis d'abord ton code de double authentification.";
+    case "reauthentication_needed":
+    case "session_expired":
+    case "session_not_found":
+      return "Le lien a expiré. Redemande un e-mail de réinitialisation.";
     case "email_address_invalid":
       return "Cette adresse e-mail n'est pas acceptée. Vérifie-la ou utilises-en une autre.";
     case "email_address_not_authorized":
@@ -31,7 +39,10 @@ export function authErrorMessage(error: AuthError): string {
  * Journalise une erreur d'authentification côté serveur (visible dans les logs de Vercel),
  * sans données personnelles : seulement l'opération, le code, le statut et le message.
  */
-export function logAuthError(operation: "signIn" | "signUp", error: AuthError) {
+export function logAuthError(
+  operation: "signIn" | "signUp" | "resetRequest" | "updatePassword",
+  error: AuthError,
+) {
   console.error(
     `[auth] ${operation} a échoué`,
     JSON.stringify({

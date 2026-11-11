@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { authErrorMessage, logAuthError } from "./errors";
-import { signInSchema, signUpSchema } from "./schemas";
+import { newPasswordSchema, resetRequestSchema, signInSchema, signUpSchema } from "./schemas";
 import type { FormState } from "@/lib/form-state";
 
 type SignInField = "email" | "password";
@@ -84,4 +84,52 @@ export async function signOut() {
   // Déconnecte seulement cet appareil, pas les autres sessions de l'utilisateur.
   await supabase.auth.signOut({ scope: "local" });
   redirect("/login");
+}
+
+/** Envoie l'e-mail de réinitialisation du mot de passe. */
+export async function requestPasswordReset(
+  _prev: FormState<"email">,
+  formData: FormData,
+): Promise<FormState<"email">> {
+  const values = { email: String(formData.get("email") ?? "") };
+  const parsed = resetRequestSchema.safeParse(values);
+  if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors, values };
+
+  const origin = (await headers()).get("origin") ?? "";
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${origin}/auth/confirm?next=/nouveau-mot-de-passe`,
+  });
+  // Seule la limite d'envoi est signalée : les autres cas reçoivent le message habituel,
+  // pour ne pas révéler si un compte existe pour cette adresse.
+  if (error?.code === "over_email_send_rate_limit" || error?.code === "over_request_rate_limit") {
+    return { error: authErrorMessage(error), values };
+  }
+  if (error) logAuthError("resetRequest", error);
+
+  return {
+    success: `Si un compte existe pour ${parsed.data.email}, un e-mail vient de partir. Ouvre-le et touche le lien pour choisir un nouveau mot de passe.`,
+  };
+}
+
+/** Enregistre le nouveau mot de passe (lien de réinitialisation ou page Profil). */
+export async function updatePassword(
+  _prev: FormState<"password" | "confirm">,
+  formData: FormData,
+): Promise<FormState<"password" | "confirm">> {
+  const parsed = newPasswordSchema.safeParse({
+    password: formData.get("password") ?? "",
+    confirm: formData.get("confirm") ?? "",
+  });
+  if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+  if (error) {
+    if (error.code !== "same_password" && error.code !== "weak_password") {
+      logAuthError("updatePassword", error);
+    }
+    return { error: authErrorMessage(error) };
+  }
+  return { success: "Mot de passe modifié." };
 }

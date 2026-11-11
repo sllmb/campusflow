@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { FormState } from "@/lib/form-state";
+import { safeNext } from "@/lib/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
 import { mfaErrorMessage } from "./errors";
 import { totpCodeSchema } from "./schemas";
@@ -92,8 +93,9 @@ export async function verifyTwoFactorLogin(
   const supabase = await createClient();
   const { data: factors, error: listError } = await supabase.auth.mfa.listFactors();
   if (listError) return { error: mfaErrorMessage(listError) };
+  const next = safeNext(String(formData.get("next") ?? ""));
   const factor = factors.totp.find((f) => f.status === "verified");
-  if (!factor) redirect("/dashboard");
+  if (!factor) redirect(next);
 
   const { error } = await supabase.auth.mfa.challengeAndVerify({
     factorId: factor.id,
@@ -101,5 +103,5 @@ export async function verifyTwoFactorLogin(
   });
   if (error) return { error: mfaErrorMessage(error) };
 
-  redirect("/dashboard");
+  redirect(next);
 }

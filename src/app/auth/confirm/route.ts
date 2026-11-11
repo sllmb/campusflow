@@ -1,11 +1,7 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNext } from "@/lib/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
-
-/** N'accepte que des chemins internes, pour éviter les redirections vers un autre site. */
-function safeNext(next: string | null) {
-  return next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
-}
 
 /**
  * Lien reçu par e-mail (confirmation d'inscription, réinitialisation…).
@@ -32,7 +28,9 @@ export async function GET(request: NextRequest) {
   const url = request.nextUrl.clone();
   url.search = "";
   if (ok) {
-    url.pathname = next;
+    const target = new URL(next, url);
+    url.pathname = target.pathname;
+    url.search = target.search;
   } else {
     url.pathname = "/login";
     url.searchParams.set("erreur", "lien");
