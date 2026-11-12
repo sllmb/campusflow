@@ -75,7 +75,7 @@ export async function signUp(
 
   // Même message si l'adresse est déjà inscrite : on ne révèle pas quels e-mails ont un compte.
   return {
-    success: `C'est presque fini ! Ouvre le mail envoyé à ${parsed.data.email} et clique sur le lien pour activer ton compte.`,
+    success: `C'est presque fini ! Ouvre le mail envoyé à ${parsed.data.email} et clique sur le lien pour activer ton compte. Rien reçu ? Regarde dans tes spams.`,
   };
 }
 
@@ -108,7 +108,7 @@ export async function requestPasswordReset(
   if (error) logAuthError("resetRequest", error);
 
   return {
-    success: `Si un compte existe pour ${parsed.data.email}, un e-mail vient de partir. Ouvre-le et touche le lien pour choisir un nouveau mot de passe.`,
+    success: `Si un compte existe pour ${parsed.data.email}, un e-mail vient de partir. Ouvre-le et touche le lien pour choisir un nouveau mot de passe. Rien reçu ? Regarde dans tes spams.`,
   };
 }
 

@@ -71,8 +71,10 @@ Sur iPhone, les notifications ne marchent que dans l'app installée (iOS 16.4 ou
 
 ## E-mails
 
-Les e-mails d'authentification partent par un SMTP personnalisé (Resend), configuré dans
-Supabase → Authentication → Emails → SMTP Settings. Les modèles français sont dans
+Les e-mails d'authentification partent par un SMTP personnalisé (Gmail, avec un mot de passe
+d'application), configuré dans Supabase → Authentication → Emails → SMTP Settings. Sans nom de
+domaine, ils arrivent souvent dans les spams : l'app le rappelle après l'inscription et le mot de
+passe oublié. Solution durable : un domaine et un service d'envoi (Resend…) avec SPF et DKIM. Les modèles français sont dans
 `supabase/templates/` (`confirm-signup.html` pour « Confirm signup », `reset-password.html`
 pour « Reset password »), à coller dans Supabase → Authentication → Emails → Templates.
 
