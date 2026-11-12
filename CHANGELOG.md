@@ -4,24 +4,45 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), numérotation
 [SemVer](https://semver.org/lang/fr/).
 
-## [Non publié]
+## [1.1.0] — 12 novembre 2026
+
+Organiser ses révisions et ne plus rien oublier : calendrier, planning de révisions, rappels du
+matin et statistiques.
 
 ### Ajouté
 
 - **Calendrier des échéances** (Devoirs → Calendrier) : vue mois et vue semaine, couleurs des
   matières, ajout rapide d'une échéance sur un jour choisi. Les jours suivent le fuseau horaire
   de l'étudiant.
-- **Rappels du matin** (Profil → Rappels du matin) : une notification vers 8 h (heure du Sénégal) avec les
-  échéances et révisions du jour, les examens du lendemain et les retards. Notification d'essai.
-  Sur iPhone, dans l'app installée.
 - **Planning de révisions** pour les examens et les projets : un temps total et des jours
   choisis, répartis jusqu'à la veille de l'échéance. Les créneaux apparaissent dans Devoirs, le
   calendrier et l'accueil (révisions du jour) ; « Lancer » ouvre le minuteur réglé.
+- **Rappels du matin** (Profil → Rappels du matin) : une notification vers 8 h (heure du
+  Sénégal) avec les échéances et révisions du jour, les examens du lendemain et les retards.
+  Notification d'essai. Sur iPhone, dans l'app installée.
 - **Statistiques** (depuis l'accueil, ou le menu sur ordinateur) : temps de concentration par
   jour sur 7 ou 30 jours comparé à la période d'avant, répartition par matière, série de jours
   d'affilée, évolution de la moyenne du semestre, devoirs rendus à temps.
 - **Deep work de durée libre** : de 1 h à 10 h, par quarts d'heure, avec des raccourcis
   (1 h, 1 h 30, 2 h, 3 h, 4 h, 6 h, 10 h). La dernière durée choisie est proposée à nouveau.
+- **Documentation du projet** (`docs/`) : cahier des charges, modèle de données (MCD, MLD),
+  cas d'utilisation et diagrammes de séquence.
+
+### Modifié
+
+- Fuseau horaire par défaut : Sénégal (`Africa/Dakar`) au lieu de Paris.
+
+### Sécurité
+
+- Le rappel du matin est la seule partie de l'app qui utilise la clé secrète Supabase, côté
+  serveur, derrière le secret de Vercel Cron (comparaison à temps constant).
+- Les clés secrètes sont nettoyées des espaces et retours à la ligne collés par erreur, et les
+  messages d'erreur bruts ne sont plus jamais renvoyés ni journalisés.
+
+### Base de données
+
+Trois migrations, à appliquer dans l'ordre : `20261115090000_longer_deep_work`,
+`20261116090000_create_revision_sessions`, `20261117090000_create_push_subscriptions`.
 
 ## [1.0.0] — 11 novembre 2026
 
@@ -67,5 +88,6 @@ Première version (MVP), utilisable pendant un semestre.
 - Sécurité par RLS sur toutes les tables, tests unitaires et de bout en bout, intégration
   continue GitHub Actions, mise en ligne sur Vercel.
 
+[1.1.0]: https://github.com/sllmb/campusflow/releases/tag/v1.1.0
 [1.0.0]: https://github.com/sllmb/campusflow/releases/tag/v1.0.0
 [0.1.0]: https://github.com/sllmb/campusflow/releases/tag/v0.1.0
