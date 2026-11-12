@@ -125,4 +125,9 @@ cette page (paramètre `next`, contrôlé par `safeNext`).
 5. ~~Devoirs, projets et examens~~
 6. ~~Notes et moyennes~~
 7. ~~Dashboard~~
-8. Pomodoro, tests E2E et déploiement sur Vercel
+8. ~~Pomodoro, tests E2E et déploiement sur Vercel~~ → **v0.1.0**
+9. ~~Accueil public, logo, double authentification, PWA, mot de passe oublié~~ → **v1.0.0**
+10. ~~Calendrier, statistiques, deep work libre, planning de révisions, rappels du matin~~ →
+    **v1.1.0**
+
+Le détail de chaque version est dans le [journal des versions](CHANGELOG.md).
