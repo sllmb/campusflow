@@ -76,6 +76,8 @@ test.describe("connecté", () => {
     // Le navigateur des tests bloque les notifications par défaut.
     await page.goto("/profil", { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { name: "Rappels du matin" })).toBeVisible();
+    // Le prénom enregistré ne doit pas être remplacé par celui que le navigateur a mémorisé.
+    await expect(page.getByLabel("Prénom")).toHaveAttribute("autocomplete", "off");
     await expect(page.getByText("Les notifications sont bloquées pour CampusFlow.")).toBeVisible();
 
     // Un téléphone qui n'a encore rien décidé (« default ») : le bouton d'activation apparaît.
