@@ -39,11 +39,34 @@ export async function getGradesOverview(
   today: string,
 ): Promise<GradesOverview> {
   const supabase = await createClient();
-  const { data: semesters, error } = await supabase
-    .from("semesters")
-    .select("id, name, starts_on, ends_on")
-    .order("starts_on", { ascending: false });
-  if (error) throw error;
+  // Les quatre tables en un seul aller-retour vers la base (en parallèle) : la RLS limite déjà
+  // chaque lecture aux lignes de l'étudiant, et le tri par semestre se fait ensuite en mémoire.
+  const [semestersResult, unitsResult, subjectsResult, gradesResult] = await Promise.all([
+    supabase
+      .from("semesters")
+      .select("id, name, starts_on, ends_on")
+      .order("starts_on", { ascending: false }),
+    supabase
+      .from("teaching_units")
+      .select("id, semester_id, name, code, ects_credits, jury_validated")
+      .order("position")
+      .order("created_at"),
+    supabase
+      .from("subjects")
+      .select("id, unit_id, name, color, coefficient")
+      .order("position")
+      .order("created_at"),
+    supabase
+      .from("grades")
+      .select("*")
+      .order("graded_on", { ascending: true, nullsFirst: false })
+      .order("created_at"),
+  ]);
+  if (semestersResult.error) throw semestersResult.error;
+  if (unitsResult.error) throw unitsResult.error;
+  if (subjectsResult.error) throw subjectsResult.error;
+  if (gradesResult.error) throw gradesResult.error;
+  const semesters = semestersResult.data;
 
   const semester =
     semesters.find((s) => s.id === requestedSemesterId) ??
@@ -56,35 +79,11 @@ export async function getGradesOverview(
     return { semesters: list, semester: null, units: [], result: semesterResult([]) };
   }
 
-  const { data: units, error: unitsError } = await supabase
-    .from("teaching_units")
-    .select("id, name, code, ects_credits, jury_validated")
-    .eq("semester_id", semester.id)
-    .order("position")
-    .order("created_at");
-  if (unitsError) throw unitsError;
-
-  const unitIds = units.map((unit) => unit.id);
-  const { data: subjects, error: subjectsError } = unitIds.length
-    ? await supabase
-        .from("subjects")
-        .select("id, unit_id, name, color, coefficient")
-        .in("unit_id", unitIds)
-        .order("position")
-        .order("created_at")
-    : { data: [], error: null };
-  if (subjectsError) throw subjectsError;
-
-  const subjectIds = subjects.map((subject) => subject.id);
-  const { data: grades, error: gradesError } = subjectIds.length
-    ? await supabase
-        .from("grades")
-        .select("*")
-        .in("subject_id", subjectIds)
-        .order("graded_on", { ascending: true, nullsFirst: false })
-        .order("created_at")
-    : { data: [] as Grade[], error: null };
-  if (gradesError) throw gradesError;
+  const units = unitsResult.data.filter((unit) => unit.semester_id === semester.id);
+  const unitIds = new Set(units.map((unit) => unit.id));
+  const subjects = subjectsResult.data.filter((subject) => unitIds.has(subject.unit_id));
+  const subjectIds = new Set(subjects.map((subject) => subject.id));
+  const grades: Grade[] = gradesResult.data.filter((grade) => subjectIds.has(grade.subject_id));
 
   const shaped: UnitWithGrades[] = units.map((unit) => ({
     id: unit.id,
