@@ -20,7 +20,7 @@ export function authErrorMessage(error: AuthError): string {
     case "same_password":
       return "Choisis un mot de passe différent de l'ancien.";
     case "captcha_failed":
-      return "La vérification anti-robots a échoué ou a expiré. Attends qu'elle soit validée, puis réessaie.";
+      return "La vérification anti-robots n'est pas validée. Attends la coche verte (ou désactive ton bloqueur de publicités), puis réessaie.";
     case "insufficient_aal":
       return "Saisis d'abord ton code de double authentification.";
     case "reauthentication_needed":
