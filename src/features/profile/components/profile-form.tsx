@@ -16,7 +16,9 @@ export function ProfileForm({ displayName }: { displayName: string }) {
       <Field
         name="displayName"
         label="Prénom"
-        autoComplete="given-name"
+        // Champ de modification : il affiche le prénom enregistré. Sans ça, le navigateur le
+        // remplaçait par le prénom qu'il a mémorisé, et « Enregistrer » l'aurait écrasé.
+        autoComplete="off"
         defaultValue={state.values?.displayName ?? displayName}
         errors={state.fieldErrors?.displayName}
         required
