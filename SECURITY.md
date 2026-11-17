@@ -17,6 +17,8 @@ reproduire le problème. Une réponse est donnée sous 7 jours.
   (`src/app/api/rappels`), protégé par le secret de Vercel Cron (comparaison à temps constant).
   Elle n'existe que dans les variables de Vercel, jamais dans le code ni dans le navigateur.
   Toutes les autres requêtes passent par la clé publique et la RLS.
+- **Anti-robots** : Cloudflare Turnstile sur l'inscription, la connexion et le mot de passe
+  oublié, vérifié par Supabase lui-même (impossible à contourner en appelant l'API directement).
 - **Entrées validées** côté serveur (Zod) avant toute écriture ; redirections limitées aux pages
   du site (`safeNext`).
 - **En-têtes** : HSTS, CSP, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy` ;

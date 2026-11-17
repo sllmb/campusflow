@@ -4,6 +4,19 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), numérotation
 [SemVer](https://semver.org/lang/fr/).
 
+## [Non publié]
+
+### Sécurité
+
+- **Anti-robots Cloudflare Turnstile** sur l'inscription, la connexion et le mot de passe
+  oublié, vérifié par Supabase.
+
+### Modifié
+
+- Pages légales complètes (éditeur, contact, hébergement des données dans l'UE, droits selon la
+  loi sénégalaise n° 2008-12).
+- Développement et tests de bout en bout sur un projet Supabase de test, séparé de la production.
+
 ## [1.1.0] — 12 novembre 2026
 
 Organiser ses révisions et ne plus rien oublier : calendrier, planning de révisions, rappels du

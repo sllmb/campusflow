@@ -28,6 +28,19 @@ l'ordre des noms. Deux façons de l'appliquer :
 
 Règle du projet : toute nouvelle table active la RLS dans la même migration.
 
+### Deux projets Supabase : production et test
+
+| Projet            | Utilisé par                                             | Anti-robots |
+| ----------------- | ------------------------------------------------------- | ----------- |
+| `campusflow`      | le site en ligne (variables de Vercel)                  | Turnstile   |
+| `campusflow-test` | `npm run dev` sur ton ordi et les tests de bout en bout | non         |
+
+`.env.local` pointe toujours vers **le projet de test** : les essais en local ne touchent jamais
+les vraies données. Le projet de test n'envoie pas d'e-mail (« Confirm email » désactivé).
+
+Chaque nouvelle migration s'applique **aux deux projets** : d'abord au test, puis à la
+production avant de fusionner.
+
 ## Application installable (PWA)
 
 - Manifeste : `src/app/manifest.ts` (nom, plein écran, couleurs, icônes de `public/brand/`).
@@ -47,6 +60,16 @@ migration `20261113090000_enforce_mfa.sql`).
 
 En cas de perte du téléphone : Supabase → Authentication → Users → le compte → retirer le
 facteur MFA.
+
+## Anti-robots (Cloudflare Turnstile)
+
+L'inscription, la connexion et le mot de passe oublié affichent la vérification Turnstile quand
+`NEXT_PUBLIC_TURNSTILE_SITE_KEY` est défini (production seulement). Le jeton est vérifié **par
+Supabase** (Authentication > Attack Protection, avec la clé secrète de Turnstile) : un robot ne
+peut pas contourner l'app en appelant Supabase directement.
+
+Ordre de mise en place : 1) clé de site dans Vercel et déploiement ; 2) seulement ensuite,
+activation dans Supabase. Dans l'autre ordre, plus personne ne peut se connecter.
 
 ## Rappels du matin
 
@@ -101,10 +124,11 @@ cette page (paramètre `next`, contrôlé par `safeNext`).
   accueil) a besoin d'un compte de test confirmé :
 
   ```bash
-  E2E_EMAIL=test@exemple.fr E2E_PASSWORD=... npm run e2e
+  E2E_EMAIL=test@campusflow.local E2E_PASSWORD=... npm run e2e
   ```
 
-  Il crée son propre semestre puis le supprime. Premier lancement : `npx playwright install chromium`.
+  Le compte vient du projet Supabase **de test** (jamais de la production, protégée par
+  Turnstile). Il crée son propre semestre puis le supprime. Premier lancement : `npx playwright install chromium`.
 
 - **Intégration continue** : à chaque pull request, GitHub Actions lance lint, types, formatage,
   tests unitaires et build.
