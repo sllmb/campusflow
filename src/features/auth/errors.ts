@@ -19,6 +19,8 @@ export function authErrorMessage(error: AuthError): string {
       return "Les inscriptions sont fermées pour le moment.";
     case "same_password":
       return "Choisis un mot de passe différent de l'ancien.";
+    case "captcha_failed":
+      return "La vérification anti-robots a échoué ou a expiré. Attends qu'elle soit validée, puis réessaie.";
     case "insufficient_aal":
       return "Saisis d'abord ton code de double authentification.";
     case "reauthentication_needed":

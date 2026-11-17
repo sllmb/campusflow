@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { requestPasswordReset } from "../actions";
 import { Field } from "./field";
 import { FormAlert } from "./form-alert";
+import { Turnstile } from "./turnstile";
 
 export function ForgotPasswordForm() {
   const [state, action, pending] = useActionState(requestPasswordReset, {});
@@ -23,6 +24,7 @@ export function ForgotPasswordForm() {
         defaultValue={state.values?.email}
         errors={state.fieldErrors?.email}
       />
+      <Turnstile resetKey={state} />
       <Button type="submit" size="lg" className="mt-2" disabled={pending}>
         {pending ? "Envoi…" : "Recevoir le lien"}
       </Button>

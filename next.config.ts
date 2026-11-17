@@ -10,14 +10,17 @@ const supabaseOrigin = (() => {
 
 /**
  * Politique de sécurité du contenu : scripts, styles, images et connexions uniquement depuis
- * CampusFlow (et Supabase) ; jamais d'intégration dans un autre site.
+ * CampusFlow (et Supabase) ; jamais d'intégration dans un autre site. Seule exception : la
+ * vérification anti-robots Cloudflare Turnstile (son script et son cadre), sur les formulaires
+ * d'inscription, de connexion et de mot de passe oublié.
  * 'unsafe-inline' reste nécessaire aux scripts que Next.js insère dans les pages prérendues
  * (une CSP à nonce imposerait de tout rendre à la demande). En développement, Next.js a aussi
  * besoin de 'unsafe-eval' : la CSP n'est donc appliquée qu'en production.
  */
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
+  "frame-src https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",

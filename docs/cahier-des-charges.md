@@ -169,6 +169,6 @@ Le détail des tables est dans le [modèle de données](modele-de-donnees.md).
 ## 10. Avant une ouverture au public
 
 - ~~Compléter les informations de l'éditeur dans les mentions légales~~ : fait.
-- Ajouter un CAPTCHA à l'inscription.
+- ~~Ajouter un CAPTCHA à l'inscription~~ : Cloudflare Turnstile, sur l'inscription, la connexion et le mot de passe oublié.
 - Installer les modèles d'e-mail en français dans Supabase.
 - Envisager un nom de domaine et un service d'envoi d'e-mails dédié.

@@ -9,6 +9,12 @@ import { newPasswordSchema, resetRequestSchema, signInSchema, signUpSchema } fro
 import type { FormState } from "@/lib/form-state";
 
 type SignInField = "email" | "password";
+
+/** Jeton Turnstile du formulaire (vérifié par Supabase), s'il y en a un. */
+function captchaToken(formData: FormData) {
+  const value = formData.get("captchaToken");
+  return typeof value === "string" && value ? value : undefined;
+}
 type SignUpField = "displayName" | "email" | "password";
 
 export async function signIn(
@@ -25,7 +31,10 @@ export async function signIn(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { error } = await supabase.auth.signInWithPassword({
+    ...parsed.data,
+    options: { captchaToken: captchaToken(formData) },
+  });
   if (error) {
     if (error.code !== "invalid_credentials") logAuthError("signIn", error);
     return { error: authErrorMessage(error), values };
@@ -62,6 +71,7 @@ export async function signUp(
     password: parsed.data.password,
     options: {
       emailRedirectTo: `${origin}/auth/confirm?next=/dashboard`,
+      captchaToken: captchaToken(formData),
       data: { display_name: parsed.data.displayName },
     },
   });
@@ -99,10 +109,16 @@ export async function requestPasswordReset(
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${origin}/auth/confirm?next=/nouveau-mot-de-passe`,
+    captchaToken: captchaToken(formData),
   });
-  // Seule la limite d'envoi est signalée : les autres cas reçoivent le message habituel,
+  // Seuls la limite d'envoi et l'anti-robots sont signalés : les autres cas reçoivent le message habituel,
   // pour ne pas révéler si un compte existe pour cette adresse.
-  if (error?.code === "over_email_send_rate_limit" || error?.code === "over_request_rate_limit") {
+  // Anti-robots refusé : rien n'est parti, on le dit (ça ne révèle rien sur les comptes).
+  if (
+    error?.code === "over_email_send_rate_limit" ||
+    error?.code === "over_request_rate_limit" ||
+    error?.code === "captcha_failed"
+  ) {
     return { error: authErrorMessage(error), values };
   }
   if (error) logAuthError("resetRequest", error);

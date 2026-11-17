@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { signUp } from "../actions";
 import { Field } from "./field";
 import { FormAlert } from "./form-alert";
+import { Turnstile } from "./turnstile";
 
 export function SignupForm() {
   const [state, formAction, pending] = useActionState(signUp, {});
@@ -43,6 +44,7 @@ export function SignupForm() {
         errors={state.fieldErrors?.password}
         required
       />
+      <Turnstile resetKey={state} />
       <Button type="submit" size="lg" className="mt-2" disabled={pending}>
         {pending ? "Création…" : "Créer mon compte"}
       </Button>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { signIn } from "../actions";
 import { Field } from "./field";
 import { FormAlert } from "./form-alert";
+import { Turnstile } from "./turnstile";
 
 export function LoginForm({ notice, success }: { notice?: string; success?: string }) {
   const [state, formAction, pending] = useActionState(signIn, {});
@@ -32,6 +33,7 @@ export function LoginForm({ notice, success }: { notice?: string; success?: stri
         errors={state.fieldErrors?.password}
         required
       />
+      <Turnstile resetKey={state} />
       <Button type="submit" size="lg" className="mt-2" disabled={pending}>
         {pending ? "Connexion…" : "Se connecter"}
       </Button>
