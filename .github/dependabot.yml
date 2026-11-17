@@ -10,6 +10,17 @@ updates:
     groups:
       dependances-mineures:
         update-types: [minor, patch]
+    # Mises à jour majeures écartées pour l'instant (testées le 17 novembre 2026) :
+    ignore:
+      # Types de Node : rester sur la version qui tourne vraiment (Node 22, CI et Vercel).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # TypeScript 7 : typescript-eslint ne gère que TypeScript < 6.1 (le lint plante).
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      # web-push 4 : plus d'export par défaut, le code des rappels doit d'abord être adapté.
+      - dependency-name: web-push
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
