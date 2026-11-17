@@ -1,0 +1,10 @@
+# Fins de ligne : toujours LF dans le dépôt et sur tous les systèmes, Windows compris.
+# Sans ça, Git convertit en CRLF sous Windows, Prettier remet en LF, et chaque fichier
+# paraît modifié.
+* text=auto eol=lf
+
+# Fichiers binaires : jamais convertis.
+*.png binary
+*.jpg binary
+*.ico binary
+*.webp binary

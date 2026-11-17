@@ -54,7 +54,7 @@ const features: Feature[] = [
     icon: Timer,
     iconBg: "bg-green",
     title: "Ton focus",
-    text: "Un minuteur Pomodoro intégré. Ton temps de travail est enregistré par matière.",
+    text: "Pomodoro de 25 min ou deep work de 1 h à 10 h. Ton temps de travail est enregistré par matière.",
     sample: <p className="text-4xl font-extrabold tracking-[-0.04em] tabular-nums">25:00</p>,
   },
 ];
