@@ -25,8 +25,14 @@ test("les pages de l'app exigent une connexion", async ({ page }) => {
 test("les pages légales sont publiques", async ({ page }) => {
   await page.goto("/confidentialite");
   await expect(page.getByRole("heading", { level: 1, name: "Confidentialité" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "campusflow.contact@gmail.com" }).first(),
+  ).toBeVisible();
   await page.goto("/mentions-legales");
   await expect(page.getByRole("heading", { level: 1, name: "Mentions légales" })).toBeVisible();
+  await expect(page.getByText("édité par Salamba Diène")).toBeVisible();
+  // Plus aucune information « À compléter » avant l'ouverture au public.
+  await expect(page.getByText("À compléter")).toHaveCount(0);
 });
 
 test("de faux identifiants sont refusés avec un message clair", async ({ page }) => {

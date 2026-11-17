@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
-import { LegalPage, ToFill } from "@/components/marketing/legal-page";
+import { LegalPage } from "@/components/marketing/legal-page";
+import { CONTACT_EMAIL } from "@/components/marketing/legal-contact";
 
 export const metadata: Metadata = { title: "Mentions légales" };
 
 export default function LegalNoticePage() {
   return (
-    <LegalPage title="Mentions légales" updated="10 novembre 2026">
+    <LegalPage title="Mentions légales" updated="17 novembre 2026">
       <section>
         <h2>Éditeur du site</h2>
         <p>
-          CampusFlow est édité par <ToFill>nom ou raison sociale</ToFill>, <ToFill>adresse</ToFill>.
+          CampusFlow est un projet étudiant, gratuit et non commercial, édité par Salamba Diène,
+          Dakar, Sénégal.
         </p>
         <p>
-          Contact : <ToFill>adresse e-mail de contact</ToFill>
+          Contact : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
         </p>
-        <p>
-          Directeur de la publication : <ToFill>nom</ToFill>
-        </p>
+        <p>Directeur de la publication : Salamba Diène.</p>
       </section>
 
       <section>
@@ -26,8 +26,12 @@ export default function LegalNoticePage() {
           États-Unis.
         </p>
         <p>
-          Les données des comptes (authentification et base de données) sont hébergées par Supabase,
-          dans la région <ToFill>région du projet Supabase</ToFill>.
+          Les comptes et les données (authentification et base de données) sont hébergés par
+          Supabase Inc., sur des serveurs situés dans l&apos;Union européenne (Irlande).
+        </p>
+        <p>
+          Les e-mails du service (confirmation d&apos;inscription, mot de passe) sont envoyés par
+          Gmail (Google).
         </p>
       </section>
 
@@ -45,6 +49,11 @@ export default function LegalNoticePage() {
           Le traitement de tes données est décrit dans la{" "}
           <a href="/confidentialite">politique de confidentialité</a>.
         </p>
+      </section>
+
+      <section>
+        <h2>Droit applicable</h2>
+        <p>Le site et ces mentions sont soumis au droit sénégalais.</p>
       </section>
     </LegalPage>
   );
