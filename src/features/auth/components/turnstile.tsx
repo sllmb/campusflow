@@ -118,8 +118,9 @@ export function Turnstile({ resetKey }: { resetKey?: unknown }) {
       <div ref={container} className="min-h-[65px]" />
       <input ref={input} type="hidden" name="captchaToken" defaultValue="" />
       {failed && (
-        <p className="text-[13px] font-semibold text-error">
-          La vérification anti-robots n&apos;a pas pu se charger. Recharge la page.
+        <p role="alert" className="text-[13px] font-semibold text-error">
+          La vérification anti-robots est bloquée. Désactive ton bloqueur de publicités pour
+          CampusFlow, ou essaie un autre navigateur ou ton téléphone, puis recharge la page.
         </p>
       )}
     </div>
