@@ -73,18 +73,21 @@ test.describe("connecté", () => {
   test("le profil propose les rappels du matin, ou explique qu'ils sont bloqués", async ({
     page,
   }) => {
-    // Le navigateur des tests bloque les notifications par défaut.
+    // La permission dépend du navigateur des tests : on simule chaque cas.
+    const simulate = (permission: NotificationPermission) =>
+      page.addInitScript((value) => {
+        Object.defineProperty(Notification, "permission", { get: () => value });
+      }, permission);
+
+    await simulate("denied");
     await page.goto("/profil", { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { name: "Rappels du matin" })).toBeVisible();
     // Le prénom enregistré ne doit pas être remplacé par celui que le navigateur a mémorisé.
     await expect(page.getByLabel("Prénom")).toHaveAttribute("autocomplete", "off");
     await expect(page.getByText("Les notifications sont bloquées pour CampusFlow.")).toBeVisible();
 
-    // Un téléphone qui n'a encore rien décidé (« default ») : le bouton d'activation apparaît.
-    // Le Chromium sans écran répond toujours « denied » : on simule la première visite.
-    await page.addInitScript(() =>
-      Object.defineProperty(Notification, "permission", { get: () => "default" }),
-    );
+    // Première visite (« default ») : le bouton d'activation apparaît.
+    await simulate("default");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.getByRole("button", { name: "Activer les rappels" })).toBeVisible();
   });
