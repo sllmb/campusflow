@@ -4,18 +4,42 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), numérotation
 [SemVer](https://semver.org/lang/fr/).
 
-## [Non publié]
+## [1.2.0] — 17 novembre 2026
 
-### Sécurité
+Prête à accueillir d'autres étudiants : anti-robots, pages légales complètes et une base de test
+séparée de la production.
+
+### Ajouté
 
 - **Anti-robots Cloudflare Turnstile** sur l'inscription, la connexion et le mot de passe
-  oublié, vérifié par Supabase.
+  oublié. Le jeton est vérifié par Supabase lui-même : impossible de contourner l'app. Si la
+  vérification est bloquée (bloqueur de publicités, réseau), un message dit quoi faire.
 
 ### Modifié
 
-- Pages légales complètes (éditeur, contact, hébergement des données dans l'UE, droits selon la
-  loi sénégalaise n° 2008-12).
-- Développement et tests de bout en bout sur un projet Supabase de test, séparé de la production.
+- **Pages légales complètes** : éditeur, contact (campusflow.contact@gmail.com), hébergement des
+  données dans l'Union européenne, droits selon la loi sénégalaise n° 2008-12 et recours auprès
+  de la CDP. La politique de confidentialité couvre les révisions et les rappels.
+- Après une inscription ou une demande de mot de passe, l'app rappelle de regarder dans les
+  spams.
+- Page d'accueil : la carte « Ton focus » mentionne le deep work de 1 h à 10 h.
+
+### Corrigé
+
+- Profil : le navigateur ne remplace plus le prénom enregistré par celui qu'il a mémorisé.
+
+### Technique
+
+- **Projet Supabase de test** pour le développement local et les tests de bout en bout : les
+  essais ne touchent plus jamais les vraies données.
+- Fins de ligne identiques sur tous les systèmes (`.gitattributes`), Windows compris.
+- Dependabot écarte les mises à jour majeures testées et incompatibles (TypeScript 7,
+  web-push 4, types de Node 26).
+
+### Mise en place
+
+Aucune migration. Variable Vercel `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, puis anti-robots activé dans
+Supabase (production) avec la clé secrète Turnstile.
 
 ## [1.1.0] — 12 novembre 2026
 
@@ -101,6 +125,7 @@ Première version (MVP), utilisable pendant un semestre.
 - Sécurité par RLS sur toutes les tables, tests unitaires et de bout en bout, intégration
   continue GitHub Actions, mise en ligne sur Vercel.
 
+[1.2.0]: https://github.com/sllmb/campusflow/releases/tag/v1.2.0
 [1.1.0]: https://github.com/sllmb/campusflow/releases/tag/v1.1.0
 [1.0.0]: https://github.com/sllmb/campusflow/releases/tag/v1.0.0
 [0.1.0]: https://github.com/sllmb/campusflow/releases/tag/v0.1.0
