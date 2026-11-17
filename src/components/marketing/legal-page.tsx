@@ -22,12 +22,3 @@ export function LegalPage({
     </article>
   );
 }
-
-/** Information que le propriétaire du site doit fournir avant la mise en ligne publique. */
-export function ToFill({ children }: { children: ReactNode }) {
-  return (
-    <mark className="rounded-md border-2 border-dashed bg-pink px-1.5 py-0.5 font-bold text-ink">
-      À compléter : {children}
-    </mark>
-  );
-}
