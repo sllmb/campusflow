@@ -131,6 +131,7 @@ comptes (seulement leurs informations de compte).
   2. L'étudiant voit « Un questionnaire t'attend » sur son accueil et touche « Répondre ».
   3. Il lit si le questionnaire est anonyme ou nominatif, répond, envoie : « Merci ! ».
   4. L'éditeur voit le nombre de réponses ; les questions sont alors verrouillées.
+  5. Il ouvre les **Résultats** (barres, moyennes, réponses écrites) et exporte un CSV.
 - **Variantes** :
   - Réponse obligatoire manquante : message sous la question, rien n'est envoyé.
   - Deuxième visite : « Une seule réponse par personne ».

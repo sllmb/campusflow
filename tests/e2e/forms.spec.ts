@@ -125,6 +125,29 @@ test("l'admin publie un questionnaire, l'étudiant y répond une fois", async ({
       await expect(admin.getByText("1 réponse", { exact: true })).toBeVisible();
       await expect(admin.getByText("les questions ne peuvent plus changer")).toBeVisible();
       await expect(admin.getByRole("button", { name: "Ajouter une question" })).toHaveCount(0);
+      // Résultats : barres pour les choix, moyenne pour l'échelle, export CSV.
+      const editorUrl = admin.url();
+      await admin.getByRole("link", { name: "Résultats" }).click();
+      await expect(admin.getByRole("heading", { level: 1, name: TITLE })).toBeVisible();
+      const annee = admin.getByRole("listitem").filter({ hasText: /^L2/ });
+      await expect(annee).toContainText("1 personne");
+      await expect(annee).toContainText("100 %");
+      await expect(admin.getByText("Moyenne :")).toContainText("4");
+      const [download] = await Promise.all([
+        admin.waitForEvent("download"),
+        admin.getByRole("link", { name: "Exporter en CSV" }).click(),
+      ]);
+      expect(download.suggestedFilename()).toMatch(/^questionnaire-e2e-.*-reponses\.csv$/);
+      const csv = (await (await download.createReadStream()).toArray()).join("");
+      const lines = csv
+        .replace(/^\uFEFF/, "")
+        .trim()
+        .split("\r\n");
+      expect(lines[0]).toBe("Date;Recommanderais-tu CampusFlow ?;Ton année d'études");
+      expect(lines[1]).toMatch(/;4;L2$/);
+      expect(lines).toHaveLength(2);
+      await admin.goto(editorUrl, { waitUntil: "networkidle" });
+
       await admin.getByRole("button", { name: "Fermer les réponses" }).click();
       await expect(admin.getByText("Fermé", { exact: true })).toBeVisible();
     });

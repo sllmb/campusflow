@@ -101,7 +101,10 @@ where email = 'ton-adresse@exemple.com';
 **Formulaires** (`/admin/formulaires`) : l'admin crée des questionnaires (réponse courte,
 paragraphe, choix unique, cases à cocher, échelle de 1 à 5), anonymes par défaut ; les étudiants
 les voient sur leur accueil et répondent une fois. Tout passe par la RLS
-(`private.is_admin()`), sans clé secrète. Les résultats arrivent dans la prochaine version.
+(`private.is_admin()`), sans clé secrète. Chaque formulaire a sa page
+**Résultats** (barres, moyennes, réponses écrites) et un **export CSV** (séparateur « ; », UTF-8 :
+Excel en français l'ouvre directement ; les formules sont neutralisées). Pour un formulaire
+nominatif, le prénom et l'e-mail viennent de la clé secrète, côté serveur.
 
 Test de bout en bout à deux personnes (`tests/e2e/forms.spec.ts`) : il faut en plus un compte
 admin sur le projet de **test** (`E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD`), sans 2FA (le test

@@ -14,6 +14,7 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 
 - **Questionnaires** : l'admin crée des formulaires (5 types de questions, anonymes par défaut) ;
   les étudiants les voient sur leur accueil et y répondent une fois, toujours facultativement.
+  Résultats en graphiques (barres, moyennes, réponses écrites) et export CSV.
 
 ### Modifié
 
