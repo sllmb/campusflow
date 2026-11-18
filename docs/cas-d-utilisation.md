@@ -32,6 +32,7 @@ flowchart LR
         uc_profil(["Gérer son compte<br/>nom, mot de passe, 2FA, suppression"])
         uc_rappels(["Recevoir un rappel<br/>chaque matin"])
         uc_admin(["Suivre l'adoption<br/>en chiffres globaux"])
+        uc_comptes(["Gérer les comptes<br/>suspendre, supprimer"])
     end
 
     visiteur --- uc_accueil
@@ -54,10 +55,12 @@ flowchart LR
     etudiant --- uc_rappels
     uc_rappels --- push
     editeur --- uc_admin
+    editeur --- uc_comptes
 ```
 
 Un visiteur devient étudiant en se connectant. L'éditeur est un étudiant à qui le rôle `admin` a
-été donné dans Supabase ; il ne voit jamais le contenu des autres comptes.
+été donné dans Supabase ; il a son propre espace, sans les pages d'étudiant, et ne voit jamais le contenu des autres
+comptes (seulement leurs informations de compte).
 
 ## Détail des cas principaux
 

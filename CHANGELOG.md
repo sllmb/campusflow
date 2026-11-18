@@ -8,8 +8,9 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 
 ### Ajouté
 
-- **Tableau admin** (`/admin`, réservé à l'éditeur avec la double authentification) :
-  l'adoption en chiffres globaux et le nettoyage des comptes jamais confirmés.
+- **Espace admin** (réservé à l'éditeur, avec la double authentification), séparé des pages
+  d'étudiant : tableau de l'adoption en chiffres globaux, liste des comptes avec recherche,
+  filtres, suspension et suppression. Jamais le contenu des comptes.
 
 ### Modifié
 

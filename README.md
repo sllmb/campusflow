@@ -75,11 +75,16 @@ peut pas contourner l'app en appelant Supabase directement.
 Ordre de mise en place : 1) clé de site dans Vercel et déploiement ; 2) seulement ensuite,
 activation dans Supabase. Dans l'autre ordre, plus personne ne peut se connecter.
 
-## Tableau admin
+## Espace admin
 
-`/admin` affiche l'adoption en **chiffres globaux** : comptes, actifs sur 7 jours, inscriptions
-par jour, abonnés aux rappels, totaux de contenus. Jamais une note, un devoir ou un prénom. Il
-permet aussi de supprimer les comptes jamais confirmés depuis plus de 7 jours.
+Le compte admin a son **propre espace**, sans les pages d'étudiant (le proxy l'y renvoie) :
+
+- **Tableau** (`/admin`) : l'adoption en chiffres globaux (comptes, actifs sur 7 jours,
+  inscriptions par jour, abonnés aux rappels, totaux de contenus), nettoyage des comptes jamais
+  confirmés depuis plus de 7 jours.
+- **Utilisateurs** (`/admin/utilisateurs`) : la liste des comptes (e-mail, prénom, dates, état
+  de l'adresse, 2FA, rappels, activité récente), avec recherche, filtres, suspension,
+  réactivation et suppression. Jamais le contenu des comptes (notes, devoirs…).
 
 Accès : rôle `admin` dans `app_metadata` (posé par le serveur, impossible à modifier par
 l'utilisateur) **et** code 2FA saisi. Sinon : 404, la page n'existe pas. Pour se donner le rôle,
