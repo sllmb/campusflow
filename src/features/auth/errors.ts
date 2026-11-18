@@ -1,7 +1,12 @@
 import type { AuthError } from "@supabase/supabase-js";
 
+export const CAPTCHA_MESSAGE =
+  "La vérification anti-robots n'est pas validée. Attends la coche verte (ou désactive ton bloqueur de publicités), puis réessaie.";
+
 /** Traduit les erreurs d'authentification Supabase en messages compréhensibles. */
-export function authErrorMessage(error: AuthError): string {
+export function authErrorMessage(error: Pick<AuthError, "code" | "message">): string {
+  // Filet de sécurité : selon la version de Supabase, le code peut manquer.
+  if (/captcha/i.test(error.message ?? "")) return CAPTCHA_MESSAGE;
   switch (error.code) {
     case "invalid_credentials":
       return "E-mail ou mot de passe incorrect.";
@@ -20,7 +25,7 @@ export function authErrorMessage(error: AuthError): string {
     case "same_password":
       return "Choisis un mot de passe différent de l'ancien.";
     case "captcha_failed":
-      return "La vérification anti-robots n'est pas validée. Attends la coche verte (ou désactive ton bloqueur de publicités), puis réessaie.";
+      return CAPTCHA_MESSAGE;
     case "insufficient_aal":
       return "Saisis d'abord ton code de double authentification.";
     case "reauthentication_needed":

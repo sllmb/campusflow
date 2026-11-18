@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getRequestOrigin } from "@/lib/request-origin";
 import { createClient } from "@/lib/supabase/server";
-import { authErrorMessage, logAuthError } from "./errors";
+import { authErrorMessage, CAPTCHA_MESSAGE, logAuthError } from "./errors";
 import { newPasswordSchema, resetRequestSchema, signInSchema, signUpSchema } from "./schemas";
 import type { FormState } from "@/lib/form-state";
 
@@ -14,6 +14,14 @@ type SignInField = "email" | "password";
 function captchaToken(formData: FormData) {
   const value = formData.get("captchaToken");
   return typeof value === "string" && value ? value : undefined;
+}
+
+/**
+ * Anti-robots activé (production) mais aucun jeton : le widget n'a pas fini, ou il est bloqué
+ * (bloqueur de publicités, réseau). On le dit tout de suite, sans appeler Supabase.
+ */
+function missingCaptcha(formData: FormData) {
+  return Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim()) && !captchaToken(formData);
 }
 type SignUpField = "displayName" | "email" | "password";
 
@@ -30,6 +38,7 @@ export async function signIn(
     return { fieldErrors: z.flattenError(parsed.error).fieldErrors, values };
   }
 
+  if (missingCaptcha(formData)) return { error: CAPTCHA_MESSAGE, values };
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
     ...parsed.data,
@@ -65,6 +74,7 @@ export async function signUp(
   }
 
   const origin = await getRequestOrigin();
+  if (missingCaptcha(formData)) return { error: CAPTCHA_MESSAGE, values };
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
@@ -106,6 +116,7 @@ export async function requestPasswordReset(
   if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors, values };
 
   const origin = await getRequestOrigin();
+  if (missingCaptcha(formData)) return { error: CAPTCHA_MESSAGE, values };
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${origin}/auth/confirm?next=/nouveau-mot-de-passe`,
