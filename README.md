@@ -28,6 +28,10 @@ l'ordre des noms. Deux façons de l'appliquer :
 
 Règle du projet : toute nouvelle table active la RLS dans la même migration.
 
+Les fonctions de Vercel tournent à **Dublin** (`"regions": ["dub1"]` dans `vercel.json`), à côté
+de la base de données (Supabase, région West EU, Irlande) : chaque requête à la base reste en
+Europe au lieu de traverser l'Atlantique.
+
 ### Deux projets Supabase : production et test
 
 | Projet            | Utilisé par                                             | Anti-robots |
