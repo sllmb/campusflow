@@ -28,6 +28,7 @@ const STUDENT_PATHS = [
   "/pomodoro",
   "/statistiques",
   "/styleguide",
+  "/questionnaires",
 ];
 
 function matches(pathname: string, paths: string[]) {

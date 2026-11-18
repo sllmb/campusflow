@@ -2,6 +2,7 @@ import {
   BookOpen,
   ChartColumn,
   ClipboardList,
+  FileText,
   GraduationCap,
   LayoutDashboard,
   ShieldCheck,
@@ -36,6 +37,7 @@ export const navItems: NavItem[] = [
 export const adminNavItems: NavItem[] = [
   { href: "/admin", label: "Tableau", icon: ShieldCheck, exact: true },
   { href: "/admin/utilisateurs", label: "Utilisateurs", icon: Users },
+  { href: "/admin/formulaires", label: "Formulaires", icon: FileText },
   { href: "/profil", label: "Profil", icon: UserRound, mobileOnly: true },
 ];
 
