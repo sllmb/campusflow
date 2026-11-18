@@ -33,6 +33,8 @@ flowchart LR
         uc_rappels(["Recevoir un rappel<br/>chaque matin"])
         uc_admin(["Suivre l'adoption<br/>en chiffres globaux"])
         uc_comptes(["Gérer les comptes<br/>suspendre, supprimer"])
+        uc_formulaires(["Créer des formulaires<br/>et lire les réponses"])
+        uc_repondre(["Répondre à un<br/>questionnaire"])
     end
 
     visiteur --- uc_accueil
@@ -56,6 +58,8 @@ flowchart LR
     uc_rappels --- push
     editeur --- uc_admin
     editeur --- uc_comptes
+    editeur --- uc_formulaires
+    etudiant --- uc_repondre
 ```
 
 Un visiteur devient étudiant en se connectant. L'éditeur est un étudiant à qui le rôle `admin` a
@@ -118,6 +122,20 @@ comptes (seulement leurs informations de compte).
   - Trop d'heures pour le temps qui reste (plus de 10 h par jour) : le maximum possible est indiqué.
   - Aucun jour choisi n'est disponible : message sous les jours.
   - « Refaire le planning » : les créneaux déjà faits et ceux des jours passés sont gardés.
+
+### Répondre à un questionnaire (EF-95 à EF-97)
+
+- **Acteurs** : l'éditeur (admin), puis l'étudiant.
+- **Scénario nominal** :
+  1. L'éditeur crée un formulaire, ajoute ses questions, choisit anonyme ou nominatif, publie.
+  2. L'étudiant voit « Un questionnaire t'attend » sur son accueil et touche « Répondre ».
+  3. Il lit si le questionnaire est anonyme ou nominatif, répond, envoie : « Merci ! ».
+  4. L'éditeur voit le nombre de réponses ; les questions sont alors verrouillées.
+- **Variantes** :
+  - Réponse obligatoire manquante : message sous la question, rien n'est envoyé.
+  - Deuxième visite : « Une seule réponse par personne ».
+  - « Plus tard » : la carte disparaît de l'accueil sur cet appareil.
+  - Formulaire fermé : page « Introuvable ».
 
 ### Consulter ses statistiques (EF-60 à EF-64)
 

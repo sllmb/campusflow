@@ -119,13 +119,16 @@ Une session compte pour le jour où elle a commencé, dans le fuseau de l'étudi
 
 ### Administration
 
-| Id    | Exigence                                                                                                                                                                                 | Version |
-| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| EF-90 | Tableau admin réservé à l'éditeur (rôle admin et code 2FA) : comptes, actifs sur 7 jours, inscriptions par jour, abonnés aux rappels, totaux de contenus. Jamais le contenu d'un compte. | 1.3     |
-| EF-91 | Supprimer les comptes jamais confirmés depuis plus de 7 jours.                                                                                                                           | 1.3     |
-| EF-92 | Espace admin séparé : le compte admin n'a que ses pages (Tableau, Utilisateurs, Profil), pas celles des étudiants.                                                                       | 1.3     |
-| EF-93 | Liste des comptes : e-mail, prénom, inscription, dernière connexion, adresse confirmée, 2FA, rappels, activité récente ; recherche et filtres. Jamais le contenu des comptes.            | 1.3     |
-| EF-94 | Suspendre, réactiver ou supprimer un compte (jamais le sien ni celui d'un autre admin).                                                                                                  | 1.3     |
+| Id    | Exigence                                                                                                                                                                                          | Version |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| EF-90 | Tableau admin réservé à l'éditeur (rôle admin et code 2FA) : comptes, actifs sur 7 jours, inscriptions par jour, abonnés aux rappels, totaux de contenus. Jamais le contenu d'un compte.          | 1.3     |
+| EF-91 | Supprimer les comptes jamais confirmés depuis plus de 7 jours.                                                                                                                                    | 1.3     |
+| EF-92 | Espace admin séparé : le compte admin n'a que ses pages (Tableau, Utilisateurs, Profil), pas celles des étudiants.                                                                                | 1.3     |
+| EF-93 | Liste des comptes : e-mail, prénom, inscription, dernière connexion, adresse confirmée, 2FA, rappels, activité récente ; recherche et filtres. Jamais le contenu des comptes.                     | 1.3     |
+| EF-94 | Suspendre, réactiver ou supprimer un compte (jamais le sien ni celui d'un autre admin).                                                                                                           | 1.3     |
+| EF-95 | Formulaires créés par l'admin : 5 types de questions (réponse courte, paragraphe, choix unique, cases à cocher, échelle de 1 à 5), obligatoires ou non, réordonnables ; brouillon, ouvert, fermé. | 1.3     |
+| EF-96 | Réponses anonymes (par défaut) ou nominatives, annoncées à l'étudiant avant qu'il réponde.                                                                                                        | 1.3     |
+| EF-97 | L'étudiant voit « Un questionnaire t'attend » sur son accueil (facultatif, « Plus tard »), répond une seule fois.                                                                                 | 1.3     |
 
 ## 5. Exigences non fonctionnelles
 

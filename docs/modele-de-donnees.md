@@ -39,6 +39,11 @@ erDiagram
     MATIERE |o--o{ SESSION_CONCENTRATION : "concerne"
     UTILISATEUR ||--o{ SESSION_CONCENTRATION : "réalise"
     UTILISATEUR ||--o{ ABONNEMENT_RAPPEL : "reçoit sur"
+    FORMULAIRE ||--o{ QUESTION : "pose"
+    FORMULAIRE ||--o{ REPONSE : "recueille"
+    UTILISATEUR |o--o{ REPONSE : "signe (si nominatif)"
+    UTILISATEUR ||--o{ PARTICIPATION : "a répondu à"
+    FORMULAIRE ||--o{ PARTICIPATION : "compte"
 ```
 
 Une session de concentration peut ne concerner aucune matière (`|o`) : on peut lancer un
@@ -118,6 +123,38 @@ erDiagram
         text priority
         timestamptz completed_at
     }
+    forms ||--o{ form_questions : "form_id"
+    forms ||--o{ form_responses : "form_id"
+    forms ||--o{ form_participations : "form_id"
+    auth_users |o--o{ form_responses : "user_id (null si anonyme)"
+    auth_users ||--o{ form_participations : "user_id"
+
+    forms {
+        uuid id PK
+        text title
+        text description
+        text status
+        boolean anonymous
+    }
+    form_questions {
+        uuid id PK
+        uuid form_id FK
+        int position
+        text kind
+        text label
+        boolean required
+        text_array options
+    }
+    form_participations {
+        uuid form_id PK
+        uuid user_id PK
+    }
+    form_responses {
+        uuid id PK
+        uuid form_id FK
+        uuid user_id FK "null si anonyme"
+        jsonb answers
+    }
     push_subscriptions {
         uuid id PK
         uuid user_id FK
@@ -164,6 +201,11 @@ Notation : la clé primaire est en **gras**, les clés étrangères sont précé
 - **revision_sessions** (**id**, #user_id, #assignment_id, planned_on, minutes, done)
 - **focus_sessions** (**id**, #user_id, #subject_id, mode, planned_minutes, started_at, ended_at,
   focused_seconds, completed)
+
+- **forms** (**id**, title, description, status, anonymous)
+- **form_questions** (**id**, #form_id, position, kind, label, required, options)
+- **form_participations** (**#form_id, #user_id**)
+- **form_responses** (**id**, #form_id, #user_id, answers, submitted_at)
 
 ## Règles portées par la base
 
@@ -217,17 +259,30 @@ rattacher une UE au semestre d'un autre étudiant, même en connaissant son iden
 - Les sessions de concentration ne peuvent pas être modifiées après coup : il n'existe pas de
   politique `update` sur `focus_sessions`.
 
+### Formulaires
+
+- Les formulaires appartiennent à l'**éditeur**, pas à un étudiant : la RLS reconnaît l'admin
+  avec `private.is_admin()` (rôle `admin` dans le jeton **et** code 2FA saisi). Aucune clé
+  secrète n'est nécessaire.
+- Un étudiant ne lit que les formulaires **ouverts** et leurs questions, et seulement ses
+  propres participations. Il n'écrit qu'à travers `submit_form_response` (une seule réponse,
+  formulaire ouvert, anonyme ou non selon le formulaire).
+- **Anonymat** : la réponse d'un formulaire anonyme est enregistrée avec `user_id` vide ; le
+  fait d'avoir répondu est noté à part (`form_participations`), **sans date**, et l'admin ne peut
+  pas lire cette table : impossible de relier une réponse à une personne.
+
 ## Historique des migrations
 
-| Migration                                        | Contenu                                     |
-| ------------------------------------------------ | ------------------------------------------- |
-| `20261110170000_create_profiles`                 | Profils, création automatique.              |
-| `20261111090000_create_semesters_units_subjects` | Semestres, UE, matières.                    |
-| `20261111140000_create_assignments`              | Devoirs, projets, examens.                  |
-| `20261111180000_create_grades`                   | Notes, validation par le jury.              |
-| `20261112090000_create_focus_sessions`           | Sessions Pomodoro et deep work.             |
-| `20261113090000_enforce_mfa`                     | Double authentification exigée par la base. |
-| `20261114090000_delete_own_account`              | Suppression de son propre compte.           |
-| `20261115090000_longer_deep_work`                | Deep work jusqu'à 10 h.                     |
-| `20261116090000_create_revision_sessions`        | Créneaux de révision.                       |
-| `20261117090000_create_push_subscriptions`       | Abonnements aux rappels du matin.           |
+| Migration                                        | Contenu                                           |
+| ------------------------------------------------ | ------------------------------------------------- |
+| `20261110170000_create_profiles`                 | Profils, création automatique.                    |
+| `20261111090000_create_semesters_units_subjects` | Semestres, UE, matières.                          |
+| `20261111140000_create_assignments`              | Devoirs, projets, examens.                        |
+| `20261111180000_create_grades`                   | Notes, validation par le jury.                    |
+| `20261112090000_create_focus_sessions`           | Sessions Pomodoro et deep work.                   |
+| `20261113090000_enforce_mfa`                     | Double authentification exigée par la base.       |
+| `20261114090000_delete_own_account`              | Suppression de son propre compte.                 |
+| `20261115090000_longer_deep_work`                | Deep work jusqu'à 10 h.                           |
+| `20261116090000_create_revision_sessions`        | Créneaux de révision.                             |
+| `20261117090000_create_push_subscriptions`       | Abonnements aux rappels du matin.                 |
+| `20261119090000_create_forms`                    | Formulaires, questions, participations, réponses. |

@@ -17,6 +17,8 @@ import {
   UpcomingWidget,
 } from "@/features/dashboard/components/widgets";
 import { getFocusToday } from "@/features/focus/queries";
+import { PendingFormsLoader } from "@/features/forms/components/pending-forms-loader";
+import { listPendingForms } from "@/features/forms/queries";
 import { getGradesOverview } from "@/features/grades/queries";
 import { listRevisionSlots } from "@/features/revisions/queries";
 import { Greeting } from "@/features/profile/components/greeting";
@@ -45,11 +47,12 @@ async function DashboardWidgets() {
   const now = new Date();
   const today = utcToLocalInput(now.toISOString(), timeZone).slice(0, 10);
 
-  const [assignments, overview, focus, revisions] = await Promise.all([
+  const [assignments, overview, focus, revisions, pendingForms] = await Promise.all([
     listAssignments(),
     getGradesOverview(undefined, today),
     getFocusToday(today, timeZone),
     listRevisionSlots({ first: today, last: today }),
+    listPendingForms(),
   ]);
   const schedule = buildSchedule(assignments, now, timeZone);
   // Carte principale : la prochaine échéance à venir ; s'il n'y a que des retards, le plus ancien.
@@ -57,6 +60,7 @@ async function DashboardWidgets() {
 
   return (
     <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-4 lg:gap-5">
+      <PendingFormsLoader forms={pendingForms} />
       <NextDueWidget item={next} />
       <AverageWidget result={overview.result} />
       <FocusWidget totalSeconds={focus.totalSeconds} sessions={focus.sessions.length} />

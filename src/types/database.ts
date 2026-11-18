@@ -33,6 +33,78 @@ export type Database = {
         Update: Record<string, never>;
         Relationships: [];
       };
+      forms: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          status: "draft" | "open" | "closed";
+          anonymous: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string;
+          status?: "draft" | "open" | "closed";
+          anonymous?: boolean;
+        };
+        Update: {
+          title?: string;
+          description?: string;
+          status?: "draft" | "open" | "closed";
+          anonymous?: boolean;
+        };
+        Relationships: [];
+      };
+      form_questions: {
+        Row: {
+          id: string;
+          form_id: string;
+          position: number;
+          kind: "short_text" | "long_text" | "single_choice" | "multiple_choice" | "scale";
+          label: string;
+          required: boolean;
+          options: string[];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          form_id: string;
+          position?: number;
+          kind: "short_text" | "long_text" | "single_choice" | "multiple_choice" | "scale";
+          label: string;
+          required?: boolean;
+          options?: string[];
+        };
+        Update: {
+          position?: number;
+          kind?: "short_text" | "long_text" | "single_choice" | "multiple_choice" | "scale";
+          label?: string;
+          required?: boolean;
+          options?: string[];
+        };
+        Relationships: [];
+      };
+      form_participations: {
+        Row: { form_id: string; user_id: string };
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      form_responses: {
+        Row: {
+          id: string;
+          form_id: string;
+          user_id: string | null;
+          answers: Record<string, string | string[] | number>;
+          submitted_at: string;
+        };
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
       push_subscriptions: {
         Row: {
           id: string;
@@ -257,6 +329,10 @@ export type Database = {
     Views: Record<string, never>;
     Functions: {
       delete_my_account: { Args: Record<string, never>; Returns: undefined };
+      submit_form_response: {
+        Args: { p_form_id: string; p_answers: Record<string, string | string[] | number> };
+        Returns: undefined;
+      };
       save_push_subscription: {
         Args: { p_endpoint: string; p_p256dh: string; p_auth: string; p_time_zone: string };
         Returns: undefined;
