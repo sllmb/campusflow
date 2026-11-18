@@ -24,8 +24,8 @@ CampusFlow réunit ces besoins dans une seule application web, pensée d'abord p
 | Visiteur | Personne non connectée : voit la page d'accueil et les pages légales. |
 | Étudiant | Personne inscrite et connectée : utilise toutes les fonctionnalités.  |
 
-Chaque étudiant ne gère que ses données. L'éditeur dispose d'un tableau admin en **chiffres
-globaux** (EF-90), sans accès au contenu des comptes.
+Chaque étudiant ne gère que ses données. L'éditeur dispose d'un espace admin séparé : chiffres
+globaux (EF-90) et liste des comptes (EF-93), sans accès au contenu des comptes.
 
 ## 4. Exigences fonctionnelles
 
@@ -123,6 +123,9 @@ Une session compte pour le jour où elle a commencé, dans le fuseau de l'étudi
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | EF-90 | Tableau admin réservé à l'éditeur (rôle admin et code 2FA) : comptes, actifs sur 7 jours, inscriptions par jour, abonnés aux rappels, totaux de contenus. Jamais le contenu d'un compte. | 1.3     |
 | EF-91 | Supprimer les comptes jamais confirmés depuis plus de 7 jours.                                                                                                                           | 1.3     |
+| EF-92 | Espace admin séparé : le compte admin n'a que ses pages (Tableau, Utilisateurs, Profil), pas celles des étudiants.                                                                       | 1.3     |
+| EF-93 | Liste des comptes : e-mail, prénom, inscription, dernière connexion, adresse confirmée, 2FA, rappels, activité récente ; recherche et filtres. Jamais le contenu des comptes.            | 1.3     |
+| EF-94 | Suspendre, réactiver ou supprimer un compte (jamais le sien ni celui d'un autre admin).                                                                                                  | 1.3     |
 
 ## 5. Exigences non fonctionnelles
 

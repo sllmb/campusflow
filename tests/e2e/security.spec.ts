@@ -26,10 +26,16 @@ test("le rappel du matin refuse tout appel sans le secret de Vercel Cron", async
 test.describe("pages personnelles", () => {
   test.skip(!process.env.E2E_EMAIL, "E2E_EMAIL et E2E_PASSWORD non définis");
 
-  test("le tableau admin n'existe pas pour un étudiant", async ({ page }) => {
-    const response = await page.goto("/admin");
-    expect(response?.status()).toBe(404);
-    await expect(page.getByRole("heading", { name: /Admin/ })).toHaveCount(0);
+  test("l'espace admin n'existe pas pour un étudiant", async ({ page }) => {
+    for (const path of ["/admin", "/admin/utilisateurs"]) {
+      const response = await page.goto(path);
+      expect(response?.status(), path).toBe(404);
+      await expect(page.getByRole("heading", { name: /Admin|Utilisateurs/ })).toHaveCount(0);
+    }
+    // Menu d'étudiant, sans lien vers l'espace admin.
+    await page.goto("/dashboard");
+    await expect(page.getByRole("link", { name: "Accueil" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Utilisateurs" })).toHaveCount(0);
     await page.goto("/profil");
     await expect(page.getByRole("link", { name: /tableau admin/ })).toHaveCount(0);
   });

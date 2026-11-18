@@ -19,6 +19,17 @@ const PUBLIC_PATHS = [
 /** Pages réservées aux visiteurs non connectés (un utilisateur connecté est renvoyé à l'accueil). */
 const GUEST_ONLY_PATHS = ["/login", "/signup"];
 
+/** Pages d'étudiant : le compte admin est renvoyé vers son propre espace. */
+const STUDENT_PATHS = [
+  "/dashboard",
+  "/matieres",
+  "/devoirs",
+  "/notes",
+  "/pomodoro",
+  "/statistiques",
+  "/styleguide",
+];
+
 function matches(pathname: string, paths: string[]) {
   return paths.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 }
@@ -100,13 +111,18 @@ export async function updateSession(request: NextRequest) {
     const wanted = pathname + request.nextUrl.search;
     return redirectTo("/verification", wanted === "/" ? undefined : wanted);
   }
+  const isAdmin = adminAccess(data?.claims) !== "denied";
   if (isSignedIn && (pathname === "/" || matches(pathname, GUEST_ONLY_PATHS))) {
-    return redirectTo("/dashboard");
+    return redirectTo(isAdmin ? "/admin" : "/dashboard");
+  }
+  // Espace admin séparé : pas de pages d'étudiant pour le compte admin.
+  if (isAdmin && matches(pathname, STUDENT_PATHS)) {
+    return redirectTo("/admin");
   }
 
   // Tableau admin : vérifié AVANT d'envoyer quoi que ce soit (la page s'affiche en flux, elle ne
   // pourrait plus changer son statut). Sans le rôle admin, la page n'existe pas : 404.
-  if (matches(pathname, ["/admin"]) && adminAccess(data?.claims) === "denied") {
+  if (matches(pathname, ["/admin"]) && !isAdmin) {
     const notFound = request.nextUrl.clone();
     notFound.pathname = "/introuvable";
     notFound.search = "";

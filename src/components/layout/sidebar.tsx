@@ -2,7 +2,7 @@ import Link from "next/link";
 import { UserRound } from "lucide-react";
 import { Suspense } from "react";
 import { Logo } from "./logo";
-import { NavLinks, NavLinksView } from "./nav-links";
+import { RoleNavLinks } from "./role-nav-links";
 
 /** Navigation principale sur ordinateur (masquée sur mobile). */
 export function Sidebar() {
@@ -12,8 +12,9 @@ export function Sidebar() {
         <Logo />
       </div>
       <nav aria-label="Navigation principale" className="mt-10">
-        <Suspense fallback={<NavLinksView variant="sidebar" pathname={null} />}>
-          <NavLinks variant="sidebar" />
+        {/* Le menu dépend du rôle (étudiant ou admin) : rien n'est affiché avant de le connaître. */}
+        <Suspense fallback={<div className="h-64" />}>
+          <RoleNavLinks variant="sidebar" />
         </Suspense>
       </nav>
       <Link

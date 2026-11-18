@@ -45,6 +45,12 @@ async function AdminLink() {
   );
 }
 
+/** Les rappels du matin concernent les étudiants : pas affichés pour le compte admin. */
+async function RemindersSection() {
+  if ((await getAdminAccess()) !== "denied") return null;
+  return <RemindersCardLoader />;
+}
+
 async function TwoFactorSection() {
   return <TwoFactorCard enabled={await getTwoFactorEnabled()} />;
 }
@@ -63,7 +69,9 @@ export default function ProfilePage() {
         <Suspense fallback={null}>
           <AdminLink />
         </Suspense>
-        <RemindersCardLoader />
+        <Suspense fallback={null}>
+          <RemindersSection />
+        </Suspense>
         <Suspense fallback={<div className="h-40 animate-pulse rounded-card bg-muted" />}>
           <TwoFactorSection />
         </Suspense>

@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getServerSecrets } from "@/lib/server-secrets";
 import { adminAccess, type AccountInfo } from "./lib/adoption";
+import { canManage, toUserRows, type AuthUserLike, type UserRow } from "./lib/users";
 
 /** « granted », « needs-2fa » ou « denied », d'après la session de la personne connectée. */
 export async function getAdminAccess() {
@@ -15,31 +16,58 @@ export async function getAdminAccess() {
  * Client à clé secrète, seulement pour un administrateur qui a saisi son code 2FA.
  * Toute fonction de ce fichier qui lit les données de tous les comptes passe par ici.
  */
-async function adminClientFor() {
-  if ((await getAdminAccess()) !== "granted") throw new Error("Accès admin refusé.");
+async function adminSession() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  if (adminAccess(data?.claims) !== "granted" || !data?.claims.sub) {
+    throw new Error("Accès admin refusé.");
+  }
   const { supabaseSecretKey } = getServerSecrets();
   if (!supabaseSecretKey) throw new Error("SUPABASE_SECRET_KEY n'est pas configurée.");
-  return createAdminClient(supabaseSecretKey);
+  return { admin: createAdminClient(supabaseSecretKey), adminId: data.claims.sub };
+}
+
+async function adminClientFor() {
+  return (await adminSession()).admin;
 }
 
 type AdminClient = Awaited<ReturnType<typeof adminClientFor>>;
 
-/** Tous les comptes, sans e-mail ni prénom : seulement des dates et un identifiant. */
-async function listAccounts(admin: AdminClient): Promise<AccountInfo[]> {
-  const accounts: AccountInfo[] = [];
+/** Tous les comptes d'authentification (Supabase les donne par pages de 1 000). */
+async function listAuthUsers(admin: AdminClient): Promise<AuthUserLike[]> {
+  const users: AuthUserLike[] = [];
   for (let page = 1; ; page += 1) {
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
     if (error) throw error;
-    for (const user of data.users) {
-      accounts.push({
-        id: user.id,
-        createdAt: user.created_at,
-        confirmedAt: user.email_confirmed_at ?? null,
-        lastSignInAt: user.last_sign_in_at ?? null,
-      });
-    }
-    if (data.users.length < 1000) return accounts;
+    users.push(...data.users);
+    if (data.users.length < 1000) return users;
   }
+}
+
+/** Tous les comptes, sans e-mail ni prénom : seulement des dates et un identifiant. */
+async function listAccounts(admin: AdminClient): Promise<AccountInfo[]> {
+  return (await listAuthUsers(admin)).map((user) => ({
+    id: user.id,
+    createdAt: user.created_at,
+    confirmedAt: user.email_confirmed_at ?? null,
+    lastSignInAt: user.last_sign_in_at ?? null,
+  }));
+}
+
+/** Comptes ayant créé ou modifié quelque chose depuis `since` (identifiants seulement). */
+async function recentActivityIds(admin: AdminClient, since: string) {
+  const results = await Promise.all([
+    admin.from("assignments").select("user_id").gte("updated_at", since),
+    admin.from("grades").select("user_id").gte("updated_at", since),
+    admin.from("focus_sessions").select("user_id").gte("created_at", since),
+    admin.from("revision_sessions").select("user_id").gte("updated_at", since),
+  ]);
+  const ids = new Set<string>();
+  for (const result of results) {
+    if (result.error) throw result.error;
+    result.data.forEach((row) => ids.add(row.user_id));
+  }
+  return ids;
 }
 
 /** Nombre de lignes d'une table, sans les lire. */
@@ -63,35 +91,24 @@ export async function getAdoptionData(today: string): Promise<AdoptionData> {
   const admin = await adminClientFor();
   const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
 
-  const [accounts, assignments, grades, focus, revisions, subscriptions, semesters, totals] =
-    await Promise.all([
-      listAccounts(admin),
-      admin.from("assignments").select("user_id").gte("updated_at", since),
-      admin.from("grades").select("user_id").gte("updated_at", since),
-      admin.from("focus_sessions").select("user_id, focused_seconds, created_at"),
-      admin.from("revision_sessions").select("user_id").gte("updated_at", since),
-      admin.from("push_subscriptions").select("user_id, last_sent_on"),
-      count(admin, "semesters"),
-      Promise.all([count(admin, "assignments"), count(admin, "grades")]),
-    ]);
-  for (const result of [assignments, grades, focus, revisions, subscriptions]) {
-    if (result.error) throw result.error;
-  }
-
-  const activeIds = new Set([
-    ...assignments.data!.map((row) => row.user_id),
-    ...grades.data!.map((row) => row.user_id),
-    ...revisions.data!.map((row) => row.user_id),
-    ...focus.data!.filter((row) => row.created_at >= since).map((row) => row.user_id),
+  const [accounts, activeIds, focus, subscriptions, semesters, totals] = await Promise.all([
+    listAccounts(admin),
+    recentActivityIds(admin, since),
+    admin.from("focus_sessions").select("focused_seconds"),
+    admin.from("push_subscriptions").select("user_id, last_sent_on"),
+    count(admin, "semesters"),
+    Promise.all([count(admin, "assignments"), count(admin, "grades")]),
   ]);
-  const focusSeconds = focus.data!.reduce((sum, row) => sum + row.focused_seconds, 0);
+  if (focus.error) throw focus.error;
+  if (subscriptions.error) throw subscriptions.error;
+  const focusSeconds = focus.data.reduce((sum, row) => sum + row.focused_seconds, 0);
 
   return {
     accounts,
     activeIds,
     reminders: {
-      subscribers: new Set(subscriptions.data!.map((row) => row.user_id)).size,
-      sentToday: subscriptions.data!.filter((row) => row.last_sent_on === today).length,
+      subscribers: new Set(subscriptions.data.map((row) => row.user_id)).size,
+      sentToday: subscriptions.data.filter((row) => row.last_sent_on === today).length,
     },
     content: {
       semesters,
@@ -111,4 +128,49 @@ export async function deleteStaleAccounts(isStale: (account: AccountInfo) => boo
     if (error) throw error;
   }
   return stale.length;
+}
+
+/** La liste des comptes (niveau A : informations de compte, jamais le contenu). */
+export async function getUserRows(): Promise<{ rows: UserRow[]; adminId: string }> {
+  const { admin, adminId } = await adminSession();
+  const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
+  const [users, profiles, subscriptions, activeIds] = await Promise.all([
+    listAuthUsers(admin),
+    admin.from("profiles").select("id, display_name"),
+    admin.from("push_subscriptions").select("user_id"),
+    recentActivityIds(admin, since),
+  ]);
+  if (profiles.error) throw profiles.error;
+  if (subscriptions.error) throw subscriptions.error;
+  return {
+    adminId,
+    rows: toUserRows(users, {
+      names: new Map(profiles.data.map((profile) => [profile.id, profile.display_name])),
+      subscribers: new Set(subscriptions.data.map((row) => row.user_id)),
+      activeIds,
+      now: new Date(),
+    }),
+  };
+}
+
+/**
+ * Suspend, réactive ou supprime un compte. Refusé pour soi-même et pour un autre admin.
+ * Chaque action est journalisée (identifiants seulement) dans les logs de Vercel.
+ */
+export async function manageUser(targetId: string, action: "suspend" | "reactivate" | "delete") {
+  const { admin, adminId } = await adminSession();
+  const { data, error } = await admin.auth.admin.getUserById(targetId);
+  if (error || !data.user) throw new Error("Compte introuvable.");
+  const isAdmin = data.user.app_metadata?.role === "admin";
+  if (!canManage({ id: targetId, isAdmin }, adminId)) throw new Error("Action interdite.");
+
+  const result =
+    action === "delete"
+      ? await admin.auth.admin.deleteUser(targetId)
+      : await admin.auth.admin.updateUserById(targetId, {
+          // Suspension : connexion refusée pendant 100 ans, jusqu'à réactivation.
+          ban_duration: action === "suspend" ? "876000h" : "none",
+        });
+  if (result.error) throw result.error;
+  console.info(`[admin] ${action} du compte ${targetId} par ${adminId}`);
 }

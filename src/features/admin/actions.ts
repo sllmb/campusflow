@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { isStaleUnconfirmed } from "./lib/adoption";
-import { deleteStaleAccounts } from "./queries";
+import { z } from "zod";
+import { deleteStaleAccounts, manageUser } from "./queries";
 
 export type CleanupResult = { message?: string; error?: string };
 
@@ -21,4 +22,32 @@ export async function cleanUpStaleAccounts(): Promise<CleanupResult> {
   } catch {
     return { error: "Suppression impossible. Réessaie, ou vérifie ton code 2FA." };
   }
+}
+
+const manageSchema = z.object({
+  id: z.uuid(),
+  action: z.enum(["suspend", "reactivate", "delete"]),
+});
+
+/** Suspendre, réactiver ou supprimer un compte depuis la liste des utilisateurs. */
+export async function manageUserAction(
+  _prev: CleanupResult,
+  formData: FormData,
+): Promise<CleanupResult> {
+  const parsed = manageSchema.safeParse({ id: formData.get("id"), action: formData.get("action") });
+  if (!parsed.success) return { error: "Action inconnue." };
+  try {
+    await manageUser(parsed.data.id, parsed.data.action);
+  } catch {
+    return { error: "Action impossible sur ce compte." };
+  }
+  revalidatePath("/admin/utilisateurs");
+  revalidatePath("/admin");
+  return {
+    message: {
+      suspend: "Compte suspendu : il ne peut plus se connecter.",
+      reactivate: "Compte réactivé.",
+      delete: "Compte supprimé avec toutes ses données.",
+    }[parsed.data.action],
+  };
 }

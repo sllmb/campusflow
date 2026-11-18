@@ -60,10 +60,13 @@ export default function PrivacyPolicyPage() {
           accès depuis un autre compte.
         </p>
         <p>
-          L&apos;éditeur consulte uniquement des chiffres globaux sur l&apos;utilisation du service
-          (nombre de comptes, d&apos;inscriptions, de comptes actifs, totaux de notes ou de devoirs
-          créés), jamais le contenu de ton compte. Il peut supprimer les comptes jamais confirmés
-          depuis plus de 7 jours.
+          Pour gérer le service et t&apos;aider en cas de problème, l&apos;éditeur peut consulter la
+          liste des comptes : adresse e-mail, prénom, dates d&apos;inscription et de dernière
+          connexion, adresse confirmée ou non, double authentification et rappels activés ou non,
+          activité récente (oui ou non), ainsi que des chiffres globaux sur l&apos;utilisation du
+          service. Il peut suspendre ou supprimer un compte en cas d&apos;abus. Il ne voit jamais le
+          contenu de ton compte : tes matières, devoirs, notes, révisions et sessions de travail
+          restent visibles par toi seul.
         </p>
         <p>Nos prestataires techniques interviennent sans exploiter tes données :</p>
         <ul>
