@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Confidentialité" };
 
 export default function PrivacyPolicyPage() {
   return (
-    <LegalPage title="Confidentialité" updated="17 novembre 2026">
+    <LegalPage title="Confidentialité" updated="18 novembre 2026">
       <p className="text-lg font-semibold">
         En bref : tes données servent uniquement à faire fonctionner CampusFlow, et toi seul peux
         les voir.
@@ -58,6 +58,12 @@ export default function PrivacyPolicyPage() {
         <p>
           Toi seul. Chaque donnée est rattachée à ton compte, et la base de données refuse tout
           accès depuis un autre compte.
+        </p>
+        <p>
+          L&apos;éditeur consulte uniquement des chiffres globaux sur l&apos;utilisation du service
+          (nombre de comptes, d&apos;inscriptions, de comptes actifs, totaux de notes ou de devoirs
+          créés), jamais le contenu de ton compte. Il peut supprimer les comptes jamais confirmés
+          depuis plus de 7 jours.
         </p>
         <p>Nos prestataires techniques interviennent sans exploiter tes données :</p>
         <ul>

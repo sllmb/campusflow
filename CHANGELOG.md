@@ -4,6 +4,18 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), numérotation
 [SemVer](https://semver.org/lang/fr/).
 
+## [Non publié]
+
+### Ajouté
+
+- **Tableau admin** (`/admin`, réservé à l'éditeur avec la double authentification) :
+  l'adoption en chiffres globaux et le nettoyage des comptes jamais confirmés.
+
+### Modifié
+
+- **CampusFlow est plus rapide** : le serveur tourne à Dublin, à côté de la base de données, et
+  les notes sont lues en un seul aller-retour.
+
 ## [1.2.0] — 17 novembre 2026
 
 Prête à accueillir d'autres étudiants : anti-robots, pages légales complètes et une base de test

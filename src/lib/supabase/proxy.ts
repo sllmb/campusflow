@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { adminAccess } from "@/features/admin/lib/adoption";
 import { NextResponse, type NextRequest } from "next/server";
 import { getPublicEnv } from "@/lib/env";
 import type { Database } from "@/types/database";
@@ -101,6 +102,18 @@ export async function updateSession(request: NextRequest) {
   }
   if (isSignedIn && (pathname === "/" || matches(pathname, GUEST_ONLY_PATHS))) {
     return redirectTo("/dashboard");
+  }
+
+  // Tableau admin : vérifié AVANT d'envoyer quoi que ce soit (la page s'affiche en flux, elle ne
+  // pourrait plus changer son statut). Sans le rôle admin, la page n'existe pas : 404.
+  if (matches(pathname, ["/admin"]) && adminAccess(data?.claims) === "denied") {
+    const notFound = request.nextUrl.clone();
+    notFound.pathname = "/introuvable";
+    notFound.search = "";
+    const rewrite = NextResponse.rewrite(notFound, { status: 404 });
+    response.cookies.getAll().forEach((cookie) => rewrite.cookies.set(cookie));
+    rewrite.headers.set("Cache-Control", "private, no-store, max-age=0");
+    return rewrite;
   }
 
   // Page personnelle : aucun cache partagé (proxy d'école, d'entreprise, CDN) ne doit la garder.

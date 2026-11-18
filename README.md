@@ -75,6 +75,22 @@ peut pas contourner l'app en appelant Supabase directement.
 Ordre de mise en place : 1) clé de site dans Vercel et déploiement ; 2) seulement ensuite,
 activation dans Supabase. Dans l'autre ordre, plus personne ne peut se connecter.
 
+## Tableau admin
+
+`/admin` affiche l'adoption en **chiffres globaux** : comptes, actifs sur 7 jours, inscriptions
+par jour, abonnés aux rappels, totaux de contenus. Jamais une note, un devoir ou un prénom. Il
+permet aussi de supprimer les comptes jamais confirmés depuis plus de 7 jours.
+
+Accès : rôle `admin` dans `app_metadata` (posé par le serveur, impossible à modifier par
+l'utilisateur) **et** code 2FA saisi. Sinon : 404, la page n'existe pas. Pour se donner le rôle,
+dans le SQL Editor du projet de production, puis se déconnecter et se reconnecter :
+
+```sql
+update auth.users
+set raw_app_meta_data = coalesce(raw_app_meta_data, '{}') || '{"role": "admin"}'
+where email = 'ton-adresse@exemple.com';
+```
+
 ## Rappels du matin
 
 Chaque matin (Vercel Cron, `vercel.json`, 8 h UTC = 8 h au Sénégal), `/api/rappels` envoie à chaque

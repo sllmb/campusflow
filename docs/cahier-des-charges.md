@@ -24,7 +24,8 @@ CampusFlow réunit ces besoins dans une seule application web, pensée d'abord p
 | Visiteur | Personne non connectée : voit la page d'accueil et les pages légales. |
 | Étudiant | Personne inscrite et connectée : utilise toutes les fonctionnalités.  |
 
-Il n'y a pas de rôle administrateur dans l'application : chaque étudiant ne gère que ses données.
+Chaque étudiant ne gère que ses données. L'éditeur dispose d'un tableau admin en **chiffres
+globaux** (EF-90), sans accès au contenu des comptes.
 
 ## 4. Exigences fonctionnelles
 
@@ -115,6 +116,13 @@ Une session compte pour le jour où elle a commencé, dans le fuseau de l'étudi
 | EF-80 | Activer ou désactiver, par appareil, un rappel chaque matin vers 8 h (heure du Sénégal ; 8 h locales partout avec un réveil horaire).                         | 1.1     |
 | EF-81 | Le rappel résume les échéances du jour, les révisions du jour, les examens et projets du lendemain et les retards ; rien n'est envoyé s'il n'y a rien à dire. | 1.1     |
 | EF-82 | Envoyer une notification d'essai depuis le profil.                                                                                                            | 1.1     |
+
+### Administration
+
+| Id    | Exigence                                                                                                                                                                                 | Version |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| EF-90 | Tableau admin réservé à l'éditeur (rôle admin et code 2FA) : comptes, actifs sur 7 jours, inscriptions par jour, abonnés aux rappels, totaux de contenus. Jamais le contenu d'un compte. | 1.3     |
+| EF-91 | Supprimer les comptes jamais confirmés depuis plus de 7 jours.                                                                                                                           | 1.3     |
 
 ## 5. Exigences non fonctionnelles
 
