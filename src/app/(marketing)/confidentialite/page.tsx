@@ -44,6 +44,17 @@ export default function PrivacyPolicyPage() {
       </section>
 
       <section>
+        <h2>Questionnaires</h2>
+        <p>
+          L&apos;éditeur peut te proposer des questionnaires pour améliorer CampusFlow. Y répondre
+          est toujours facultatif. Chaque questionnaire indique, avant que tu répondes, s&apos;il
+          est <strong>anonyme</strong> (tes réponses ne sont pas reliées à ton compte : personne ne
+          peut savoir qu&apos;elles viennent de toi) ou <strong>nominatif</strong> (ton prénom et
+          ton adresse e-mail accompagnent tes réponses). Seul l&apos;éditeur lit les réponses.
+        </p>
+      </section>
+
+      <section>
         <h2>Utilisation</h2>
         <p>
           Ces données servent uniquement à te fournir le service : afficher tes échéances, calculer

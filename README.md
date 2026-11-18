@@ -96,6 +96,17 @@ set raw_app_meta_data = coalesce(raw_app_meta_data, '{}') || '{"role": "admin"}'
 where email = 'ton-adresse@exemple.com';
 ```
 
+### Formulaires
+
+**Formulaires** (`/admin/formulaires`) : l'admin crée des questionnaires (réponse courte,
+paragraphe, choix unique, cases à cocher, échelle de 1 à 5), anonymes par défaut ; les étudiants
+les voient sur leur accueil et répondent une fois. Tout passe par la RLS
+(`private.is_admin()`), sans clé secrète. Les résultats arrivent dans la prochaine version.
+
+Test de bout en bout à deux personnes (`tests/e2e/forms.spec.ts`) : il faut en plus un compte
+admin sur le projet de **test** (`E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD`), sans 2FA (le test
+l'active puis la retire).
+
 ## Rappels du matin
 
 Chaque matin (Vercel Cron, `vercel.json`, 8 h UTC = 8 h au Sénégal), `/api/rappels` envoie à chaque

@@ -120,7 +120,9 @@ export function ResponseForm({
     return (
       <Card tone="green" className="max-w-xl">
         <CardTitle>Merci pour tes réponses !</CardTitle>
-        <p className="mt-2 text-[15px]">Elles aideront à rendre CampusFlow encore plus utile.</p>
+        <p className="mt-2 text-[15px]">
+          Elles aideront à rendre CampusFlow encore plus utile. Une seule réponse par personne.
+        </p>
         <ButtonLink href="/dashboard" variant="dark" className="mt-4">
           Retour à l&apos;accueil
         </ButtonLink>

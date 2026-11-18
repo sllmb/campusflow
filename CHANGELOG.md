@@ -12,6 +12,9 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
   d'étudiant : tableau de l'adoption en chiffres globaux, liste des comptes avec recherche,
   filtres, suspension et suppression. Jamais le contenu des comptes.
 
+- **Questionnaires** : l'admin crée des formulaires (5 types de questions, anonymes par défaut) ;
+  les étudiants les voient sur leur accueil et y répondent une fois, toujours facultativement.
+
 ### Modifié
 
 - **CampusFlow est plus rapide** : le serveur tourne à Dublin, à côté de la base de données, et

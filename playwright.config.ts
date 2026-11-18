@@ -7,7 +7,8 @@ import { defineConfig, devices } from "@playwright/test";
  *
  * Les tests « connectés » ont besoin d'un compte de test confirmé, passé par variables
  * d'environnement (jamais dans le code) : E2E_EMAIL et E2E_PASSWORD. Sans elles, ils sont
- * ignorés et seuls les tests publics tournent.
+ * ignorés et seuls les tests publics tournent. Le test des formulaires demande aussi un compte
+ * admin : E2E_ADMIN_EMAIL et E2E_ADMIN_PASSWORD.
  */
 export default defineConfig({
   testDir: "tests/e2e",

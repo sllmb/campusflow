@@ -20,9 +20,12 @@ async function Questionnaire({ params }: PageProps<"/questionnaires/[formId]">) 
     <>
       <PageHeader title={data.form.title} description={data.form.description || undefined} />
       {answered ? (
-        <Card className="max-w-xl">
-          <CardTitle>Tu as déjà répondu</CardTitle>
-          <p className="mt-2 text-[15px] text-ink-soft">Merci ! Une seule réponse par personne.</p>
+        // Affiché aussi juste après l'envoi : la page est alors rechargée par le serveur.
+        <Card tone="green" className="max-w-xl">
+          <CardTitle>Merci pour tes réponses !</CardTitle>
+          <p className="mt-2 text-[15px]">
+            Elles aideront à rendre CampusFlow encore plus utile. Une seule réponse par personne.
+          </p>
           <ButtonLink href="/dashboard" variant="dark" className="mt-4">
             Retour à l&apos;accueil
           </ButtonLink>

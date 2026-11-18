@@ -68,7 +68,9 @@ test("l'admin publie un questionnaire, l'étudiant y répond une fois", async ({
       await expect(admin.getByRole("button", { name: "Publier" })).toBeDisabled();
 
       await admin.getByRole("button", { name: "Ajouter une question" }).click();
-      await admin.getByLabel("Question").fill("Ton année d'études");
+      await admin
+        .getByRole("textbox", { name: "Question", exact: true })
+        .fill("Ton année d'études");
       await admin.getByLabel("Type de réponse").selectOption({ label: "Choix unique" });
       await admin.getByLabel("Choix proposés (un par ligne)").fill("L1\nL2\nL3");
       await admin.getByLabel("Réponse obligatoire").check();
@@ -76,7 +78,9 @@ test("l'admin publie un questionnaire, l'étudiant y répond une fois", async ({
       await expect(admin.getByText("Ton année d'études")).toBeVisible();
 
       await admin.getByRole("button", { name: "Ajouter une question" }).click();
-      await admin.getByLabel("Question").fill("Recommanderais-tu CampusFlow ?");
+      await admin
+        .getByRole("textbox", { name: "Question", exact: true })
+        .fill("Recommanderais-tu CampusFlow ?");
       await admin.getByLabel("Type de réponse").selectOption({ label: "Échelle de 1 à 5" });
       await admin.getByRole("button", { name: "Ajouter la question" }).click();
       await expect(admin.getByText("Recommanderais-tu CampusFlow ?")).toBeVisible();
@@ -110,7 +114,8 @@ test("l'admin publie un questionnaire, l'étudiant y répond une fois", async ({
 
       // Une seule réponse par personne, et la carte disparaît de l'accueil.
       await student.reload({ waitUntil: "networkidle" });
-      await expect(student.getByText("Tu as déjà répondu")).toBeVisible();
+      await expect(student.getByText("Une seule réponse par personne.")).toBeVisible();
+      await expect(student.getByRole("button", { name: "Envoyer mes réponses" })).toHaveCount(0);
       await student.goto("/dashboard", { waitUntil: "networkidle" });
       await expect(student.getByText(TITLE)).toHaveCount(0);
     });
@@ -125,11 +130,10 @@ test("l'admin publie un questionnaire, l'étudiant y répond une fois", async ({
     });
 
     await test.step("fermé : l'étudiant ne peut plus l'ouvrir", async () => {
-      await student.goBack();
-      const response = await student.goto(
-        admin.url().replace("/admin/formulaires", "/questionnaires"),
-      );
-      expect(response?.status()).toBe(404);
+      // La RLS ne laisse plus lire le formulaire : page « Introuvable », sans les questions.
+      await student.goto(admin.url().replace("/admin/formulaires", "/questionnaires"));
+      await expect(student.getByRole("heading", { name: "Introuvable" })).toBeVisible();
+      await expect(student.getByText(TITLE)).toHaveCount(0);
     });
   } finally {
     await test.step("nettoyage : supprimer le questionnaire, retirer la 2FA de l'admin", async () => {
