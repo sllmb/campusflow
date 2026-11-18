@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { ArrowLeft, Lock } from "lucide-react";
+import { ArrowLeft, ChartColumn, Lock } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { AdminGate } from "@/features/admin/components/admin-gate";
 import { deleteForm, setFormStatus } from "@/features/forms/actions";
@@ -61,7 +61,15 @@ async function FormEditor({ params }: PageProps<"/admin/formulaires/[formId]">) 
       >
         <ArrowLeft className="size-4" strokeWidth={2.6} aria-hidden /> Formulaires
       </Link>
-      <PageHeader title={form.title} description={plural(responses, "réponse")} />
+      <PageHeader
+        title={form.title}
+        description={plural(responses, "réponse")}
+        action={
+          <ButtonLink href={`/admin/formulaires/${form.id}/resultats`} variant="dark" size="sm">
+            <ChartColumn /> Résultats
+          </ButtonLink>
+        }
+      />
 
       <div className="grid gap-5 lg:grid-cols-[1fr_22rem] lg:items-start">
         <section aria-labelledby="questions-title" className="grid gap-3">

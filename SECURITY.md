@@ -21,6 +21,8 @@ reproduire le problème. Une réponse est donnée sous 7 jours.
   Toutes les autres requêtes passent par la clé publique et la RLS.
 - **Anti-robots** : Cloudflare Turnstile sur l'inscription, la connexion et le mot de passe
   oublié, vérifié par Supabase lui-même (impossible à contourner en appelant l'API directement).
+- **Export CSV** des formulaires : les cellules qui commencent par `=`, `+`, `-` ou `@` sont
+  neutralisées, pour qu'un tableur n'exécute jamais une formule écrite par un étudiant.
 - **Entrées validées** côté serveur (Zod) avant toute écriture ; redirections limitées aux pages
   du site (`safeNext`).
 - **En-têtes** : HSTS, CSP, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy` ;

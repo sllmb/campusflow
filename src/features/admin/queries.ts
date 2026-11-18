@@ -174,3 +174,29 @@ export async function manageUser(targetId: string, action: "suspend" | "reactiva
   if (result.error) throw result.error;
   console.info(`[admin] ${action} du compte ${targetId} par ${adminId}`);
 }
+
+/**
+ * Prénom et e-mail de quelques comptes, pour les formulaires NOMINATIFS (l'étudiant en a été
+ * prévenu avant de répondre). Sans clé secrète configurée : liste vide.
+ */
+export async function getRespondents(userIds: string[]) {
+  const respondents = new Map<string, { name: string; email: string }>();
+  if (userIds.length === 0 || !getServerSecrets().supabaseSecretKey) return respondents;
+  const { admin } = await adminSession();
+  const wanted = new Set(userIds);
+  const [users, profiles] = await Promise.all([
+    listAuthUsers(admin),
+    admin
+      .from("profiles")
+      .select("id, display_name")
+      .in("id", [...wanted]),
+  ]);
+  if (profiles.error) throw profiles.error;
+  const names = new Map(profiles.data.map((profile) => [profile.id, profile.display_name]));
+  for (const user of users) {
+    if (wanted.has(user.id)) {
+      respondents.set(user.id, { name: names.get(user.id) ?? "", email: user.email ?? "" });
+    }
+  }
+  return respondents;
+}

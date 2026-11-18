@@ -129,6 +129,7 @@ Une session compte pour le jour où elle a commencé, dans le fuseau de l'étudi
 | EF-95 | Formulaires créés par l'admin : 5 types de questions (réponse courte, paragraphe, choix unique, cases à cocher, échelle de 1 à 5), obligatoires ou non, réordonnables ; brouillon, ouvert, fermé. | 1.3     |
 | EF-96 | Réponses anonymes (par défaut) ou nominatives, annoncées à l'étudiant avant qu'il réponde.                                                                                                        | 1.3     |
 | EF-97 | L'étudiant voit « Un questionnaire t'attend » sur son accueil (facultatif, « Plus tard »), répond une seule fois.                                                                                 | 1.3     |
+| EF-98 | Résultats d'un formulaire : barres par choix, moyenne et répartition des échelles, réponses écrites (avec le prénom si nominatif), export CSV pour Excel ou Google Sheets.                        | 1.3     |
 
 ## 5. Exigences non fonctionnelles
 

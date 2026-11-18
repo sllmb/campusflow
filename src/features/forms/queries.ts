@@ -1,7 +1,9 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
-import type { Question } from "./lib/forms";
+import { getRespondents } from "@/features/admin/queries";
+import type { Answer, Question } from "./lib/forms";
+import type { ResponseInput } from "./lib/results";
 
 type Tables = Database["public"]["Tables"];
 export type FormRow = Tables["forms"]["Row"];
@@ -63,4 +65,32 @@ export async function hasAnswered(formId: string) {
     .eq("form_id", formId)
     .maybeSingle();
   return Boolean(data);
+}
+
+/**
+ * Tout ce qu'il faut pour les résultats (admin seulement : la RLS cache les réponses aux autres).
+ * Pour un formulaire nominatif, on ajoute le prénom et l'e-mail de chaque personne.
+ */
+export async function getFormResults(formId: string) {
+  const data = await getFormWithQuestions(formId);
+  if (!data) return null;
+  const supabase = await createClient();
+  const { data: rows, error } = await supabase
+    .from("form_responses")
+    .select("user_id, answers, submitted_at")
+    .eq("form_id", formId)
+    .order("submitted_at");
+  if (error) throw error;
+
+  const respondents =
+    !data.form.anonymous && rows.some((row) => row.user_id)
+      ? await getRespondents(rows.flatMap((row) => (row.user_id ? [row.user_id] : [])))
+      : new Map<string, { name: string; email: string }>();
+
+  const responses: ResponseInput[] = rows.map((row) => ({
+    submittedAt: row.submitted_at,
+    answers: row.answers as Record<string, Answer>,
+    respondent: row.user_id ? (respondents.get(row.user_id) ?? null) : null,
+  }));
+  return { ...data, responses };
 }
