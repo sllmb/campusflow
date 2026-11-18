@@ -12,35 +12,55 @@ const longDay = new Intl.DateTimeFormat("fr-FR", {
 });
 const utc = (date: string) => new Date(`${date}T00:00:00Z`);
 
-/**
- * Barres du temps de concentration par jour. Dessinées en HTML (pas de bibliothèque) ; le
- * tableau caché donne les mêmes chiffres aux lecteurs d'écran.
- */
-export function FocusBars({
-  days,
-  today,
-  caption,
-}: {
+/** Barres du temps de concentration par jour (échelle d'au moins 1 h). */
+export function FocusBars(props: {
   days: { date: string; seconds: number }[];
   today: string;
   caption: string;
 }) {
-  // Échelle : au moins 1 h, pour qu'une petite session ne remplisse pas toute la hauteur.
-  const max = Math.max(3600, ...days.map((d) => d.seconds));
+  return (
+    <DayBars
+      {...props}
+      days={props.days.map(({ date, seconds }) => ({ date, value: seconds }))}
+      format={formatDuration}
+      floor={3600}
+    />
+  );
+}
+
+/**
+ * Une barre par jour. Dessinées en HTML (pas de bibliothèque) ; le tableau caché donne les mêmes
+ * chiffres aux lecteurs d'écran. `floor` : valeur minimale de l'échelle, pour qu'une petite
+ * valeur ne remplisse pas toute la hauteur.
+ */
+export function DayBars({
+  days,
+  today,
+  caption,
+  format,
+  floor = 1,
+}: {
+  days: { date: string; value: number }[];
+  today: string;
+  caption: string;
+  format: (value: number) => string;
+  floor?: number;
+}) {
+  const max = Math.max(floor, ...days.map((d) => d.value));
   const compact = days.length > 7;
 
   return (
     <figure>
       <div aria-hidden className={cn("flex h-36 items-end", compact ? "gap-0.5" : "gap-2")}>
-        {days.map(({ date, seconds }) => (
+        {days.map(({ date, value }) => (
           <div key={date} className="flex h-full flex-1 flex-col justify-end">
             <div
               className={cn(
                 "rounded-t-md border-2",
-                seconds === 0 && "border-dashed opacity-40",
+                value === 0 && "border-dashed opacity-40",
                 date === today ? "bg-primary" : "bg-ink",
               )}
-              style={{ height: seconds === 0 ? 4 : `${Math.max(4, (seconds / max) * 100)}%` }}
+              style={{ height: value === 0 ? 4 : `${Math.max(4, (value / max) * 100)}%` }}
             />
           </div>
         ))}
@@ -65,10 +85,10 @@ export function FocusBars({
       <table className="sr-only">
         <caption>{caption}</caption>
         <tbody>
-          {days.map(({ date, seconds }) => (
+          {days.map(({ date, value }) => (
             <tr key={date}>
               <th scope="row">{longDay.format(utc(date))}</th>
-              <td>{formatDuration(seconds)}</td>
+              <td>{format(value)}</td>
             </tr>
           ))}
         </tbody>

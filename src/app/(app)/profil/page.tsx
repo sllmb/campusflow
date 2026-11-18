@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { KeyRound, LogOut } from "lucide-react";
+import { KeyRound, LogOut, ShieldCheck } from "lucide-react";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { DeleteAccountCard } from "@/features/account/components/delete-account-card";
+import { getAdminAccess } from "@/features/admin/queries";
 import { signOut } from "@/features/auth/actions";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { getCurrentProfile } from "@/features/profile/queries";
@@ -28,6 +29,22 @@ async function ProfileDetails() {
   );
 }
 
+/** Lien vers le tableau admin, visible seulement par l'administrateur. */
+async function AdminLink() {
+  if ((await getAdminAccess()) === "denied") return null;
+  return (
+    <Card>
+      <CardTitle>Administration</CardTitle>
+      <p className="mt-1 mb-4 text-[15px] text-ink-soft">
+        L&apos;adoption de CampusFlow en chiffres globaux.
+      </p>
+      <ButtonLink href="/admin" variant="outline">
+        <ShieldCheck /> Ouvrir le tableau admin
+      </ButtonLink>
+    </Card>
+  );
+}
+
 async function TwoFactorSection() {
   return <TwoFactorCard enabled={await getTwoFactorEnabled()} />;
 }
@@ -43,6 +60,9 @@ export default function ProfilePage() {
             <ProfileDetails />
           </Suspense>
         </Card>
+        <Suspense fallback={null}>
+          <AdminLink />
+        </Suspense>
         <RemindersCardLoader />
         <Suspense fallback={<div className="h-40 animate-pulse rounded-card bg-muted" />}>
           <TwoFactorSection />

@@ -13,8 +13,9 @@ reproduire le problème. Une réponse est donnée sous 7 jours.
   rattachement à la ligne d'un autre compte, contraintes `CHECK` sur toutes les valeurs.
 - **Double authentification** facultative ; politiques RLS restrictives : sans le code, un compte
   protégé ne lit ni n'écrit rien.
-- **Clé secrète Supabase** utilisée à un seul endroit, côté serveur : le rappel du matin
-  (`src/app/api/rappels`), protégé par le secret de Vercel Cron (comparaison à temps constant).
+- **Clé secrète Supabase** utilisée côté serveur seulement à deux endroits : le rappel du matin
+  (`src/app/api/rappels`) et le tableau admin (`src/features/admin/queries.ts`, après vérification
+  du rôle `admin` et du code 2FA), protégé par le secret de Vercel Cron (comparaison à temps constant).
   Elle n'existe que dans les variables de Vercel, jamais dans le code ni dans le navigateur.
   Toutes les autres requêtes passent par la clé publique et la RLS.
 - **Anti-robots** : Cloudflare Turnstile sur l'inscription, la connexion et le mot de passe

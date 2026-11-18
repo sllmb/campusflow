@@ -10,6 +10,7 @@ les conventions (acteurs à gauche, cas d'utilisation dans le cadre du système)
 flowchart LR
     visiteur(["👤 Visiteur"])
     etudiant(["👤 Étudiant"])
+    editeur(["🛡️ Éditeur (admin)"])
     mail(["✉️ Service e-mail"])
     push(["🔔 Service de notification<br/>Apple, Google"])
 
@@ -30,6 +31,7 @@ flowchart LR
         uc_stats(["Consulter ses statistiques"])
         uc_profil(["Gérer son compte<br/>nom, mot de passe, 2FA, suppression"])
         uc_rappels(["Recevoir un rappel<br/>chaque matin"])
+        uc_admin(["Suivre l'adoption<br/>en chiffres globaux"])
     end
 
     visiteur --- uc_accueil
@@ -51,9 +53,11 @@ flowchart LR
     etudiant --- uc_profil
     etudiant --- uc_rappels
     uc_rappels --- push
+    editeur --- uc_admin
 ```
 
-Un visiteur devient étudiant en se connectant.
+Un visiteur devient étudiant en se connectant. L'éditeur est un étudiant à qui le rôle `admin` a
+été donné dans Supabase ; il ne voit jamais le contenu des autres comptes.
 
 ## Détail des cas principaux
 
