@@ -195,5 +195,6 @@ cette page (paramètre `next`, contrôlé par `safeNext`).
 10. ~~Calendrier, statistiques, deep work libre, planning de révisions, rappels du matin~~ →
     **v1.1.0**
 11. ~~Anti-robots, pages légales, base de test séparée~~ → **v1.2.0**
+12. ~~Espace admin, gestion des comptes, questionnaires, serveur à Dublin~~ → **v1.3.0**
 
 Le détail de chaque version est dans le [journal des versions](CHANGELOG.md).

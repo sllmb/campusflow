@@ -4,22 +4,42 @@ Toutes les évolutions notables de CampusFlow. Format inspiré de
 [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), numérotation
 [SemVer](https://semver.org/lang/fr/).
 
-## [Non publié]
+## [1.3.0] — 18 novembre 2026
+
+L'éditeur a ses outils : un espace admin séparé, la gestion des comptes et des questionnaires
+pour mieux connaître les étudiants. Et CampusFlow est plus rapide.
 
 ### Ajouté
 
-- **Espace admin** (réservé à l'éditeur, avec la double authentification), séparé des pages
-  d'étudiant : tableau de l'adoption en chiffres globaux, liste des comptes avec recherche,
-  filtres, suspension et suppression. Jamais le contenu des comptes.
-
-- **Questionnaires** : l'admin crée des formulaires (5 types de questions, anonymes par défaut) ;
-  les étudiants les voient sur leur accueil et y répondent une fois, toujours facultativement.
-  Résultats en graphiques (barres, moyennes, réponses écrites) et export CSV.
+- **Espace admin**, réservé à l'éditeur avec la double authentification, séparé des pages
+  d'étudiant (le compte admin n'a que Tableau, Utilisateurs, Formulaires et Profil) :
+  - **Tableau** : l'adoption en chiffres globaux (étudiants, actifs sur 7 jours, inscriptions
+    par jour, abonnés aux rappels, totaux de contenus) et nettoyage des comptes jamais confirmés ;
+  - **Utilisateurs** : la liste des comptes (e-mail, prénom, dates, état), recherche, filtres,
+    suspension, réactivation et suppression. Jamais le contenu des comptes.
+- **Questionnaires** : l'admin crée des formulaires (réponse courte, paragraphe, choix unique,
+  cases à cocher, échelle de 1 à 5), anonymes par défaut ou nominatifs. Les étudiants les voient
+  sur leur accueil et y répondent une fois, toujours facultativement. Résultats en graphiques et
+  export CSV pour Excel ou Google Sheets.
 
 ### Modifié
 
 - **CampusFlow est plus rapide** : le serveur tourne à Dublin, à côté de la base de données, et
-  les notes sont lues en un seul aller-retour.
+  les notes sont lues en un seul aller-retour au lieu de quatre.
+- La politique de confidentialité décrit ce que l'éditeur voit (liste des comptes, chiffres
+  globaux, réponses aux questionnaires) et ce qu'il ne voit jamais (le contenu des comptes).
+
+### Sécurité
+
+- Accès admin : rôle posé côté serveur (`app_metadata`) **et** code 2FA. Les autres reçoivent une
+  404 avant même que la page commence à s'afficher.
+- Formulaires protégés par la RLS (`private.is_admin()`), sans clé secrète ; anonymat réel (aucun
+  lien entre une réponse anonyme et un compte).
+- Export CSV : formules de tableur neutralisées.
+
+### Base de données
+
+Une migration : `20261119090000_create_forms`.
 
 ## [1.2.0] — 17 novembre 2026
 
@@ -142,6 +162,7 @@ Première version (MVP), utilisable pendant un semestre.
 - Sécurité par RLS sur toutes les tables, tests unitaires et de bout en bout, intégration
   continue GitHub Actions, mise en ligne sur Vercel.
 
+[1.3.0]: https://github.com/sllmb/campusflow/releases/tag/v1.3.0
 [1.2.0]: https://github.com/sllmb/campusflow/releases/tag/v1.2.0
 [1.1.0]: https://github.com/sllmb/campusflow/releases/tag/v1.1.0
 [1.0.0]: https://github.com/sllmb/campusflow/releases/tag/v1.0.0
