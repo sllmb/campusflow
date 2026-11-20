@@ -34,7 +34,7 @@ export function SubjectForm({ unitId, subject, suggestedColor = 1, onDone }: Sub
     >
       <input type="hidden" name="unitId" value={unitId} />
       {subject && <input type="hidden" name="id" value={subject.id} />}
-      <div className="grid grid-cols-[1fr_7rem] gap-3">
+      <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
         <Field
           name="name"
           id={`subject-name-${key}`}
