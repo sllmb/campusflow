@@ -37,7 +37,7 @@ export function SemesterHeader({ semester, totalCredits, unitCount }: SemesterHe
       ) : (
         <div className="mt-3 flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="text-4xl leading-[1.05] font-extrabold tracking-[-0.03em] lg:text-5xl">
+            <h1 className="text-4xl leading-[1.05] font-extrabold tracking-[-0.03em] break-words hyphens-auto lg:text-5xl">
               {semester.name}
             </h1>
             <p className="mt-2 text-[15px] text-ink-soft">

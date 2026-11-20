@@ -4,5 +4,5 @@ import { getCurrentProfile } from "../queries";
 export async function Greeting() {
   const { displayName } = await getCurrentProfile();
   const firstName = displayName.split(" ")[0];
-  return <>{firstName ? `Salut ${firstName} !` : "Salut !"}</>;
+  return <>{firstName ? `Salut ${firstName}\u00a0!` : "Salut !"}</>;
 }

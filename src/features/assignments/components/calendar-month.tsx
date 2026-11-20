@@ -83,7 +83,10 @@ export function CalendarMonth({
                       {day}
                     </span>
                     {(items.length > 0 || revisions.length > 0) && (
-                      <span aria-hidden className="flex items-center gap-0.5">
+                      <span
+                        aria-hidden
+                        className="flex max-w-full flex-wrap items-center justify-center gap-0.5 px-0.5"
+                      >
                         {items.slice(0, MAX_DOTS).map((item) => (
                           <span
                             key={item.id}

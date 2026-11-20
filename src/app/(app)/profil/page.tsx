@@ -20,7 +20,8 @@ async function ProfileDetails() {
   return (
     <>
       <p className="mt-1 text-[15px] text-ink-soft">
-        Connecté avec <span className="font-bold text-ink">{profile.email}</span>
+        Connecté avec{" "}
+        <span className="font-bold [overflow-wrap:anywhere] text-ink">{profile.email}</span>
       </p>
       <div className="mt-5">
         <ProfileForm displayName={profile.displayName} />
