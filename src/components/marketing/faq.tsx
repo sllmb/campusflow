@@ -20,7 +20,7 @@ const questions = [
   },
   {
     q: "Il y a un calendrier ou des rappels ?",
-    a: "Pas encore. Le calendrier, les statistiques et un planning de révision sont prévus pour une prochaine version.",
+    a: "Oui. Tes devoirs et examens s'affichent dans un calendrier, et tu peux planifier tes révisions avant chaque examen. Active les rappels du matin pour recevoir chaque jour sur ton téléphone tes échéances et révisions du jour. Une page de statistiques suit aussi ton temps de travail et l'évolution de ta moyenne.",
   },
 ];
 
