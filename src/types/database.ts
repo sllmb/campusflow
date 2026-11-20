@@ -191,7 +191,7 @@ export type Database = {
           id: string;
           user_id: string;
           subject_id: string;
-          kind: "homework" | "project" | "exam";
+          kind: "homework" | "td" | "tp" | "project" | "exam";
           title: string;
           notes: string | null;
           due_at: string;
@@ -205,7 +205,7 @@ export type Database = {
           id?: string;
           user_id?: string;
           subject_id: string;
-          kind?: "homework" | "project" | "exam";
+          kind?: "homework" | "td" | "tp" | "project" | "exam";
           title: string;
           notes?: string | null;
           due_at: string;
@@ -214,7 +214,7 @@ export type Database = {
         };
         Update: {
           subject_id?: string;
-          kind?: "homework" | "project" | "exam";
+          kind?: "homework" | "td" | "tp" | "project" | "exam";
           title?: string;
           notes?: string | null;
           due_at?: string;

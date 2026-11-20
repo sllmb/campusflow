@@ -13,6 +13,8 @@ export const KINDS: {
   tone: BadgeProps["tone"];
 }[] = [
   { value: "homework", label: "Devoir", plural: "Devoirs", tone: "blue" },
+  { value: "td", label: "TD", plural: "TD", tone: "green" },
+  { value: "tp", label: "TP", plural: "TP", tone: "yellow" },
   { value: "project", label: "Projet", plural: "Projets", tone: "orange" },
   { value: "exam", label: "Examen", plural: "Examens", tone: "dark" },
 ];
@@ -28,6 +30,13 @@ export const PRIORITIES: { value: AssignmentPriority; label: string }[] = [
   { value: "normal", label: "Normale" },
   { value: "high", label: "Haute" },
 ];
+
+/** Échéances qui se préparent par des révisions (et s'annoncent la veille dans le rappel). */
+export const REVISABLE_KINDS: readonly AssignmentKind[] = ["project", "exam"];
+
+export function isRevisable(kind: string) {
+  return (REVISABLE_KINDS as readonly string[]).includes(kind);
+}
 
 export function kindInfo(kind: AssignmentKind) {
   return KINDS.find((item) => item.value === kind) ?? KINDS[0];

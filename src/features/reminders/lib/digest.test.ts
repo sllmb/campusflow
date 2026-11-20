@@ -86,6 +86,20 @@ describe("buildDigest", () => {
     expect(digest).toMatchObject({ title: "À préparer", body: "Demain : Projet web (17:00)" });
   });
 
+  it("un TD ou un TP demain n'est pas annoncé comme un examen", () => {
+    expect(
+      buildDigest({
+        today: TODAY,
+        timeZone: PARIS,
+        assignments: [
+          a("TD de mécanique", "2026-11-12T07:00:00Z", "td"),
+          a("TP d'électronique", "2026-11-12T13:00:00Z", "tp"),
+        ],
+        revisions: [],
+      }),
+    ).toBe(null);
+  });
+
   it("le jour se lit dans le fuseau de l'étudiant", () => {
     // 23:30 UTC le 10 = 00:30 le 11 à Paris, mais encore le 10 à Dakar.
     const late = [a("Rendu de minuit", "2026-11-10T23:30:00Z")];
