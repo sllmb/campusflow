@@ -329,6 +329,7 @@ export type Database = {
     Views: Record<string, never>;
     Functions: {
       delete_my_account: { Args: Record<string, never>; Returns: undefined };
+      revoke_user_sessions: { Args: { target: string }; Returns: undefined };
       submit_form_response: {
         Args: { p_form_id: string; p_answers: Record<string, string | string[] | number> };
         Returns: undefined;

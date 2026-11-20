@@ -170,7 +170,19 @@ cette page (paramètre `next`, contrôlé par `safeNext`).
   Turnstile). Il crée son propre semestre puis le supprime. Premier lancement : `npx playwright install chromium`.
 
 - **Intégration continue** : à chaque pull request, GitHub Actions lance lint, types, formatage,
-  tests unitaires et build.
+  tests unitaires et build, puis les tests de bout en bout sur le projet Supabase **de test**.
+  Ils ont besoin de ces secrets (GitHub > **Settings** > **Secrets and variables** >
+  **Actions**) ; sans eux, l'étape est ignorée avec un avertissement :
+
+  | Secret                                   | Valeur                                    |
+  | ---------------------------------------- | ----------------------------------------- |
+  | `E2E_SUPABASE_URL`                       | URL du projet `campusflow-test`           |
+  | `E2E_SUPABASE_PUBLISHABLE_KEY`           | sa clé publique (`publishable` ou `anon`) |
+  | `E2E_EMAIL` / `E2E_PASSWORD`             | le compte de test confirmé                |
+  | `E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD` | le compte admin de test, sans 2FA         |
+
+  Le parcours de suppression de compte (`E2E_DELETE_*`) reste en local : il efface vraiment
+  un compte.
 
 ## Organisation
 
