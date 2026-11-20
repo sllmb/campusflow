@@ -31,3 +31,47 @@ jobs:
       - run: npm test
       # Le build n'a pas besoin des clés Supabase (rendu reporté à la requête).
       - run: npm run build
+
+  e2e:
+    name: Tests de bout en bout
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Un seul passage à la fois : tous les passages partagent le compte du projet de test.
+    concurrency:
+      group: e2e-campusflow-test
+      cancel-in-progress: false
+    # Projet Supabase de TEST uniquement (jamais la production). Secrets du dépôt :
+    # Settings > Secrets and variables > Actions. Le parcours de suppression de compte
+    # (E2E_DELETE_*) reste en local : il efface réellement un compte.
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.E2E_SUPABASE_PUBLISHABLE_KEY }}
+      E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+    steps:
+      - name: Secrets du projet de test présents ?
+        id: secrets
+        run: |
+          if [ -n "$NEXT_PUBLIC_SUPABASE_URL" ] && [ -n "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Secrets E2E_SUPABASE_URL et E2E_SUPABASE_PUBLISHABLE_KEY absents : tests de bout en bout ignorés."
+          fi
+      - if: steps.secrets.outputs.ok == 'true'
+        uses: actions/checkout@v7
+      - if: steps.secrets.outputs.ok == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - if: steps.secrets.outputs.ok == 'true'
+        run: npm ci
+      - if: steps.secrets.outputs.ok == 'true'
+        run: npx playwright install --with-deps chromium
+      - if: steps.secrets.outputs.ok == 'true'
+        run: npm run build
+      - if: steps.secrets.outputs.ok == 'true'
+        run: npm run e2e

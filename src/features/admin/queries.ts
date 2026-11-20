@@ -172,6 +172,12 @@ export async function manageUser(targetId: string, action: "suspend" | "reactiva
           ban_duration: action === "suspend" ? "876000h" : "none",
         });
   if (result.error) throw result.error;
+  if (action === "suspend") {
+    // Le blocage ci-dessus refuse les nouvelles connexions ; on ferme aussi les sessions déjà
+    // ouvertes, pour que le compte perde l'accès à ses données tout de suite.
+    const revoked = await admin.rpc("revoke_user_sessions", { target: targetId });
+    if (revoked.error) throw revoked.error;
+  }
   console.info(`[admin] ${action} du compte ${targetId} par ${adminId}`);
 }
 
