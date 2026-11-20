@@ -68,7 +68,7 @@ function SubjectGrades({
           {subject.name.trim().charAt(0).toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-bold">{subject.name}</p>
+          <p className="text-[15px] leading-snug font-bold break-words">{subject.name}</p>
           <p className="text-[13px] text-ink-soft">Coef {formatNumber(subject.coefficient)}</p>
         </div>
         <p
@@ -145,7 +145,7 @@ export function UnitGradesCard({ unit, result }: { unit: UnitWithGrades; result:
             {unit.code && <Badge tone="dark">{unit.code}</Badge>}
             <Badge tone="yellow">{plural(unit.ectsCredits, "crédit")} ECTS</Badge>
           </div>
-          <h2 className="mt-2 text-xl font-extrabold tracking-tight">{unit.name}</h2>
+          <h2 className="mt-2 text-xl font-extrabold tracking-tight break-words">{unit.name}</h2>
           <div className="mt-2 flex flex-wrap gap-1.5">
             <Badge tone={status.tone}>{status.label}</Badge>
             {result.status !== "none" && !result.complete && <Badge>Provisoire</Badge>}

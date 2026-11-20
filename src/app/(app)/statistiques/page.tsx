@@ -122,7 +122,7 @@ async function StatsContent({ searchParams }: PageProps<"/statistiques">) {
             {subjects.map((subject) => (
               <li key={subject.key}>
                 <div className="flex items-baseline justify-between gap-3 text-[15px]">
-                  <span className="min-w-0 truncate font-bold">{subject.name}</span>
+                  <span className="min-w-0 font-bold break-words">{subject.name}</span>
                   <span className="shrink-0 font-semibold tabular-nums">
                     {formatDuration(subject.seconds)}
                     <span className="ml-1.5 text-[13px] text-ink-soft">

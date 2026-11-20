@@ -37,7 +37,7 @@ function SubjectRow({ subject, unitId }: { subject: Subject; unitId: string }) {
         {subject.name.trim().charAt(0).toUpperCase()}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[15px] font-bold">{subject.name}</p>
+        <p className="text-[15px] leading-snug font-bold break-words">{subject.name}</p>
         <p className="text-[13px] text-ink-soft">Coefficient {formatNumber(subject.coefficient)}</p>
       </div>
       <IconAction aria-label={`Modifier ${subject.name}`} onClick={() => setEditing(true)}>

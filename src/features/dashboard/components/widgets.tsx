@@ -217,7 +217,7 @@ export function SubjectsWidget({
               >
                 {subject.name.trim().charAt(0).toUpperCase()}
               </span>
-              <p className="min-w-0 flex-1 truncate text-[15px] font-bold">
+              <p className="min-w-0 flex-1 text-[15px] leading-snug font-bold break-words">
                 {subject.name}
                 {subject.unitCode && (
                   <span className="ml-1.5 text-[13px] font-semibold text-ink-soft">
