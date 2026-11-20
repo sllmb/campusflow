@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 /** Liste déroulante native, au style des champs. */
 export function Select({ className, children, ...props }: ComponentProps<"select">) {
   return (
-    <div className="relative">
+    <div className="relative min-w-0">
       <select
         className={cn(
-          "h-12 w-full cursor-pointer appearance-none rounded-2xl border-2 bg-surface pr-11 pl-4 text-[15px] font-medium transition-shadow focus-visible:shadow-hard-sm focus-visible:outline-none aria-invalid:border-error",
+          "h-12 w-full min-w-0 cursor-pointer appearance-none rounded-2xl border-2 bg-surface pr-11 pl-4 text-base font-medium transition-shadow focus-visible:shadow-hard-sm focus-visible:outline-none aria-invalid:border-error sm:text-[15px]",
           className,
         )}
         {...props}

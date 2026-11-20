@@ -14,7 +14,7 @@ export function Field({ name, label, errors, hint, id = name, ...props }: FieldP
   const error = errors?.[0];
   const describedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
   return (
-    <div className="grid gap-1.5">
+    <div className="grid min-w-0 gap-1.5">
       <Label htmlFor={id}>{label}</Label>
       <Input
         id={id}
