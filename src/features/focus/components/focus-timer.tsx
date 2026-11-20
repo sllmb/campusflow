@@ -280,7 +280,11 @@ export function FocusTimer({ groups, pomodorosToday, preset }: FocusTimerProps) 
             <p
               role="timer"
               aria-live="off"
-              className="text-[56px] leading-none font-extrabold tracking-[-0.04em] tabular-nums"
+              className={cn(
+                "leading-none font-extrabold tracking-[-0.04em] tabular-nums",
+                // « 10:00:00 » ne tient pas dans le cercle d'un petit téléphone en 56 px.
+                remaining > 35_999_000 ? "text-[44px] sm:text-[56px]" : "text-[56px]",
+              )}
             >
               {formatClock(remaining)}
             </p>

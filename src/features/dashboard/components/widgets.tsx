@@ -67,11 +67,13 @@ export function AverageWidget({ result }: { result: SemesterResult }) {
     <Link href="/notes" className={widgetLink}>
       <Card
         tone="yellow"
-        className="flex aspect-square h-full flex-col justify-between p-4 lg:aspect-auto lg:p-5"
+        className="@container flex aspect-square h-full flex-col justify-between p-4 lg:aspect-auto lg:p-5"
       >
         <CardLabel>Moyenne</CardLabel>
         <div>
-          <CardValue className="tabular-nums">{formatAverage(result.average)}</CardValue>
+          <CardValue className="text-[min(44px,26cqi)] whitespace-nowrap tabular-nums">
+            {formatAverage(result.average)}
+          </CardValue>
           <p className="mt-1 text-[13px] font-semibold">{caption}</p>
         </div>
       </Card>
@@ -91,16 +93,18 @@ export function FocusWidget({
     <Link href="/pomodoro" className={widgetLink}>
       <Card
         tone="green"
-        className="flex aspect-square h-full flex-col justify-between p-4 lg:aspect-auto lg:p-5"
+        className="@container flex aspect-square h-full flex-col justify-between p-4 lg:aspect-auto lg:p-5"
       >
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-2">
           <CardLabel>Pomodoro</CardLabel>
-          <span className="flex size-10 items-center justify-center rounded-full border-2 bg-ink text-green">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full border-2 bg-ink text-green sm:size-10">
             <Timer className="size-5" strokeWidth={2.4} aria-hidden />
           </span>
         </div>
         <div>
-          <CardValue className="tabular-nums">{formatDuration(totalSeconds)}</CardValue>
+          <CardValue className="text-[min(44px,26cqi)] whitespace-nowrap tabular-nums">
+            {formatDuration(totalSeconds)}
+          </CardValue>
           <p className="mt-1 text-[13px] font-semibold">
             {sessions > 0
               ? `aujourd'hui · ${sessions} session${sessions > 1 ? "s" : ""}`
