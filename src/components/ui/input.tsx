@@ -1,9 +1,13 @@
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
+import { DateInput } from "./date-input";
+
+const DATE_TYPES = new Set(["date", "datetime-local", "time", "month"]);
 
 export function Input({ className, type = "text", ...props }: ComponentProps<"input">) {
+  const Component = DATE_TYPES.has(type) ? DateInput : "input";
   return (
-    <input
+    <Component
       type={type}
       className={cn(
         "h-12 w-full min-w-0 rounded-2xl border-2 bg-surface px-4 text-base font-medium transition-shadow placeholder:font-normal placeholder:text-ink-soft focus-visible:shadow-hard-sm focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-error aria-invalid:shadow-[3px_3px_0_var(--error)] sm:text-[15px]",

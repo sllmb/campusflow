@@ -110,4 +110,9 @@
   input::-webkit-date-and-time-value {
     text-align: left;
   }
+
+  /* Champ de date vide : on masque « jj/mm/aaaa » pour laisser voir l'indication (DateInput). */
+  input[data-empty]:not(:focus) {
+    color: transparent;
+  }
 }
