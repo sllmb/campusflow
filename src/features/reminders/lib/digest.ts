@@ -2,6 +2,7 @@
  * Rappel du matin — fonction pure : à partir des échéances et des révisions d'un étudiant,
  * écrit la notification, ou renvoie null s'il n'y a rien à dire.
  */
+import { isRevisable } from "@/features/assignments/constants";
 import { addDays } from "@/features/assignments/lib/calendar";
 import { formatMinutes } from "@/features/focus/lib/timer";
 import { formatTime, utcToLocalInput } from "@/lib/time";
@@ -41,7 +42,7 @@ export function buildDigest(input: {
 
   const dueToday = pending.filter((a) => day(a.dueAt) === today);
   const overdue = pending.filter((a) => day(a.dueAt) < today).length;
-  const examsTomorrow = pending.filter((a) => a.kind !== "homework" && day(a.dueAt) === tomorrow);
+  const examsTomorrow = pending.filter((a) => isRevisable(a.kind) && day(a.dueAt) === tomorrow);
   const revisionMinutes = input.revisions
     .filter((r) => r.plannedOn === today && !r.done)
     .reduce((sum, r) => sum + r.minutes, 0);

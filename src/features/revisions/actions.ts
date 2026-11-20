@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { isRevisable } from "@/features/assignments/constants";
 import { parseDay } from "@/features/assignments/lib/calendar";
 import type { FormState } from "@/lib/form-state";
 import { createClient } from "@/lib/supabase/server";
@@ -72,7 +73,7 @@ export async function planRevisionsAction(
     .eq("id", assignmentId)
     .maybeSingle();
   if (error) return { error: "Impossible de lire l'examen. Réessaie dans un instant.", values };
-  if (!assignment || assignment.kind === "homework") {
+  if (!assignment || !isRevisable(assignment.kind)) {
     return { error: "Examen introuvable. Recharge la page.", values };
   }
 

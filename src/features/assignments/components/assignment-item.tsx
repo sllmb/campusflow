@@ -10,7 +10,7 @@ import { RevisionPlanner } from "@/features/revisions/components/revision-planne
 import type { RevisionSlotView } from "@/features/revisions/components/revision-slot-row";
 import { cn } from "@/lib/utils";
 import { deleteAssignment, toggleAssignmentDone } from "../actions";
-import { kindInfo } from "../constants";
+import { isRevisable, kindInfo } from "../constants";
 import type { AssignmentView } from "../lib/schedule";
 import type { SubjectOptionGroup } from "../queries";
 import { AssignmentForm } from "./assignment-form";
@@ -80,7 +80,7 @@ export function AssignmentItem({
     );
   }
 
-  const plannable = today !== undefined && item.kind !== "homework" && !done;
+  const plannable = today !== undefined && isRevisable(item.kind) && !done;
 
   return (
     <li
