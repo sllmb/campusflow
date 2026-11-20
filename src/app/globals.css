@@ -107,6 +107,16 @@
     min-width: 0;
   }
 
+  /*
+   * Une grille sans colonnes déclarées (« grid gap-3 » pour empiler des blocs) a une colonne
+   * qui s'élargit selon son contenu : un seul texte long (un nom de matière) suffisait à
+   * élargir toute la page sur téléphone, et l'iPhone dézoomait. Par défaut, la colonne reste
+   * à la largeur disponible ; les classes grid-cols-* (couche utilities) passent avant.
+   */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   input::-webkit-date-and-time-value {
     text-align: left;
   }
